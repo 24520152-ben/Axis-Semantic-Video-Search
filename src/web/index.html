@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Axis - Semantic Search Module</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="/static/app.js" defer></script>
+</head>
+
+<body>
+  <header class="header">
+    <a class="brand" href="/" aria-label="Axis home">Axis - Semantic Video Search</a>
+    <span class="author">@01100010en</span>
+  </header>
+
+  <main>
+    <aside class="search-panel" aria-labelledby="title">
+      <span class="eyebrow">Find the right moment</span>
+      <p class="intro">Describe the people, objects, or actions you want to find.</p>
+      <form id="search-form">
+        <label class="sr-only" for="query">Describe a moment</label>
+        <textarea id="query" name="query" rows="2" maxlength="4000" required
+          placeholder="Example: A woman in a red shirt and white apron standing next to a man"></textarea>
+        <div class="form-actions">
+          <label class="limit-label" for="top-k">Results
+            <input id="top-k" name="top_k" type="number" value="20" min="1" max="100" step="1" required>
+          </label>
+          <span class="keyboard-hint">Enter to search · Shift + Enter for a new line</span>
+          <button id="submit" type="submit"><span class="spinner" hidden></span><span id="button-label">Search
+              →</span></button>
+        </div>
+      </form>
+      <div class="suggestions" aria-label="Search suggestions">
+        <span>Try:</span>
+        <button type="button">A woman in a red shirt</button>
+        <button type="button">A busy street market</button>
+        <button type="button">A man cooking</button>
+      </div>
+    </aside>
+
+    <section class="results-section" aria-labelledby="results-title">
+      <div class="results-heading">
+        <h2 id="results-title">Search results</h2><span id="summary"></span>
+      </div>
+      <p id="status" role="status" aria-live="polite">Enter a description to get started. Select a frame to open the
+        video at that moment.</p>
+      <div id="empty-state" class="empty-state"><span class="empty-icon" aria-hidden="true">▷</span>
+        <h3>Your next discovery is a search away.</h3>
+        <p>Start with a specific description of the scene.</p>
+      </div>
+      <div id="results" class="results-grid" aria-busy="false"></div>
+    </section>
+  </main>
+
+  <template id="result-template">
+    <article class="result-card">
+      <a class="preview" target="_blank" rel="noopener noreferrer">
+        <img loading="lazy" decoding="async" alt="">
+        <span class="rank"></span><span class="timestamp"></span>
+        <span class="image-error" hidden>Preview unavailable</span>
+      </a>
+      <div class="card-body">
+        <div class="card-title">
+          <h3></h3><span class="frame-index"></span>
+        </div>
+        <div class="card-footer"><span class="score"></span><a class="watch-link" target="_blank"
+            rel="noopener noreferrer">Watch video ↗</a></div>
+      </div>
+    </article>
+  </template>
+</body>
+
+</html>
