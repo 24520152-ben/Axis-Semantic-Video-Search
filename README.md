@@ -8,7 +8,7 @@ matching frames through **Zilliz Cloud**. A lightweight web UI provides image
 previews and links to the original video at the matched timestamp.
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/77f4e417-51e9-4ada-a5ba-b0f3093170e3" width="100%" alt="Semantic Search Demo" />
+  <img src="https://github.com/user-attachments/assets/77f4e417-51e9-4ada-a5ba-b0f3093170e3" alt="Semantic Search Demo" />
 </p>
 
 **Stack:** FastAPI · Modal · OmniShotCut · NVIDIA DALI · Decord CUDA · Sentence Transformers · Zilliz/Milvus
