@@ -7,7 +7,7 @@ representative keyframes, embeds them with **Qwen3-VL-Embedding-2B**, and retrie
 matching frames through **Zilliz Cloud**. A lightweight web UI provides image
 previews and links to the original video at the matched timestamp.
 
-https://github.com/user-attachments/assets/01731667-ea73-4092-b154-57b430b0608c
+<video src="https://github.com/user-attachments/assets/01731667-ea73-4092-b154-57b430b0608c" autoplay loop muted playsinline width="100%"></video>
 
 **Stack:** FastAPI · Modal · OmniShotCut · NVIDIA DALI · Decord CUDA · Sentence Transformers · Zilliz/Milvus
 
