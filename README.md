@@ -7,7 +7,7 @@ representative keyframes, embeds them with **Qwen3-VL-Embedding-2B**, and retrie
 matching frames through **Zilliz Cloud**. A lightweight web UI provides image
 previews and links to the original video at the matched timestamp.
 
-<video src="./assets/demo.mp4" autoplay loop muted playsinline width="100%"></video>
+<video src="https://github.com/24520152-ben/Axis-Semantic-Video-Search/blob/main/assets/demo.mp4" autoplay loop muted playsinline width="100%"></video>
 
 **Stack:** FastAPI · Modal · OmniShotCut · NVIDIA DALI · Decord CUDA · Sentence Transformers · Zilliz/Milvus
 
