@@ -11,7 +11,7 @@ previews and links to the original video at the matched timestamp.
   <img src="https://github.com/user-attachments/assets/77f4e417-51e9-4ada-a5ba-b0f3093170e3" alt="Semantic Search Demo" />
 </p>
 
-**Stack:** FastAPI · Modal · OmniShotCut · NVIDIA DALI · Decord CUDA · Sentence Transformers · Zilliz/Milvus
+**Stack:** FastAPI · Modal · OmniShotCut · NVIDIA DALI · Decord CPU · Sentence Transformers · Zilliz/Milvus
 
 [Architecture](#architecture) · [Setup](#setup) · [Process videos](#process-videos) ·
 [Ingest](#ingest-into-zilliz) · [Deploy](#deploy-the-api-and-ui) · [API](#api-reference) ·
@@ -22,7 +22,7 @@ previews and links to the original video at the matched timestamp.
 ```mermaid
 flowchart LR
     V[Videos + media-info] --> S[DALI + OmniShotCut]
-    S --> C[Decord CUDA: candidates at ~1 FPS]
+    S --> C[Decord CPU: candidates at ~1 FPS]
     C --> E[Qwen image embeddings]
     E --> K[Cosine dedup + temporal coverage]
     K --> O[JPEG + Parquet on Modal Volume]
@@ -41,14 +41,15 @@ ingest its output, then deploy the API and UI.
 | Stage | Implementation | Runs on |
 | --- | --- | --- |
 | Shot detection | DALI decodes/resizes frames; OmniShotCut finds clean shot ranges | GPU |
-| Candidate sampling | Decord CUDA samples roughly 1 FPS within each shot; DLPack passes tensors to PyTorch | GPU |
+| Candidate sampling | Decord CPU samples roughly 1 FPS within each shot; DLPack passes tensors to PyTorch | CPU |
 | Timing and identity | PyAV demux reads source timestamps; SHA-256 identifies the video | CPU |
 | Image embedding | Qwen encodes every candidate once, in batches of 4 | GPU |
 | Frame selection | Cosine threshold **0.95**, with temporal anchors at most **5 seconds apart within each shot** | CPU |
 | Export | Only retained frames become JPEGs and Parquet rows | CPU |
 | Retrieval | Qwen embeds the text query; Zilliz searches by cosine similarity | Modal GPU + Zilliz |
 
-Candidate RGB tensors remain cached on GPU for export. Embeddings move to CPU
+Candidate RGB tensors remain cached in CPU RAM for export. Each embedding batch
+is transferred to the model device for Qwen preprocessing and inference. Embeddings move to CPU
 in native **BF16, 2048 dimensions** for selection and storage. The checkpoint
 provides normalization; the pipeline does not add another normalization step.
 Video pixels are decoded in two passes: DALI for detection and Decord for sampling.
@@ -58,8 +59,7 @@ Video pixels are decoded in two passes: DALI for detection and Decord for sampli
 ```text
 scripts/
 ├── process_videos.py       # Offline Modal app and batch-processing CLI
-├── serve_retrieval.py      # Deploy FastAPI CPU and Qwen GPU workers
-└── build_decord.sh         # Build CUDA-enabled Decord in the Modal image
+└── serve_retrieval.py      # Deploy FastAPI CPU and Qwen GPU workers
 src/
 ├── config.py              # Model, sampling, resource and dataset defaults
 ├── main.py                # FastAPI application
@@ -86,7 +86,7 @@ uv run modal setup
 ```
 
 A local GPU is not required to process videos or serve Qwen: those workloads run
-on Modal. The initial pipeline image build compiles Decord with CUDA and caches
+on Modal. Decord uses the prebuilt CPU wheel. The initial pipeline image build caches
 Qwen weights, so it takes longer than subsequent runs.
 
 ### 2. Prepare the Modal Volume
@@ -322,7 +322,7 @@ Edit [`src/config.py`](src/config.py) for shared defaults:
 | `BATCH_SIZE` | `4` | Candidate embedding batch size |
 | `SIMILARITY_THRESHOLD` | `0.95` | Within-shot cosine deduplication cutoff |
 | `MAX_GAP_SECONDS` | `5` | Maximum within-shot temporal coverage gap |
-| `MAX_FRAME_CACHE_BYTES` | `8 GiB` | Candidate RGB cache limit |
+| `MAX_FRAME_CACHE_BYTES` | `8 GiB` | Candidate RGB cache limit in CPU RAM |
 | `DATASET_VERSION` | `qwen2b-bf16-v1` | Output dataset directory |
 | `VOLUME_NAME` | `aic-abr` | Source and output Volume |
 
@@ -333,9 +333,9 @@ configured separately in `scripts/serve_retrieval.py`.
 ### Current limits
 
 - The reader requires one video stream with timestamps matching Decord's frame indexing.
-- Unsupported GPU decoding fails explicitly; there is no CPU decode fallback.
+- Candidate decoding uses Decord CPU; shot detection still requires DALI GPU decoding.
 - DALI holds the resized detection video on GPU, and Decord caches candidate RGB
-  tensors. Long or high-resolution videos can exceed memory/cache limits.
+  tensors in CPU RAM. Long or high-resolution videos can exceed memory/cache limits.
 - Coverage applies within detected clean shots; gaps across shot boundaries can exceed 5 seconds.
 
 ## Development checks

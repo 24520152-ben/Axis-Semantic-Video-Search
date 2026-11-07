@@ -19,31 +19,13 @@ image = (
     modal.Image.from_registry("nvidia/cuda:12.6.3-base-ubuntu22.04", add_python="3.12")
     .apt_install(
         "git",
-        "curl",
         "ca-certificates",
-        "cmake",
-        "build-essential",
-        "pkg-config",
         "ffmpeg",
-        "libavcodec-dev",
-        "libavformat-dev",
-        "libavutil-dev",
-        "libavdevice-dev",
-        "libavfilter-dev",
-        "libswresample-dev",
-        "libswscale-dev",
         "libgl1",
         "libglib2.0-0",
-        "cuda-nvcc-12-6",
-        "cuda-cudart-dev-12-6",
-        "cuda-driver-dev-12-6",
-        "cuda-nvrtc-dev-12-6",
-        "cuda-nvml-dev-12-6",
     )
     .env({"NVIDIA_DRIVER_CAPABILITIES": "compute,utility,video"})
     .uv_sync(extras=["pipeline"], frozen=True, extra_options="--no-dev")
-    .add_local_file("scripts/build_decord.sh", "/opt/build_decord.sh", copy=True)
-    .run_commands("sh /opt/build_decord.sh")
     .workdir("/root")  # Volume reload requires cwd outside its mount.
     .run_commands(f"/.uv/.venv/bin/python -c {shlex.quote(cache_code)}")
     .add_local_python_source("src")

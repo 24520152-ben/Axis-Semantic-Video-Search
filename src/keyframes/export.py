@@ -50,7 +50,7 @@ def _write_images(directory, frames, candidates, selected):
 
     for index in selected:
         frame_idx = candidates[index]["frame_idx"]
-        # Only retained pixels leave the GPU, when a JPEG is actually needed.
+        # Export retained pixels directly from the CPU cache.
         pixels = frames[index].permute(1, 2, 0).contiguous().cpu().numpy()
         Image.fromarray(pixels).save(
             directory / f"{frame_idx}.jpg", format="JPEG", quality=JPEG_QUALITY

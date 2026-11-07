@@ -104,10 +104,10 @@ def presentation_timeline(pts, info):
 
 
 class DecordFrames:
-    """Decode candidate frames once and retain their CUDA tensors for export.
+    """Decode candidate frames once and retain their CPU tensors for export.
 
     Args:
-        reader: CUDA Decord VideoReader.
+        reader: CPU Decord VideoReader.
         indices: Source frame indices in candidate order.
     """
 
@@ -204,14 +204,14 @@ def _read_source(path):
 
 
 def read_candidates(path, shots):
-    """Index shot candidates and decode their pixels lazily with NVDEC.
+    """Index shot candidates and decode their pixels lazily on CPU.
 
     Args:
         path: Source video path.
         shots: Ordered, disjoint, inclusive frame ranges.
 
     Returns:
-        Source metadata, candidate rows, lazy CUDA frames and exact PTS timeline.
+        Source metadata, candidate rows, lazy CPU frames and exact PTS timeline.
     """
     import decord
     import numpy as np
@@ -224,7 +224,7 @@ def read_candidates(path, shots):
     if not shots:
         raise ValueError("Expected at least one shot")
     source, timeline = _read_source(path)
-    reader = decord.VideoReader(str(path), ctx=decord.gpu(0))
+    reader = decord.VideoReader(str(path), ctx=decord.cpu(0))
     if len(reader) != len(timeline) - 1:
         raise ValueError("Decord frame count differs from source packet timestamps")
     if shots[-1][1] >= len(reader):

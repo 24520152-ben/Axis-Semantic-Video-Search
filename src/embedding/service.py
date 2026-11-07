@@ -43,7 +43,7 @@ def embed_candidates(model, frames, batch_size=BATCH_SIZE):
 
     Args:
         model: Loaded Sentence Transformer.
-        frames: Sliceable sequence of RGB uint8 CHW CUDA tensors.
+        frames: Sliceable sequence of RGB uint8 CHW CPU tensors.
         batch_size: Number of images per inference batch.
 
     Returns:
@@ -55,7 +55,8 @@ def embed_candidates(model, frames, batch_size=BATCH_SIZE):
         raise ValueError("No candidate frames to embed")
     vectors = []
     for start in range(0, len(frames), batch_size):
-        batch = frames[start : start + batch_size]
+        # Keep the RGB cache in RAM; preprocess only this batch on the model device.
+        batch = [frame.to(model.device) for frame in frames[start : start + batch_size]]
         vectors.append(
             model.encode(
                 batch,

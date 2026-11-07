@@ -19,7 +19,7 @@ def test_bf16_checkpoint_output_is_returned_without_casting_or_renormalizing():
     raw = torch.stack([values, values.flip(0)]).to(torch.bfloat16)
     checkpoint_output = Normalize()({"sentence_embedding": raw})["sentence_embedding"]
     assert torch.max(torch.abs(checkpoint_output.float().norm(dim=1) - 1)) > 1e-4
-    model = SimpleNamespace(encode=Mock(return_value=checkpoint_output))
+    model = SimpleNamespace(device=torch.device("cpu"), encode=Mock(return_value=checkpoint_output))
     frames = [torch.zeros((3, 28, 28), dtype=torch.uint8) for _ in range(2)]
 
     vectors = embed_candidates(model, frames, batch_size=2)
@@ -53,7 +53,7 @@ def test_lazy_frames_are_decoded_and_encoded_once_in_bounded_batches():
         )
 
     frames = Frames()
-    model = SimpleNamespace(encode=Mock(side_effect=encode))
+    model = SimpleNamespace(device=torch.device("cpu"), encode=Mock(side_effect=encode))
     vectors = embed_candidates(model, frames, batch_size=2)
 
     assert frames.slices == [slice(0, 2), slice(2, 4), slice(4, 6)]
@@ -184,3 +184,19 @@ def test_qwen_feature_extraction_loads_prefixed_checkpoint_weights(tmp_path):
     assert expected.keys() == actual.keys()
     for name in expected:
         torch.testing.assert_close(actual[name], expected[name], rtol=0, atol=0)
+
+
+def test_embedding_transfers_only_current_batch_and_keeps_cpu_cache():
+    frames = [torch.full((3, 28, 28), i, dtype=torch.uint8) for i in range(5)]
+    # The meta device exercises cross-device transfer without requiring a local GPU.
+    def encode(batch, **kwargs):
+        assert all(frame.device.type == "meta" for frame in batch)
+        return torch.ones((len(batch), 2048), dtype=torch.bfloat16)
+
+    model = SimpleNamespace(device=torch.device("meta"), encode=Mock(side_effect=encode))
+    vectors = embed_candidates(model, frames, batch_size=2)
+
+    assert vectors.shape == (5, 2048) and vectors.device.type == "cpu"
+    assert [len(call.args[0]) for call in model.encode.call_args_list] == [2, 2, 1]
+    assert all(frame.device.type == "cpu" for frame in frames)
+    assert [int(frame[0, 0, 0]) for frame in frames] == list(range(5))

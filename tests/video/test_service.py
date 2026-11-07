@@ -105,7 +105,7 @@ def write_video(path, times_ms):
 
 @pytest.fixture(autouse=True)
 def fake_decord(monkeypatch):
-    """Exercise real packet indexing with a CPU stand-in for NVDEC/DLPack."""
+    """Exercise real packet indexing with a CPU stand-in for Decord/DLPack."""
     import av
     import numpy as np
     import torch
@@ -121,7 +121,7 @@ def fake_decord(monkeypatch):
 
     class Reader:
         def __init__(self, path, *, ctx):
-            assert ctx == ("gpu", 0)
+            assert ctx == ("cpu", 0)
             self.calls = []
             with av.open(path) as container:
                 stream = container.streams.video[0]
@@ -148,7 +148,7 @@ def fake_decord(monkeypatch):
             ]))
 
     monkeypatch.setitem(sys.modules, "decord", SimpleNamespace(
-        VideoReader=Reader, gpu=lambda index: ("gpu", index)
+        VideoReader=Reader, cpu=lambda index: ("cpu", index)
     ))
     return readers
 
@@ -169,7 +169,7 @@ def test_vfr_sampling_keeps_exact_pts_and_decodes_only_requested_batches(tmp_pat
     images = frames[1:3]
     assert fake_decord[0].calls == [[2, 4]]
     assert [int(image[0, 0, 0]) for image in images] == [2, 4]
-    assert all(image.shape == (3, 16, 16) for image in images)
+    assert all(image.shape == (3, 16, 16) and image.device.type == "cpu" for image in images)
     assert int(frames[-1][0, 0, 0]) == 9
     assert [int(image[0, 0, 0]) for image in frames[[3, 0]]] == [6, 0]
     assert frames[0:0] == []
@@ -264,17 +264,17 @@ def test_decord_index_mismatch_is_rejected(tmp_path, monkeypatch):
         service.read_candidates(path, [(0, 1)])
 
 
-def test_cuda_initialization_failure_does_not_fall_back_to_cpu(tmp_path, monkeypatch):
+def test_decoder_initialization_failure_is_propagated(tmp_path, monkeypatch):
     import decord
 
     path = tmp_path / "video.mp4"
     write_video(path, [0, 40, 80])
 
     def unavailable(*_, **__):
-        raise RuntimeError("CUDA not enabled")
+        raise RuntimeError("Cannot open video")
 
     monkeypatch.setattr(decord, "VideoReader", unavailable)
-    with pytest.raises(RuntimeError, match="CUDA not enabled"):
+    with pytest.raises(RuntimeError, match="Cannot open video"):
         service.read_candidates(path, [(0, 2)])
 
 

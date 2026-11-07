@@ -14,15 +14,15 @@ from PIL import Image
 from src.pipeline import service
 
 
-def setup_adapters(tmp_path, monkeypatch):
-    """Create a six-second video; substitute GPU decoding and the two models."""
+def setup_adapters(tmp_path, monkeypatch, size=16):
+    """Create a six-second video; substitute candidate decoding and the two models."""
     path = tmp_path / "data/video.mp4"
     path.parent.mkdir()
     with av.open(str(path), "w") as container:
         stream = container.add_stream("libx264", rate=25)
-        stream.width, stream.height, stream.pix_fmt = 16, 16, "yuv420p"
+        stream.width, stream.height, stream.pix_fmt = size, size, "yuv420p"
         for _ in range(150):
-            frame = av.VideoFrame.from_image(Image.new("RGB", (16, 16), "red"))
+            frame = av.VideoFrame.from_image(Image.new("RGB", (size, size), "red"))
             container.mux(stream.encode(frame))
         container.mux(stream.encode())
     metadata = tmp_path / "data/media-info-aic25-b1/media-info/video.json"
@@ -121,3 +121,30 @@ def test_export_reuses_embedded_pixels_without_rewinding_decoder(tmp_path, monke
     table = pq.read_table(report['output']['records_path'])
     assert table['frame_idx'].to_pylist() == [0, 125]
     assert table['timestamp_us'].to_pylist() == [0, 5_000_000]
+
+
+def test_pipeline_with_real_cpu_decord_reuses_cache_for_export(tmp_path, monkeypatch):
+    # Use aligned dimensions supported by the prebuilt CPU decoder.
+    reader_type = decord.VideoReader
+    embed = setup_adapters(tmp_path, monkeypatch, size=64)
+    monkeypatch.setattr(decord, "VideoReader", reader_type)
+
+    def encode(model, frames, batch_size):
+        for start in range(0, len(frames), batch_size):
+            batch = frames[start:start + batch_size]
+            assert all(frame.device.type == "cpu" for frame in batch)
+            assert all(frame.shape == (3, 64, 64) for frame in batch)
+        # Export must use the cached decoded pixels, with no second decode.
+        monkeypatch.setattr(
+            frames.reader, "get_batch", Mock(side_effect=AssertionError("Repeated decode"))
+        )
+        return embed.return_value
+
+    embed.side_effect = encode
+    result = service.run_pipeline("data/video.mp4", workspace=tmp_path)
+    assert result["candidates"] == 6 and result["kept"] == 2
+    table = pq.read_table(result["output"]["records_path"])
+    assert table["frame_idx"].to_pylist() == [0, 125]
+    with Image.open(result["output"]["output_dir"] + "/0.jpg") as image:
+        red, green, blue = image.getpixel((0, 0))
+        assert red > 240 and green < 10 and blue < 10
