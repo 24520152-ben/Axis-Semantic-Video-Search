@@ -13,6 +13,9 @@ def load_model(device="cuda"):
 
     Returns:
         Embedding model using the checkpoint's saved configuration.
+
+    Raises:
+        RuntimeError: The loaded image processor does not use torchvision.
     """
     from sentence_transformers import SentenceTransformer
     from transformers.utils.versions import require_version
@@ -44,10 +47,16 @@ def embed_candidates(model, frames, batch_size=BATCH_SIZE):
     Args:
         model: Loaded Sentence Transformer.
         frames: Sliceable sequence of RGB uint8 CHW CPU tensors.
-        batch_size: Number of images per inference batch.
+        batch_size: Number of images per inference batch; defaults to the
+            configured BATCH_SIZE of 16. Only the current batch moves to the
+            model's device, leaving the CPU frame cache available for export.
 
     Returns:
-        Native BF16 embeddings on CPU, in candidate order.
+        Native BF16 embeddings on CPU with shape (len(frames), 2048), in
+        candidate order.
+
+    Raises:
+        ValueError: batch_size is not positive or frames is empty.
     """
     if batch_size < 1:
         raise ValueError("batch_size must be positive")

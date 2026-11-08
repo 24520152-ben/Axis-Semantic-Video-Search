@@ -40,7 +40,7 @@ def test_pipeline_decodes_samples_and_exports_aligned_records(tmp_path, monkeypa
     embed = setup_adapters(tmp_path, monkeypatch)
     result = service.run_pipeline("data/video.mp4", workspace=tmp_path)
     embed.assert_called_once()
-    assert embed.call_args.args[2] == 4
+    assert embed.call_args.args[2] == 16
     assert len(embed.call_args.args[1]) == 6
     assert result["candidates"] == 6 and result["kept"] == 2
     assert result["max_gap_seconds"] <= 5
@@ -80,7 +80,7 @@ def test_export_uses_cached_pixels_after_capture_is_closed(tmp_path, monkeypatch
     embed = setup_adapters(tmp_path, monkeypatch)
 
     def encode(model, frames, batch_size):
-        assert batch_size == 4
+        assert batch_size == 16
         assert len(frames) == 6
         assert all(frame.device.type == "cpu" for frame in frames)
         monkeypatch.setattr(
