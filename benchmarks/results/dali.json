@@ -1,0 +1,2395 @@
+{
+  "benchmark": "DALI vs official OmniShotCut file-path API",
+  "run_id": "dali-20261108T154909",
+  "repeats": 1,
+  "max_containers": 5,
+  "source_videos": [
+    "data/Videos_L21_a/video/L21_V013.mp4",
+    "data/Videos_L21_a/video/L21_V022.mp4",
+    "data/Videos_L21_a/video/L21_V023.mp4",
+    "data/Videos_L22_a/video/L22_V021.mp4",
+    "data/Videos_L22_a/video/L22_V026.mp4",
+    "data/Videos_L24_a/video/L24_V035.mp4",
+    "data/Videos_L24_a/video/L24_V044.mp4",
+    "data/Videos_L25_a/video/L25_V016.mp4",
+    "data/Videos_L25_a/video/L25_V075.mp4",
+    "data/Videos_L26_a/video/L26_V035.mp4",
+    "data/Videos_L26_d/video/L26_V390.mp4",
+    "data/Videos_L26_e/video/L26_V424.mp4",
+    "data/Videos_L28_a/video/L28_V008.mp4",
+    "data/Videos_L30_a/video/L30_V046.mp4",
+    "data/Videos_L30_a/video/L30_V072.mp4"
+  ],
+  "videos": [
+    {
+      "video": "data/Videos_L21_a/video/L21_V013.mp4",
+      "trials": [
+        {
+          "frame_count": 33805,
+          "prepare_seconds": 29.519489828000005,
+          "variant": "dali",
+          "total_seconds": 37.291924196000004,
+          "inference_and_window_preprocess_seconds": 7.772434367999999,
+          "peak_torch_allocated_bytes": 2709910528,
+          "peak_torch_reserved_bytes": 3112173568,
+          "peak_process_tree_rss_bytes": 6280007680,
+          "baseline_process_rss_bytes": 5541273600,
+          "shot_count": 315,
+          "ranges_sha256": "2e281fd95e8092c35bce70dbebf08e1089d2d73a2dc6088ce21ed939e3ec779d",
+          "repeat": 0
+        },
+        {
+          "prepare_seconds": 26.99070963399999,
+          "frame_count": 33805,
+          "variant": "official",
+          "total_seconds": 39.16800526400001,
+          "inference_and_window_preprocess_seconds": 12.177295630000017,
+          "peak_torch_allocated_bytes": 487693312,
+          "peak_torch_reserved_bytes": 497025024,
+          "peak_process_tree_rss_bytes": 12558221312,
+          "baseline_process_rss_bytes": 6279094272,
+          "shot_count": 315,
+          "ranges_sha256": "719b714abed4eb6b234ddfb9033a5d377b824c68c2a70f8099488171ce705c48",
+          "repeat": 0
+        }
+      ],
+      "errors": [],
+      "dali": {
+        "successful_trials": 1,
+        "median_total_seconds": 37.291924196000004,
+        "median_prepare_seconds": 29.519489828000005
+      },
+      "official": {
+        "successful_trials": 1,
+        "median_total_seconds": 39.16800526400001,
+        "median_prepare_seconds": 26.99070963399999
+      },
+      "correctness": {
+        "exact_clean_ranges_equal": false,
+        "shared_exact_clean_ranges": 300,
+        "dali_only_ranges": [
+          [
+            19,
+            342
+          ],
+          [
+            3525,
+            3849
+          ],
+          [
+            3874,
+            3954
+          ],
+          [
+            7948,
+            8034
+          ],
+          [
+            10396,
+            10456
+          ],
+          [
+            12517,
+            12569
+          ],
+          [
+            12569,
+            12702
+          ],
+          [
+            15548,
+            15634
+          ],
+          [
+            21861,
+            22311
+          ],
+          [
+            26253,
+            26299
+          ],
+          [
+            26299,
+            26460
+          ],
+          [
+            26488,
+            26628
+          ],
+          [
+            27295,
+            27453
+          ],
+          [
+            29746,
+            30163
+          ],
+          [
+            33110,
+            33118
+          ]
+        ],
+        "official_only_ranges": [
+          [
+            10,
+            19
+          ],
+          [
+            1023,
+            1026
+          ],
+          [
+            3525,
+            3954
+          ],
+          [
+            7948,
+            7987
+          ],
+          [
+            10395,
+            10456
+          ],
+          [
+            12517,
+            12568
+          ],
+          [
+            12568,
+            12702
+          ],
+          [
+            21861,
+            22334
+          ],
+          [
+            26253,
+            26460
+          ],
+          [
+            26546,
+            26628
+          ],
+          [
+            27295,
+            27410
+          ],
+          [
+            27410,
+            27453
+          ],
+          [
+            29746,
+            30160
+          ],
+          [
+            30160,
+            30163
+          ],
+          [
+            33110,
+            33176
+          ]
+        ],
+        "dali_clean_ranges": 315,
+        "official_clean_ranges": 315,
+        "frame_counts_equal": true
+      }
+    },
+    {
+      "video": "data/Videos_L21_a/video/L21_V022.mp4",
+      "trials": [
+        {
+          "prepare_seconds": 22.584765415,
+          "frame_count": 29325,
+          "variant": "official",
+          "total_seconds": 32.891406539,
+          "inference_and_window_preprocess_seconds": 10.306641124000002,
+          "peak_torch_allocated_bytes": 487693312,
+          "peak_torch_reserved_bytes": 497025024,
+          "peak_process_tree_rss_bytes": 11081760768,
+          "baseline_process_rss_bytes": 5538766848,
+          "shot_count": 220,
+          "ranges_sha256": "36df777da39cd96f97761b4dd0ba275f696218f3a6320abc52cdba4ee5e6133d",
+          "repeat": 0
+        },
+        {
+          "frame_count": 29325,
+          "prepare_seconds": 25.323838367999997,
+          "variant": "dali",
+          "total_seconds": 32.136825955000006,
+          "inference_and_window_preprocess_seconds": 6.812987587000009,
+          "peak_torch_allocated_bytes": 2379609088,
+          "peak_torch_reserved_bytes": 2757754880,
+          "peak_process_tree_rss_bytes": 7341162496,
+          "baseline_process_rss_bytes": 6623621120,
+          "shot_count": 222,
+          "ranges_sha256": "0375cd794bee1804209626508c1da10d151b1e06f63799db6ab5ab614663cbcb",
+          "repeat": 0
+        }
+      ],
+      "errors": [],
+      "dali": {
+        "successful_trials": 1,
+        "median_total_seconds": 32.136825955000006,
+        "median_prepare_seconds": 25.323838367999997
+      },
+      "official": {
+        "successful_trials": 1,
+        "median_total_seconds": 32.891406539,
+        "median_prepare_seconds": 22.584765415
+      },
+      "correctness": {
+        "exact_clean_ranges_equal": false,
+        "shared_exact_clean_ranges": 219,
+        "dali_only_ranges": [
+          [
+            792,
+            858
+          ],
+          [
+            858,
+            1442
+          ],
+          [
+            5184,
+            5407
+          ]
+        ],
+        "official_only_ranges": [
+          [
+            792,
+            1442
+          ]
+        ],
+        "dali_clean_ranges": 222,
+        "official_clean_ranges": 220,
+        "frame_counts_equal": true
+      }
+    },
+    {
+      "video": "data/Videos_L21_a/video/L21_V023.mp4",
+      "trials": [
+        {
+          "frame_count": 35391,
+          "prepare_seconds": 31.236031048,
+          "variant": "dali",
+          "total_seconds": 39.350513715000005,
+          "inference_and_window_preprocess_seconds": 8.114482667000004,
+          "peak_torch_allocated_bytes": 2826843136,
+          "peak_torch_reserved_bytes": 3233808384,
+          "peak_process_tree_rss_bytes": 6277607424,
+          "baseline_process_rss_bytes": 5537550336,
+          "shot_count": 319,
+          "ranges_sha256": "5456eea3bcd0635c12aaf3eef04ab2ca8150c443ff42829e28c22f05dfe7647e",
+          "repeat": 0
+        },
+        {
+          "prepare_seconds": 27.311273291999996,
+          "frame_count": 35391,
+          "variant": "official",
+          "total_seconds": 40.06704186899999,
+          "inference_and_window_preprocess_seconds": 12.755768576999998,
+          "peak_torch_allocated_bytes": 487693312,
+          "peak_torch_reserved_bytes": 497025024,
+          "peak_process_tree_rss_bytes": 9700003840,
+          "baseline_process_rss_bytes": 6276390912,
+          "shot_count": 311,
+          "ranges_sha256": "237c084eaf6a6c6da8ed6c46910a172fab1ea75d41aeffb5b98279a77eb6d232",
+          "repeat": 0
+        }
+      ],
+      "errors": [],
+      "dali": {
+        "successful_trials": 1,
+        "median_total_seconds": 39.350513715000005,
+        "median_prepare_seconds": 31.236031048
+      },
+      "official": {
+        "successful_trials": 1,
+        "median_total_seconds": 40.06704186899999,
+        "median_prepare_seconds": 27.311273291999996
+      },
+      "correctness": {
+        "exact_clean_ranges_equal": false,
+        "shared_exact_clean_ranges": 296,
+        "dali_only_ranges": [
+          [
+            1299,
+            1357
+          ],
+          [
+            8601,
+            8664
+          ],
+          [
+            11372,
+            11460
+          ],
+          [
+            12004,
+            12063
+          ],
+          [
+            12063,
+            12428
+          ],
+          [
+            14815,
+            15808
+          ],
+          [
+            15808,
+            15877
+          ],
+          [
+            18768,
+            18980
+          ],
+          [
+            18980,
+            19060
+          ],
+          [
+            19060,
+            19160
+          ],
+          [
+            19861,
+            19936
+          ],
+          [
+            19936,
+            20000
+          ],
+          [
+            20754,
+            20841
+          ],
+          [
+            21618,
+            21730
+          ],
+          [
+            21730,
+            21738
+          ],
+          [
+            21738,
+            21834
+          ],
+          [
+            23313,
+            23373
+          ],
+          [
+            23373,
+            23466
+          ],
+          [
+            23466,
+            23652
+          ],
+          [
+            27656,
+            27723
+          ],
+          [
+            27723,
+            27820
+          ],
+          [
+            28047,
+            28052
+          ],
+          [
+            28052,
+            28201
+          ]
+        ],
+        "official_only_ranges": [
+          [
+            1292,
+            1357
+          ],
+          [
+            8602,
+            8664
+          ],
+          [
+            11372,
+            11461
+          ],
+          [
+            12000,
+            12428
+          ],
+          [
+            14815,
+            15877
+          ],
+          [
+            18768,
+            19160
+          ],
+          [
+            19861,
+            19892
+          ],
+          [
+            19900,
+            19903
+          ],
+          [
+            20754,
+            20791
+          ],
+          [
+            20791,
+            20841
+          ],
+          [
+            21618,
+            21685
+          ],
+          [
+            21730,
+            21834
+          ],
+          [
+            23373,
+            23652
+          ],
+          [
+            27656,
+            27820
+          ],
+          [
+            28047,
+            28201
+          ]
+        ],
+        "dali_clean_ranges": 319,
+        "official_clean_ranges": 311,
+        "frame_counts_equal": true
+      }
+    },
+    {
+      "video": "data/Videos_L22_a/video/L22_V021.mp4",
+      "trials": [
+        {
+          "prepare_seconds": 30.363609796,
+          "frame_count": 38124,
+          "variant": "official",
+          "total_seconds": 43.946397239999996,
+          "inference_and_window_preprocess_seconds": 13.582787443999997,
+          "peak_torch_allocated_bytes": 487693312,
+          "peak_torch_reserved_bytes": 497025024,
+          "peak_process_tree_rss_bytes": 11078295552,
+          "baseline_process_rss_bytes": 5537034240,
+          "shot_count": 358,
+          "ranges_sha256": "9c7ed74d1b77e3d19812bf51b7f3d3517ad2ed29b57cacc77dff564ed39732ee",
+          "repeat": 0
+        },
+        {
+          "frame_count": 38124,
+          "prepare_seconds": 32.82649457000001,
+          "variant": "dali",
+          "total_seconds": 41.618935588,
+          "inference_and_window_preprocess_seconds": 8.792441017999991,
+          "peak_torch_allocated_bytes": 3028816896,
+          "peak_torch_reserved_bytes": 3439329280,
+          "peak_process_tree_rss_bytes": 7668301824,
+          "baseline_process_rss_bytes": 6948675584,
+          "shot_count": 363,
+          "ranges_sha256": "cb9679cfa2c76f33876c6b99021e65a12eae7f4753a57fa85c7ea27b7a1b5879",
+          "repeat": 0
+        }
+      ],
+      "errors": [],
+      "dali": {
+        "successful_trials": 1,
+        "median_total_seconds": 41.618935588,
+        "median_prepare_seconds": 32.82649457000001
+      },
+      "official": {
+        "successful_trials": 1,
+        "median_total_seconds": 43.946397239999996,
+        "median_prepare_seconds": 30.363609796
+      },
+      "correctness": {
+        "exact_clean_ranges_equal": false,
+        "shared_exact_clean_ranges": 352,
+        "dali_only_ranges": [
+          [
+            456,
+            470
+          ],
+          [
+            5661,
+            5709
+          ],
+          [
+            9674,
+            10018
+          ],
+          [
+            10018,
+            10080
+          ],
+          [
+            21330,
+            21567
+          ],
+          [
+            21567,
+            21572
+          ],
+          [
+            21572,
+            21683
+          ],
+          [
+            23350,
+            23487
+          ],
+          [
+            23487,
+            23526
+          ],
+          [
+            24861,
+            24948
+          ],
+          [
+            24948,
+            25150
+          ]
+        ],
+        "official_only_ranges": [
+          [
+            452,
+            457
+          ],
+          [
+            457,
+            470
+          ],
+          [
+            9674,
+            10080
+          ],
+          [
+            21567,
+            21683
+          ],
+          [
+            24861,
+            25011
+          ],
+          [
+            25011,
+            25150
+          ]
+        ],
+        "dali_clean_ranges": 363,
+        "official_clean_ranges": 358,
+        "frame_counts_equal": true
+      }
+    },
+    {
+      "video": "data/Videos_L22_a/video/L22_V026.mp4",
+      "trials": [
+        {
+          "frame_count": 34064,
+          "prepare_seconds": 29.762785894,
+          "variant": "dali",
+          "total_seconds": 37.733153988,
+          "inference_and_window_preprocess_seconds": 7.970368093999998,
+          "peak_torch_allocated_bytes": 2729464832,
+          "peak_torch_reserved_bytes": 3120562176,
+          "peak_process_tree_rss_bytes": 6278672384,
+          "baseline_process_rss_bytes": 5536583680,
+          "shot_count": 332,
+          "ranges_sha256": "209a0cbd32dbfba27d65e525d213b70c2bd4501920fa23ed1c8d04bb658e25e8",
+          "repeat": 0
+        },
+        {
+          "prepare_seconds": 27.598798533,
+          "frame_count": 34064,
+          "variant": "official",
+          "total_seconds": 39.945620702,
+          "inference_and_window_preprocess_seconds": 12.346822169,
+          "peak_torch_allocated_bytes": 487693312,
+          "peak_torch_reserved_bytes": 497025024,
+          "peak_process_tree_rss_bytes": 12553199616,
+          "baseline_process_rss_bytes": 6276583424,
+          "shot_count": 326,
+          "ranges_sha256": "eabf9895520a0f9a07a5d61066a70919d58129ffb0feb4e12f974e49e0d498a1",
+          "repeat": 0
+        }
+      ],
+      "errors": [],
+      "dali": {
+        "successful_trials": 1,
+        "median_total_seconds": 37.733153988,
+        "median_prepare_seconds": 29.762785894
+      },
+      "official": {
+        "successful_trials": 1,
+        "median_total_seconds": 39.945620702,
+        "median_prepare_seconds": 27.598798533
+      },
+      "correctness": {
+        "exact_clean_ranges_equal": false,
+        "shared_exact_clean_ranges": 311,
+        "dali_only_ranges": [
+          [
+            0,
+            4
+          ],
+          [
+            38,
+            309
+          ],
+          [
+            982,
+            1029
+          ],
+          [
+            3621,
+            3729
+          ],
+          [
+            3729,
+            4442
+          ],
+          [
+            16487,
+            16526
+          ],
+          [
+            16526,
+            16607
+          ],
+          [
+            22260,
+            22367
+          ],
+          [
+            22367,
+            22493
+          ],
+          [
+            22493,
+            22510
+          ],
+          [
+            22510,
+            22596
+          ],
+          [
+            22596,
+            22778
+          ],
+          [
+            23206,
+            23272
+          ],
+          [
+            24762,
+            24838
+          ],
+          [
+            24838,
+            25190
+          ],
+          [
+            28162,
+            28241
+          ],
+          [
+            28241,
+            28242
+          ],
+          [
+            28988,
+            29064
+          ],
+          [
+            29064,
+            29151
+          ],
+          [
+            29650,
+            29816
+          ],
+          [
+            29816,
+            29900
+          ]
+        ],
+        "official_only_ranges": [
+          [
+            0,
+            3
+          ],
+          [
+            38,
+            401
+          ],
+          [
+            982,
+            1437
+          ],
+          [
+            3621,
+            4442
+          ],
+          [
+            16487,
+            16556
+          ],
+          [
+            16556,
+            16607
+          ],
+          [
+            22260,
+            22493
+          ],
+          [
+            22682,
+            22778
+          ],
+          [
+            23206,
+            23271
+          ],
+          [
+            24762,
+            24776
+          ],
+          [
+            24776,
+            25190
+          ],
+          [
+            28162,
+            28163
+          ],
+          [
+            28163,
+            28241
+          ],
+          [
+            28988,
+            29151
+          ],
+          [
+            29650,
+            29900
+          ]
+        ],
+        "dali_clean_ranges": 332,
+        "official_clean_ranges": 326,
+        "frame_counts_equal": true
+      }
+    },
+    {
+      "video": "data/Videos_L24_a/video/L24_V035.mp4",
+      "trials": [
+        {
+          "prepare_seconds": 19.002444548,
+          "frame_count": 19851,
+          "variant": "official",
+          "total_seconds": 26.145516383,
+          "inference_and_window_preprocess_seconds": 7.143071835000001,
+          "peak_torch_allocated_bytes": 487693312,
+          "peak_torch_reserved_bytes": 497025024,
+          "peak_process_tree_rss_bytes": 14682349568,
+          "baseline_process_rss_bytes": 7341158400,
+          "shot_count": 67,
+          "ranges_sha256": "0cb415d36b7d3f0eb4192448a732443e668eaa50957be9c03aa60a489faed179",
+          "repeat": 0
+        },
+        {
+          "frame_count": 19851,
+          "prepare_seconds": 15.092373120000005,
+          "variant": "dali",
+          "total_seconds": 19.714661346,
+          "inference_and_window_preprocess_seconds": 4.622288225999995,
+          "peak_torch_allocated_bytes": 1681228800,
+          "peak_torch_reserved_bytes": 2009071616,
+          "peak_process_tree_rss_bytes": 7352340480,
+          "baseline_process_rss_bytes": 7341158400,
+          "shot_count": 67,
+          "ranges_sha256": "a390b1b7404048afa50f7f5f2f09dec5305a80f24a72a3ed75d61fe5eb10d995",
+          "repeat": 0
+        }
+      ],
+      "errors": [],
+      "dali": {
+        "successful_trials": 1,
+        "median_total_seconds": 19.714661346,
+        "median_prepare_seconds": 15.092373120000005
+      },
+      "official": {
+        "successful_trials": 1,
+        "median_total_seconds": 26.145516383,
+        "median_prepare_seconds": 19.002444548
+      },
+      "correctness": {
+        "exact_clean_ranges_equal": false,
+        "shared_exact_clean_ranges": 64,
+        "dali_only_ranges": [
+          [
+            4300,
+            4343
+          ],
+          [
+            11319,
+            11509
+          ],
+          [
+            19726,
+            19851
+          ]
+        ],
+        "official_only_ranges": [
+          [
+            4300,
+            4313
+          ],
+          [
+            4313,
+            4343
+          ],
+          [
+            19727,
+            19851
+          ]
+        ],
+        "dali_clean_ranges": 67,
+        "official_clean_ranges": 67,
+        "frame_counts_equal": true
+      }
+    },
+    {
+      "video": "data/Videos_L24_a/video/L24_V044.mp4",
+      "trials": [
+        {
+          "frame_count": 933,
+          "prepare_seconds": 0.9151550589999999,
+          "variant": "dali",
+          "total_seconds": 1.140937240999989,
+          "inference_and_window_preprocess_seconds": 0.225782181999989,
+          "peak_torch_allocated_bytes": 521202688,
+          "peak_torch_reserved_bytes": 553648128,
+          "peak_process_tree_rss_bytes": 8148996096,
+          "baseline_process_rss_bytes": 8128880640,
+          "shot_count": 17,
+          "ranges_sha256": "c645253554b75f69030b1f3b8e6c2ddea4044fd99080f2c9c1d9db4d708706c8",
+          "repeat": 0
+        },
+        {
+          "prepare_seconds": 1.1664186609999945,
+          "frame_count": 933,
+          "variant": "official",
+          "total_seconds": 1.5262812889999964,
+          "inference_and_window_preprocess_seconds": 0.3598626280000019,
+          "peak_torch_allocated_bytes": 487595008,
+          "peak_torch_reserved_bytes": 509607936,
+          "peak_process_tree_rss_bytes": 16297992192,
+          "baseline_process_rss_bytes": 8148979712,
+          "shot_count": 17,
+          "ranges_sha256": "c645253554b75f69030b1f3b8e6c2ddea4044fd99080f2c9c1d9db4d708706c8",
+          "repeat": 0
+        }
+      ],
+      "errors": [],
+      "dali": {
+        "successful_trials": 1,
+        "median_total_seconds": 1.140937240999989,
+        "median_prepare_seconds": 0.9151550589999999
+      },
+      "official": {
+        "successful_trials": 1,
+        "median_total_seconds": 1.5262812889999964,
+        "median_prepare_seconds": 1.1664186609999945
+      },
+      "correctness": {
+        "exact_clean_ranges_equal": true,
+        "shared_exact_clean_ranges": 17,
+        "dali_only_ranges": [],
+        "official_only_ranges": [],
+        "dali_clean_ranges": 17,
+        "official_clean_ranges": 17,
+        "frame_counts_equal": true
+      }
+    },
+    {
+      "video": "data/Videos_L25_a/video/L25_V016.mp4",
+      "trials": [
+        {
+          "prepare_seconds": 34.53802179499999,
+          "frame_count": 39809,
+          "variant": "official",
+          "total_seconds": 48.606230847000006,
+          "inference_and_window_preprocess_seconds": 14.068209052000014,
+          "peak_torch_allocated_bytes": 487595008,
+          "peak_torch_reserved_bytes": 509607936,
+          "peak_process_tree_rss_bytes": 16275464192,
+          "baseline_process_rss_bytes": 8137715712,
+          "shot_count": 132,
+          "ranges_sha256": "295556b7501194cffcf173a77707dee16f6c7913acd14b9a96b897d1db0ca1a9",
+          "repeat": 0
+        },
+        {
+          "frame_count": 39809,
+          "prepare_seconds": 31.45831954100001,
+          "variant": "dali",
+          "total_seconds": 40.815872360000014,
+          "inference_and_window_preprocess_seconds": 9.357552819000006,
+          "peak_torch_allocated_bytes": 3152946176,
+          "peak_torch_reserved_bytes": 3579838464,
+          "peak_process_tree_rss_bytes": 8168914944,
+          "baseline_process_rss_bytes": 8152543232,
+          "shot_count": 132,
+          "ranges_sha256": "be5ab4ff376bf8d7a3bf09e1d21b048c9d1456e3fddfd9db4ef6d52f4eede8ce",
+          "repeat": 0
+        }
+      ],
+      "errors": [],
+      "dali": {
+        "successful_trials": 1,
+        "median_total_seconds": 40.815872360000014,
+        "median_prepare_seconds": 31.45831954100001
+      },
+      "official": {
+        "successful_trials": 1,
+        "median_total_seconds": 48.606230847000006,
+        "median_prepare_seconds": 34.53802179499999
+      },
+      "correctness": {
+        "exact_clean_ranges_equal": false,
+        "shared_exact_clean_ranges": 109,
+        "dali_only_ranges": [
+          [
+            786,
+            794
+          ],
+          [
+            1462,
+            1521
+          ],
+          [
+            1521,
+            1548
+          ],
+          [
+            1548,
+            1576
+          ],
+          [
+            1907,
+            1908
+          ],
+          [
+            1975,
+            1996
+          ],
+          [
+            1996,
+            2010
+          ],
+          [
+            17475,
+            17533
+          ],
+          [
+            18341,
+            18361
+          ],
+          [
+            18488,
+            18634
+          ],
+          [
+            18930,
+            19007
+          ],
+          [
+            19368,
+            19470
+          ],
+          [
+            19470,
+            19584
+          ],
+          [
+            19584,
+            19615
+          ],
+          [
+            32790,
+            35178
+          ],
+          [
+            35178,
+            37685
+          ],
+          [
+            37685,
+            37700
+          ],
+          [
+            38283,
+            38345
+          ],
+          [
+            39067,
+            39118
+          ],
+          [
+            39118,
+            39172
+          ],
+          [
+            39219,
+            39278
+          ],
+          [
+            39290,
+            39314
+          ],
+          [
+            39726,
+            39796
+          ]
+        ],
+        "official_only_ranges": [
+          [
+            787,
+            794
+          ],
+          [
+            956,
+            987
+          ],
+          [
+            1162,
+            1194
+          ],
+          [
+            1462,
+            1548
+          ],
+          [
+            1548,
+            1572
+          ],
+          [
+            1975,
+            1997
+          ],
+          [
+            17475,
+            17534
+          ],
+          [
+            18341,
+            18422
+          ],
+          [
+            18488,
+            18518
+          ],
+          [
+            18558,
+            18577
+          ],
+          [
+            18577,
+            18634
+          ],
+          [
+            18930,
+            18966
+          ],
+          [
+            18966,
+            19007
+          ],
+          [
+            19368,
+            19404
+          ],
+          [
+            19470,
+            19480
+          ],
+          [
+            19499,
+            19584
+          ],
+          [
+            35178,
+            37700
+          ],
+          [
+            38283,
+            38346
+          ],
+          [
+            39067,
+            39082
+          ],
+          [
+            39082,
+            39118
+          ],
+          [
+            39130,
+            39172
+          ],
+          [
+            39219,
+            39244
+          ],
+          [
+            39727,
+            39796
+          ]
+        ],
+        "dali_clean_ranges": 132,
+        "official_clean_ranges": 132,
+        "frame_counts_equal": true
+      }
+    },
+    {
+      "video": "data/Videos_L25_a/video/L25_V075.mp4",
+      "trials": [
+        {
+          "frame_count": 43403,
+          "prepare_seconds": 35.35394330099999,
+          "variant": "dali",
+          "total_seconds": 45.32785789100001,
+          "inference_and_window_preprocess_seconds": 9.973914590000021,
+          "peak_torch_allocated_bytes": 3417555968,
+          "peak_torch_reserved_bytes": 3858759680,
+          "peak_process_tree_rss_bytes": 8208408576,
+          "baseline_process_rss_bytes": 8190263296,
+          "shot_count": 118,
+          "ranges_sha256": "727ea1db9bc0259a3c9aca776428174b1b0ab53ec0820b7fd04392aa8b4404c8",
+          "repeat": 0
+        },
+        {
+          "prepare_seconds": 33.35936742199999,
+          "frame_count": 43403,
+          "variant": "official",
+          "total_seconds": 48.37342266900001,
+          "inference_and_window_preprocess_seconds": 15.014055247000016,
+          "peak_torch_allocated_bytes": 487595008,
+          "peak_torch_reserved_bytes": 509607936,
+          "peak_process_tree_rss_bytes": 16416817152,
+          "baseline_process_rss_bytes": 8208392192,
+          "shot_count": 123,
+          "ranges_sha256": "3eed6749bc749dd142ee169a491d91594cd48d864f1f1b8f00d2d0dcf5fb2f7f",
+          "repeat": 0
+        }
+      ],
+      "errors": [],
+      "dali": {
+        "successful_trials": 1,
+        "median_total_seconds": 45.32785789100001,
+        "median_prepare_seconds": 35.35394330099999
+      },
+      "official": {
+        "successful_trials": 1,
+        "median_total_seconds": 48.37342266900001,
+        "median_prepare_seconds": 33.35936742199999
+      },
+      "correctness": {
+        "exact_clean_ranges_equal": false,
+        "shared_exact_clean_ranges": 99,
+        "dali_only_ranges": [
+          [
+            0,
+            67
+          ],
+          [
+            67,
+            12450
+          ],
+          [
+            13296,
+            13336
+          ],
+          [
+            13336,
+            13372
+          ],
+          [
+            13372,
+            13426
+          ],
+          [
+            13473,
+            13532
+          ],
+          [
+            13542,
+            13568
+          ],
+          [
+            27000,
+            27058
+          ],
+          [
+            27513,
+            27658
+          ],
+          [
+            28082,
+            28189
+          ],
+          [
+            28214,
+            28389
+          ],
+          [
+            28476,
+            28491
+          ],
+          [
+            28856,
+            28868
+          ],
+          [
+            28952,
+            28995
+          ],
+          [
+            42012,
+            42019
+          ],
+          [
+            42388,
+            42419
+          ],
+          [
+            42456,
+            42489
+          ],
+          [
+            43132,
+            43133
+          ],
+          [
+            43169,
+            43222
+          ]
+        ],
+        "official_only_ranges": [
+          [
+            0,
+            14
+          ],
+          [
+            14,
+            12450
+          ],
+          [
+            12629,
+            12725
+          ],
+          [
+            13296,
+            13333
+          ],
+          [
+            13333,
+            13336
+          ],
+          [
+            13336,
+            13373
+          ],
+          [
+            13384,
+            13426
+          ],
+          [
+            13473,
+            13498
+          ],
+          [
+            13541,
+            13545
+          ],
+          [
+            13653,
+            13697
+          ],
+          [
+            27000,
+            27059
+          ],
+          [
+            27513,
+            27550
+          ],
+          [
+            28082,
+            28126
+          ],
+          [
+            28126,
+            28159
+          ],
+          [
+            28214,
+            28251
+          ],
+          [
+            28263,
+            28388
+          ],
+          [
+            28856,
+            28867
+          ],
+          [
+            42016,
+            42019
+          ],
+          [
+            42181,
+            42212
+          ],
+          [
+            42387,
+            42419
+          ],
+          [
+            42456,
+            42488
+          ],
+          [
+            42841,
+            42870
+          ],
+          [
+            43169,
+            43200
+          ],
+          [
+            43200,
+            43222
+          ]
+        ],
+        "dali_clean_ranges": 118,
+        "official_clean_ranges": 123,
+        "frame_counts_equal": true
+      }
+    },
+    {
+      "video": "data/Videos_L26_a/video/L26_V035.mp4",
+      "trials": [
+        {
+          "prepare_seconds": 8.144162705,
+          "frame_count": 8122,
+          "variant": "official",
+          "total_seconds": 11.063215916000004,
+          "inference_and_window_preprocess_seconds": 2.919053211000005,
+          "peak_torch_allocated_bytes": 485284864,
+          "peak_torch_reserved_bytes": 505413632,
+          "peak_process_tree_rss_bytes": 16327770112,
+          "baseline_process_rss_bytes": 8163868672,
+          "shot_count": 106,
+          "ranges_sha256": "ba48430af0c1d539096166886903db7558e4a8c6db6c2f944201fbd670d6cb0e",
+          "repeat": 0
+        },
+        {
+          "frame_count": 8122,
+          "prepare_seconds": 6.485589930000003,
+          "variant": "dali",
+          "total_seconds": 8.386456518000003,
+          "inference_and_window_preprocess_seconds": 1.9008665879999995,
+          "peak_torch_allocated_bytes": 814429184,
+          "peak_torch_reserved_bytes": 1103101952,
+          "peak_process_tree_rss_bytes": 8187277312,
+          "baseline_process_rss_bytes": 8178749440,
+          "shot_count": 105,
+          "ranges_sha256": "4965cc69d69f75152f804056870937a67262aad5a5c511fb5d1f47a1fda47ebb",
+          "repeat": 0
+        }
+      ],
+      "errors": [],
+      "dali": {
+        "successful_trials": 1,
+        "median_total_seconds": 8.386456518000003,
+        "median_prepare_seconds": 6.485589930000003
+      },
+      "official": {
+        "successful_trials": 1,
+        "median_total_seconds": 11.063215916000004,
+        "median_prepare_seconds": 8.144162705
+      },
+      "correctness": {
+        "exact_clean_ranges_equal": false,
+        "shared_exact_clean_ranges": 102,
+        "dali_only_ranges": [
+          [
+            154,
+            166
+          ],
+          [
+            224,
+            255
+          ],
+          [
+            267,
+            300
+          ]
+        ],
+        "official_only_ranges": [
+          [
+            153,
+            166
+          ],
+          [
+            224,
+            227
+          ],
+          [
+            227,
+            255
+          ],
+          [
+            255,
+            300
+          ]
+        ],
+        "dali_clean_ranges": 105,
+        "official_clean_ranges": 106,
+        "frame_counts_equal": true
+      }
+    },
+    {
+      "video": "data/Videos_L26_d/video/L26_V390.mp4",
+      "trials": [
+        {
+          "frame_count": 7606,
+          "prepare_seconds": 6.039153949999999,
+          "variant": "dali",
+          "total_seconds": 7.805062673999998,
+          "inference_and_window_preprocess_seconds": 1.765908723999999,
+          "peak_torch_allocated_bytes": 779047936,
+          "peak_torch_reserved_bytes": 1054867456,
+          "peak_process_tree_rss_bytes": 7676866560,
+          "baseline_process_rss_bytes": 7668297728,
+          "shot_count": 111,
+          "ranges_sha256": "f59fdab9b5a0c29b412ef9cee6cd864d185ad2b7629f255ffdf49e3a72623410",
+          "repeat": 0
+        },
+        {
+          "prepare_seconds": 7.635789754000001,
+          "frame_count": 7606,
+          "variant": "official",
+          "total_seconds": 10.463248101999994,
+          "inference_and_window_preprocess_seconds": 2.8274583479999933,
+          "peak_torch_allocated_bytes": 487693312,
+          "peak_torch_reserved_bytes": 497025024,
+          "peak_process_tree_rss_bytes": 15353733120,
+          "baseline_process_rss_bytes": 7676850176,
+          "shot_count": 112,
+          "ranges_sha256": "d83bde22de8ac6044fc2dbe03bc566677944f3a21b119fcfd5fb5c42c222e528",
+          "repeat": 0
+        }
+      ],
+      "errors": [],
+      "dali": {
+        "successful_trials": 1,
+        "median_total_seconds": 7.805062673999998,
+        "median_prepare_seconds": 6.039153949999999
+      },
+      "official": {
+        "successful_trials": 1,
+        "median_total_seconds": 10.463248101999994,
+        "median_prepare_seconds": 7.635789754000001
+      },
+      "correctness": {
+        "exact_clean_ranges_equal": false,
+        "shared_exact_clean_ranges": 108,
+        "dali_only_ranges": [
+          [
+            66,
+            78
+          ],
+          [
+            108,
+            131
+          ],
+          [
+            255,
+            300
+          ]
+        ],
+        "official_only_ranges": [
+          [
+            63,
+            78
+          ],
+          [
+            108,
+            130
+          ],
+          [
+            255,
+            267
+          ],
+          [
+            267,
+            300
+          ]
+        ],
+        "dali_clean_ranges": 111,
+        "official_clean_ranges": 112,
+        "frame_counts_equal": true
+      }
+    },
+    {
+      "video": "data/Videos_L26_e/video/L26_V424.mp4",
+      "trials": [
+        {
+          "prepare_seconds": 7.730817599000005,
+          "frame_count": 7700,
+          "variant": "official",
+          "total_seconds": 10.501453480999999,
+          "inference_and_window_preprocess_seconds": 2.7706358819999934,
+          "peak_torch_allocated_bytes": 487595008,
+          "peak_torch_reserved_bytes": 509607936,
+          "peak_process_tree_rss_bytes": 15353741312,
+          "baseline_process_rss_bytes": 7676854272,
+          "shot_count": 100,
+          "ranges_sha256": "18d62a21923a30fc14a968ddb276e760a8d51ed27e524bbcfe68c099bf367f01",
+          "repeat": 0
+        },
+        {
+          "frame_count": 7700,
+          "prepare_seconds": 5.9262363170000185,
+          "variant": "dali",
+          "total_seconds": 7.706656314000014,
+          "inference_and_window_preprocess_seconds": 1.7804199969999956,
+          "peak_torch_allocated_bytes": 785126400,
+          "peak_torch_reserved_bytes": 1075838976,
+          "peak_process_tree_rss_bytes": 7685242880,
+          "baseline_process_rss_bytes": 7676854272,
+          "shot_count": 100,
+          "ranges_sha256": "94ac45fa65aa5d8cee5b4e32b5e6fb70914806dab44e95ee0005044c44b57484",
+          "repeat": 0
+        }
+      ],
+      "errors": [],
+      "dali": {
+        "successful_trials": 1,
+        "median_total_seconds": 7.706656314000014,
+        "median_prepare_seconds": 5.9262363170000185
+      },
+      "official": {
+        "successful_trials": 1,
+        "median_total_seconds": 10.501453480999999,
+        "median_prepare_seconds": 7.730817599000005
+      },
+      "correctness": {
+        "exact_clean_ranges_equal": false,
+        "shared_exact_clean_ranges": 98,
+        "dali_only_ranges": [
+          [
+            66,
+            78
+          ],
+          [
+            267,
+            300
+          ]
+        ],
+        "official_only_ranges": [
+          [
+            65,
+            78
+          ],
+          [
+            255,
+            300
+          ]
+        ],
+        "dali_clean_ranges": 100,
+        "official_clean_ranges": 100,
+        "frame_counts_equal": true
+      }
+    },
+    {
+      "video": "data/Videos_L28_a/video/L28_V008.mp4",
+      "trials": [
+        {
+          "frame_count": 27961,
+          "prepare_seconds": 21.943703182999997,
+          "variant": "dali",
+          "total_seconds": 28.427145346999993,
+          "inference_and_window_preprocess_seconds": 6.483442163999996,
+          "peak_torch_allocated_bytes": 2277680128,
+          "peak_torch_reserved_bytes": 2652897280,
+          "peak_process_tree_rss_bytes": 8187703296,
+          "baseline_process_rss_bytes": 8187260928,
+          "shot_count": 226,
+          "ranges_sha256": "83d921e92d24ce28b59600b34758f6a27d8b84a1d0949a8441b75b01ca348e0c",
+          "repeat": 0
+        },
+        {
+          "prepare_seconds": 31.600896801999994,
+          "frame_count": 27961,
+          "variant": "official",
+          "total_seconds": 41.66002225700001,
+          "inference_and_window_preprocess_seconds": 10.059125455000014,
+          "peak_torch_allocated_bytes": 485284864,
+          "peak_torch_reserved_bytes": 505413632,
+          "peak_process_tree_rss_bytes": 16375283712,
+          "baseline_process_rss_bytes": 8187625472,
+          "shot_count": 227,
+          "ranges_sha256": "a75d7b4e43bf7cab18f6a590bb1835c828d6e4048017e71d9ed1b51700e7538d",
+          "repeat": 0
+        }
+      ],
+      "errors": [],
+      "dali": {
+        "successful_trials": 1,
+        "median_total_seconds": 28.427145346999993,
+        "median_prepare_seconds": 21.943703182999997
+      },
+      "official": {
+        "successful_trials": 1,
+        "median_total_seconds": 41.66002225700001,
+        "median_prepare_seconds": 31.600896801999994
+      },
+      "correctness": {
+        "exact_clean_ranges_equal": false,
+        "shared_exact_clean_ranges": 209,
+        "dali_only_ranges": [
+          [
+            481,
+            501
+          ],
+          [
+            501,
+            594
+          ],
+          [
+            734,
+            846
+          ],
+          [
+            874,
+            972
+          ],
+          [
+            1012,
+            1115
+          ],
+          [
+            1142,
+            1448
+          ],
+          [
+            1632,
+            1661
+          ],
+          [
+            3370,
+            3442
+          ],
+          [
+            6628,
+            6765
+          ],
+          [
+            15279,
+            15356
+          ],
+          [
+            16589,
+            16672
+          ],
+          [
+            18183,
+            18350
+          ],
+          [
+            18580,
+            19141
+          ],
+          [
+            23556,
+            23800
+          ],
+          [
+            27149,
+            27159
+          ],
+          [
+            27269,
+            27295
+          ],
+          [
+            27322,
+            27391
+          ]
+        ],
+        "official_only_ranges": [
+          [
+            481,
+            486
+          ],
+          [
+            486,
+            594
+          ],
+          [
+            737,
+            846
+          ],
+          [
+            874,
+            979
+          ],
+          [
+            1012,
+            1114
+          ],
+          [
+            1632,
+            1660
+          ],
+          [
+            2364,
+            2509
+          ],
+          [
+            3370,
+            3443
+          ],
+          [
+            6628,
+            6735
+          ],
+          [
+            15279,
+            15472
+          ],
+          [
+            15502,
+            15583
+          ],
+          [
+            16588,
+            16672
+          ],
+          [
+            18183,
+            18351
+          ],
+          [
+            18580,
+            18838
+          ],
+          [
+            18867,
+            19141
+          ],
+          [
+            19302,
+            19361
+          ],
+          [
+            23556,
+            23801
+          ],
+          [
+            27149,
+            27160
+          ]
+        ],
+        "dali_clean_ranges": 226,
+        "official_clean_ranges": 227,
+        "frame_counts_equal": true
+      }
+    },
+    {
+      "video": "data/Videos_L30_a/video/L30_V046.mp4",
+      "trials": [
+        {
+          "prepare_seconds": 7.622660617000008,
+          "frame_count": 6932,
+          "variant": "official",
+          "total_seconds": 10.064553335,
+          "inference_and_window_preprocess_seconds": 2.441892717999991,
+          "peak_torch_allocated_bytes": 487693312,
+          "peak_torch_reserved_bytes": 497025024,
+          "peak_process_tree_rss_bytes": 14704689152,
+          "baseline_process_rss_bytes": 7352328192,
+          "shot_count": 64,
+          "ranges_sha256": "7395a26b9ce2b48523d4003eee48f7639505c76adbd9502f78f06371e709ba10",
+          "repeat": 0
+        },
+        {
+          "frame_count": 6932,
+          "prepare_seconds": 5.446840659000003,
+          "variant": "dali",
+          "total_seconds": 7.063102392000019,
+          "inference_and_window_preprocess_seconds": 1.616261733000016,
+          "peak_torch_allocated_bytes": 743533568,
+          "peak_torch_reserved_bytes": 1008730112,
+          "peak_process_tree_rss_bytes": 7360860160,
+          "baseline_process_rss_bytes": 7352328192,
+          "shot_count": 64,
+          "ranges_sha256": "7395a26b9ce2b48523d4003eee48f7639505c76adbd9502f78f06371e709ba10",
+          "repeat": 0
+        }
+      ],
+      "errors": [],
+      "dali": {
+        "successful_trials": 1,
+        "median_total_seconds": 7.063102392000019,
+        "median_prepare_seconds": 5.446840659000003
+      },
+      "official": {
+        "successful_trials": 1,
+        "median_total_seconds": 10.064553335,
+        "median_prepare_seconds": 7.622660617000008
+      },
+      "correctness": {
+        "exact_clean_ranges_equal": true,
+        "shared_exact_clean_ranges": 64,
+        "dali_only_ranges": [],
+        "official_only_ranges": [],
+        "dali_clean_ranges": 64,
+        "official_clean_ranges": 64,
+        "frame_counts_equal": true
+      }
+    },
+    {
+      "video": "data/Videos_L30_a/video/L30_V072.mp4",
+      "trials": [
+        {
+          "frame_count": 2169,
+          "prepare_seconds": 1.8624508510000055,
+          "variant": "dali",
+          "total_seconds": 2.3585803249999913,
+          "inference_and_window_preprocess_seconds": 0.49612947399998575,
+          "peak_torch_allocated_bytes": 567340032,
+          "peak_torch_reserved_bytes": 641728512,
+          "peak_process_tree_rss_bytes": 7685672960,
+          "baseline_process_rss_bytes": 7685230592,
+          "shot_count": 27,
+          "ranges_sha256": "6a26acbfc24ae1821ed40b997a520be4363d7ce2f4394c9d0c1936341506d3d7",
+          "repeat": 0
+        },
+        {
+          "prepare_seconds": 2.392602191000009,
+          "frame_count": 2169,
+          "variant": "official",
+          "total_seconds": 3.159834582000002,
+          "inference_and_window_preprocess_seconds": 0.7672323909999932,
+          "peak_torch_allocated_bytes": 487595008,
+          "peak_torch_reserved_bytes": 509607936,
+          "peak_process_tree_rss_bytes": 15370493952,
+          "baseline_process_rss_bytes": 7685230592,
+          "shot_count": 27,
+          "ranges_sha256": "6a26acbfc24ae1821ed40b997a520be4363d7ce2f4394c9d0c1936341506d3d7",
+          "repeat": 0
+        }
+      ],
+      "errors": [],
+      "dali": {
+        "successful_trials": 1,
+        "median_total_seconds": 2.3585803249999913,
+        "median_prepare_seconds": 1.8624508510000055
+      },
+      "official": {
+        "successful_trials": 1,
+        "median_total_seconds": 3.159834582000002,
+        "median_prepare_seconds": 2.392602191000009
+      },
+      "correctness": {
+        "exact_clean_ranges_equal": true,
+        "shared_exact_clean_ranges": 27,
+        "dali_only_ranges": [],
+        "official_only_ranges": [],
+        "dali_clean_ranges": 27,
+        "official_clean_ranges": 27,
+        "frame_counts_equal": true
+      }
+    }
+  ],
+  "failures": [],
+  "worker_metadata": [
+    {
+      "benchmark": "DALI vs official OmniShotCut file-path API",
+      "run_id": "dali-20261108T154909",
+      "gpu": "NVIDIA A10",
+      "cpu_cores": 4,
+      "memory_mib": 16384,
+      "torch_num_threads": 4,
+      "torch_version": "2.15.0+cu132",
+      "python_version": "3.12.1",
+      "library_versions": {
+        "torch": "2.15.0",
+        "nvidia-dali-cuda130": "2.4.0",
+        "omnishotcut": "0.1.0",
+        "numpy": "2.5.4",
+        "opencv-python": "5.0.0.93"
+      },
+      "repeats": 1,
+      "model_load_seconds_excluded": 3.0483050169999997,
+      "warmup_seconds_excluded": 0.6600871779999995,
+      "notes": [
+        "Both variants use the same loaded GPU model and overlap=10.",
+        "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
+        "DALI variant uses production _decode_video and _infer_ranges.",
+        "Preparation includes decoder construction/build and decode+resize; model load is excluded.",
+        "CUDA is synchronized before/after timers; variant order alternates per video/repetition.",
+        "RAM is sampled process-tree RSS every 50ms, including baseline FFmpeg subprocess.",
+        "Torch VRAM peaks omit unmanaged DALI/driver allocations; do not use as total GPU memory.",
+        "One synthetic inference window per path warms the model; no full-video warmup or filesystem cache flush."
+      ]
+    },
+    {
+      "benchmark": "DALI vs official OmniShotCut file-path API",
+      "run_id": "dali-20261108T154909",
+      "gpu": "NVIDIA A10",
+      "cpu_cores": 4,
+      "memory_mib": 16384,
+      "torch_num_threads": 4,
+      "torch_version": "2.15.0+cu132",
+      "python_version": "3.12.1",
+      "library_versions": {
+        "torch": "2.15.0",
+        "nvidia-dali-cuda130": "2.4.0",
+        "omnishotcut": "0.1.0",
+        "numpy": "2.5.4",
+        "opencv-python": "5.0.0.93"
+      },
+      "repeats": 1,
+      "model_load_seconds_excluded": 3.194853105000001,
+      "warmup_seconds_excluded": 0.6775438769999997,
+      "notes": [
+        "Both variants use the same loaded GPU model and overlap=10.",
+        "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
+        "DALI variant uses production _decode_video and _infer_ranges.",
+        "Preparation includes decoder construction/build and decode+resize; model load is excluded.",
+        "CUDA is synchronized before/after timers; variant order alternates per video/repetition.",
+        "RAM is sampled process-tree RSS every 50ms, including baseline FFmpeg subprocess.",
+        "Torch VRAM peaks omit unmanaged DALI/driver allocations; do not use as total GPU memory.",
+        "One synthetic inference window per path warms the model; no full-video warmup or filesystem cache flush."
+      ]
+    },
+    {
+      "benchmark": "DALI vs official OmniShotCut file-path API",
+      "run_id": "dali-20261108T154909",
+      "gpu": "NVIDIA A10",
+      "cpu_cores": 4,
+      "memory_mib": 16384,
+      "torch_num_threads": 4,
+      "torch_version": "2.15.0+cu132",
+      "python_version": "3.12.1",
+      "library_versions": {
+        "torch": "2.15.0",
+        "nvidia-dali-cuda130": "2.4.0",
+        "omnishotcut": "0.1.0",
+        "numpy": "2.5.4",
+        "opencv-python": "5.0.0.93"
+      },
+      "repeats": 1,
+      "model_load_seconds_excluded": 2.7595165240000004,
+      "warmup_seconds_excluded": 0.6706504659999997,
+      "notes": [
+        "Both variants use the same loaded GPU model and overlap=10.",
+        "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
+        "DALI variant uses production _decode_video and _infer_ranges.",
+        "Preparation includes decoder construction/build and decode+resize; model load is excluded.",
+        "CUDA is synchronized before/after timers; variant order alternates per video/repetition.",
+        "RAM is sampled process-tree RSS every 50ms, including baseline FFmpeg subprocess.",
+        "Torch VRAM peaks omit unmanaged DALI/driver allocations; do not use as total GPU memory.",
+        "One synthetic inference window per path warms the model; no full-video warmup or filesystem cache flush."
+      ]
+    },
+    {
+      "benchmark": "DALI vs official OmniShotCut file-path API",
+      "run_id": "dali-20261108T154909",
+      "gpu": "NVIDIA A10",
+      "cpu_cores": 4,
+      "memory_mib": 16384,
+      "torch_num_threads": 4,
+      "torch_version": "2.15.0+cu132",
+      "python_version": "3.12.1",
+      "library_versions": {
+        "torch": "2.15.0",
+        "nvidia-dali-cuda130": "2.4.0",
+        "omnishotcut": "0.1.0",
+        "numpy": "2.5.4",
+        "opencv-python": "5.0.0.93"
+      },
+      "repeats": 1,
+      "model_load_seconds_excluded": 3.163676842,
+      "warmup_seconds_excluded": 0.7262371430000005,
+      "notes": [
+        "Both variants use the same loaded GPU model and overlap=10.",
+        "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
+        "DALI variant uses production _decode_video and _infer_ranges.",
+        "Preparation includes decoder construction/build and decode+resize; model load is excluded.",
+        "CUDA is synchronized before/after timers; variant order alternates per video/repetition.",
+        "RAM is sampled process-tree RSS every 50ms, including baseline FFmpeg subprocess.",
+        "Torch VRAM peaks omit unmanaged DALI/driver allocations; do not use as total GPU memory.",
+        "One synthetic inference window per path warms the model; no full-video warmup or filesystem cache flush."
+      ]
+    },
+    {
+      "benchmark": "DALI vs official OmniShotCut file-path API",
+      "run_id": "dali-20261108T154909",
+      "gpu": "NVIDIA A10",
+      "cpu_cores": 4,
+      "memory_mib": 16384,
+      "torch_num_threads": 4,
+      "torch_version": "2.15.0+cu132",
+      "python_version": "3.12.1",
+      "library_versions": {
+        "torch": "2.15.0",
+        "nvidia-dali-cuda130": "2.4.0",
+        "omnishotcut": "0.1.0",
+        "numpy": "2.5.4",
+        "opencv-python": "5.0.0.93"
+      },
+      "repeats": 1,
+      "model_load_seconds_excluded": 3.5215691609999995,
+      "warmup_seconds_excluded": 0.6676085780000012,
+      "notes": [
+        "Both variants use the same loaded GPU model and overlap=10.",
+        "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
+        "DALI variant uses production _decode_video and _infer_ranges.",
+        "Preparation includes decoder construction/build and decode+resize; model load is excluded.",
+        "CUDA is synchronized before/after timers; variant order alternates per video/repetition.",
+        "RAM is sampled process-tree RSS every 50ms, including baseline FFmpeg subprocess.",
+        "Torch VRAM peaks omit unmanaged DALI/driver allocations; do not use as total GPU memory.",
+        "One synthetic inference window per path warms the model; no full-video warmup or filesystem cache flush."
+      ]
+    },
+    {
+      "benchmark": "DALI vs official OmniShotCut file-path API",
+      "run_id": "dali-20261108T154909",
+      "gpu": "NVIDIA A10",
+      "cpu_cores": 4,
+      "memory_mib": 16384,
+      "torch_num_threads": 4,
+      "torch_version": "2.15.0+cu132",
+      "python_version": "3.12.1",
+      "library_versions": {
+        "torch": "2.15.0",
+        "nvidia-dali-cuda130": "2.4.0",
+        "omnishotcut": "0.1.0",
+        "numpy": "2.5.4",
+        "opencv-python": "5.0.0.93"
+      },
+      "repeats": 1,
+      "model_load_seconds_excluded": 0.7560711120000008,
+      "warmup_seconds_excluded": 0.05340657300000373,
+      "notes": [
+        "Both variants use the same loaded GPU model and overlap=10.",
+        "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
+        "DALI variant uses production _decode_video and _infer_ranges.",
+        "Preparation includes decoder construction/build and decode+resize; model load is excluded.",
+        "CUDA is synchronized before/after timers; variant order alternates per video/repetition.",
+        "RAM is sampled process-tree RSS every 50ms, including baseline FFmpeg subprocess.",
+        "Torch VRAM peaks omit unmanaged DALI/driver allocations; do not use as total GPU memory.",
+        "One synthetic inference window per path warms the model; no full-video warmup or filesystem cache flush."
+      ]
+    },
+    {
+      "benchmark": "DALI vs official OmniShotCut file-path API",
+      "run_id": "dali-20261108T154909",
+      "gpu": "NVIDIA A10",
+      "cpu_cores": 4,
+      "memory_mib": 16384,
+      "torch_num_threads": 4,
+      "torch_version": "2.15.0+cu132",
+      "python_version": "3.12.1",
+      "library_versions": {
+        "torch": "2.15.0",
+        "nvidia-dali-cuda130": "2.4.0",
+        "omnishotcut": "0.1.0",
+        "numpy": "2.5.4",
+        "opencv-python": "5.0.0.93"
+      },
+      "repeats": 1,
+      "model_load_seconds_excluded": 0.7745345409999942,
+      "warmup_seconds_excluded": 0.05330693700000211,
+      "notes": [
+        "Both variants use the same loaded GPU model and overlap=10.",
+        "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
+        "DALI variant uses production _decode_video and _infer_ranges.",
+        "Preparation includes decoder construction/build and decode+resize; model load is excluded.",
+        "CUDA is synchronized before/after timers; variant order alternates per video/repetition.",
+        "RAM is sampled process-tree RSS every 50ms, including baseline FFmpeg subprocess.",
+        "Torch VRAM peaks omit unmanaged DALI/driver allocations; do not use as total GPU memory.",
+        "One synthetic inference window per path warms the model; no full-video warmup or filesystem cache flush."
+      ]
+    },
+    {
+      "benchmark": "DALI vs official OmniShotCut file-path API",
+      "run_id": "dali-20261108T154909",
+      "gpu": "NVIDIA A10",
+      "cpu_cores": 4,
+      "memory_mib": 16384,
+      "torch_num_threads": 4,
+      "torch_version": "2.15.0+cu132",
+      "python_version": "3.12.1",
+      "library_versions": {
+        "torch": "2.15.0",
+        "nvidia-dali-cuda130": "2.4.0",
+        "omnishotcut": "0.1.0",
+        "numpy": "2.5.4",
+        "opencv-python": "5.0.0.93"
+      },
+      "repeats": 1,
+      "model_load_seconds_excluded": 0.7093371849999954,
+      "warmup_seconds_excluded": 0.052158380999998144,
+      "notes": [
+        "Both variants use the same loaded GPU model and overlap=10.",
+        "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
+        "DALI variant uses production _decode_video and _infer_ranges.",
+        "Preparation includes decoder construction/build and decode+resize; model load is excluded.",
+        "CUDA is synchronized before/after timers; variant order alternates per video/repetition.",
+        "RAM is sampled process-tree RSS every 50ms, including baseline FFmpeg subprocess.",
+        "Torch VRAM peaks omit unmanaged DALI/driver allocations; do not use as total GPU memory.",
+        "One synthetic inference window per path warms the model; no full-video warmup or filesystem cache flush."
+      ]
+    },
+    {
+      "benchmark": "DALI vs official OmniShotCut file-path API",
+      "run_id": "dali-20261108T154909",
+      "gpu": "NVIDIA A10",
+      "cpu_cores": 4,
+      "memory_mib": 16384,
+      "torch_num_threads": 4,
+      "torch_version": "2.15.0+cu132",
+      "python_version": "3.12.1",
+      "library_versions": {
+        "torch": "2.15.0",
+        "nvidia-dali-cuda130": "2.4.0",
+        "omnishotcut": "0.1.0",
+        "numpy": "2.5.4",
+        "opencv-python": "5.0.0.93"
+      },
+      "repeats": 1,
+      "model_load_seconds_excluded": 0.7616041469999999,
+      "warmup_seconds_excluded": 0.05336152200000299,
+      "notes": [
+        "Both variants use the same loaded GPU model and overlap=10.",
+        "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
+        "DALI variant uses production _decode_video and _infer_ranges.",
+        "Preparation includes decoder construction/build and decode+resize; model load is excluded.",
+        "CUDA is synchronized before/after timers; variant order alternates per video/repetition.",
+        "RAM is sampled process-tree RSS every 50ms, including baseline FFmpeg subprocess.",
+        "Torch VRAM peaks omit unmanaged DALI/driver allocations; do not use as total GPU memory.",
+        "One synthetic inference window per path warms the model; no full-video warmup or filesystem cache flush."
+      ]
+    },
+    {
+      "benchmark": "DALI vs official OmniShotCut file-path API",
+      "run_id": "dali-20261108T154909",
+      "gpu": "NVIDIA A10",
+      "cpu_cores": 4,
+      "memory_mib": 16384,
+      "torch_num_threads": 4,
+      "torch_version": "2.15.0+cu132",
+      "python_version": "3.12.1",
+      "library_versions": {
+        "torch": "2.15.0",
+        "nvidia-dali-cuda130": "2.4.0",
+        "omnishotcut": "0.1.0",
+        "numpy": "2.5.4",
+        "opencv-python": "5.0.0.93"
+      },
+      "repeats": 1,
+      "model_load_seconds_excluded": 0.6965720680000089,
+      "warmup_seconds_excluded": 0.053235612000008814,
+      "notes": [
+        "Both variants use the same loaded GPU model and overlap=10.",
+        "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
+        "DALI variant uses production _decode_video and _infer_ranges.",
+        "Preparation includes decoder construction/build and decode+resize; model load is excluded.",
+        "CUDA is synchronized before/after timers; variant order alternates per video/repetition.",
+        "RAM is sampled process-tree RSS every 50ms, including baseline FFmpeg subprocess.",
+        "Torch VRAM peaks omit unmanaged DALI/driver allocations; do not use as total GPU memory.",
+        "One synthetic inference window per path warms the model; no full-video warmup or filesystem cache flush."
+      ]
+    },
+    {
+      "benchmark": "DALI vs official OmniShotCut file-path API",
+      "run_id": "dali-20261108T154909",
+      "gpu": "NVIDIA A10",
+      "cpu_cores": 4,
+      "memory_mib": 16384,
+      "torch_num_threads": 4,
+      "torch_version": "2.15.0+cu132",
+      "python_version": "3.12.1",
+      "library_versions": {
+        "torch": "2.15.0",
+        "nvidia-dali-cuda130": "2.4.0",
+        "omnishotcut": "0.1.0",
+        "numpy": "2.5.4",
+        "opencv-python": "5.0.0.93"
+      },
+      "repeats": 1,
+      "model_load_seconds_excluded": 0.7495381370000018,
+      "warmup_seconds_excluded": 0.053905767999992804,
+      "notes": [
+        "Both variants use the same loaded GPU model and overlap=10.",
+        "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
+        "DALI variant uses production _decode_video and _infer_ranges.",
+        "Preparation includes decoder construction/build and decode+resize; model load is excluded.",
+        "CUDA is synchronized before/after timers; variant order alternates per video/repetition.",
+        "RAM is sampled process-tree RSS every 50ms, including baseline FFmpeg subprocess.",
+        "Torch VRAM peaks omit unmanaged DALI/driver allocations; do not use as total GPU memory.",
+        "One synthetic inference window per path warms the model; no full-video warmup or filesystem cache flush."
+      ]
+    },
+    {
+      "benchmark": "DALI vs official OmniShotCut file-path API",
+      "run_id": "dali-20261108T154909",
+      "gpu": "NVIDIA A10",
+      "cpu_cores": 4,
+      "memory_mib": 16384,
+      "torch_num_threads": 4,
+      "torch_version": "2.15.0+cu132",
+      "python_version": "3.12.1",
+      "library_versions": {
+        "torch": "2.15.0",
+        "nvidia-dali-cuda130": "2.4.0",
+        "omnishotcut": "0.1.0",
+        "numpy": "2.5.4",
+        "opencv-python": "5.0.0.93"
+      },
+      "repeats": 1,
+      "model_load_seconds_excluded": 0.6957450059999957,
+      "warmup_seconds_excluded": 0.054105164999981525,
+      "notes": [
+        "Both variants use the same loaded GPU model and overlap=10.",
+        "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
+        "DALI variant uses production _decode_video and _infer_ranges.",
+        "Preparation includes decoder construction/build and decode+resize; model load is excluded.",
+        "CUDA is synchronized before/after timers; variant order alternates per video/repetition.",
+        "RAM is sampled process-tree RSS every 50ms, including baseline FFmpeg subprocess.",
+        "Torch VRAM peaks omit unmanaged DALI/driver allocations; do not use as total GPU memory.",
+        "One synthetic inference window per path warms the model; no full-video warmup or filesystem cache flush."
+      ]
+    },
+    {
+      "benchmark": "DALI vs official OmniShotCut file-path API",
+      "run_id": "dali-20261108T154909",
+      "gpu": "NVIDIA A10",
+      "cpu_cores": 4,
+      "memory_mib": 16384,
+      "torch_num_threads": 4,
+      "torch_version": "2.15.0+cu132",
+      "python_version": "3.12.1",
+      "library_versions": {
+        "torch": "2.15.0",
+        "nvidia-dali-cuda130": "2.4.0",
+        "omnishotcut": "0.1.0",
+        "numpy": "2.5.4",
+        "opencv-python": "5.0.0.93"
+      },
+      "repeats": 1,
+      "model_load_seconds_excluded": 0.665968466999999,
+      "warmup_seconds_excluded": 0.05259058599997957,
+      "notes": [
+        "Both variants use the same loaded GPU model and overlap=10.",
+        "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
+        "DALI variant uses production _decode_video and _infer_ranges.",
+        "Preparation includes decoder construction/build and decode+resize; model load is excluded.",
+        "CUDA is synchronized before/after timers; variant order alternates per video/repetition.",
+        "RAM is sampled process-tree RSS every 50ms, including baseline FFmpeg subprocess.",
+        "Torch VRAM peaks omit unmanaged DALI/driver allocations; do not use as total GPU memory.",
+        "One synthetic inference window per path warms the model; no full-video warmup or filesystem cache flush."
+      ]
+    },
+    {
+      "benchmark": "DALI vs official OmniShotCut file-path API",
+      "run_id": "dali-20261108T154909",
+      "gpu": "NVIDIA A10",
+      "cpu_cores": 4,
+      "memory_mib": 16384,
+      "torch_num_threads": 4,
+      "torch_version": "2.15.0+cu132",
+      "python_version": "3.12.1",
+      "library_versions": {
+        "torch": "2.15.0",
+        "nvidia-dali-cuda130": "2.4.0",
+        "omnishotcut": "0.1.0",
+        "numpy": "2.5.4",
+        "opencv-python": "5.0.0.93"
+      },
+      "repeats": 1,
+      "model_load_seconds_excluded": 0.6668911739999999,
+      "warmup_seconds_excluded": 0.05277247700001908,
+      "notes": [
+        "Both variants use the same loaded GPU model and overlap=10.",
+        "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
+        "DALI variant uses production _decode_video and _infer_ranges.",
+        "Preparation includes decoder construction/build and decode+resize; model load is excluded.",
+        "CUDA is synchronized before/after timers; variant order alternates per video/repetition.",
+        "RAM is sampled process-tree RSS every 50ms, including baseline FFmpeg subprocess.",
+        "Torch VRAM peaks omit unmanaged DALI/driver allocations; do not use as total GPU memory.",
+        "One synthetic inference window per path warms the model; no full-video warmup or filesystem cache flush."
+      ]
+    },
+    {
+      "benchmark": "DALI vs official OmniShotCut file-path API",
+      "run_id": "dali-20261108T154909",
+      "gpu": "NVIDIA A10",
+      "cpu_cores": 4,
+      "memory_mib": 16384,
+      "torch_num_threads": 4,
+      "torch_version": "2.15.0+cu132",
+      "python_version": "3.12.1",
+      "library_versions": {
+        "torch": "2.15.0",
+        "nvidia-dali-cuda130": "2.4.0",
+        "omnishotcut": "0.1.0",
+        "numpy": "2.5.4",
+        "opencv-python": "5.0.0.93"
+      },
+      "repeats": 1,
+      "model_load_seconds_excluded": 0.7039009780000072,
+      "warmup_seconds_excluded": 0.0534151559999998,
+      "notes": [
+        "Both variants use the same loaded GPU model and overlap=10.",
+        "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
+        "DALI variant uses production _decode_video and _infer_ranges.",
+        "Preparation includes decoder construction/build and decode+resize; model load is excluded.",
+        "CUDA is synchronized before/after timers; variant order alternates per video/repetition.",
+        "RAM is sampled process-tree RSS every 50ms, including baseline FFmpeg subprocess.",
+        "Torch VRAM peaks omit unmanaged DALI/driver allocations; do not use as total GPU memory.",
+        "One synthetic inference window per path warms the model; no full-video warmup or filesystem cache flush."
+      ]
+    }
+  ],
+  "aggregate": {
+    "videos": 15,
+    "errors": 0,
+    "dali_sum_video_median_seconds": 356.87768585000003,
+    "official_sum_video_median_seconds": 407.582250475
+  }
+}

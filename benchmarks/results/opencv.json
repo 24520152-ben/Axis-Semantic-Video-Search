@@ -1,0 +1,2466 @@
+{
+  "benchmark": "pyav_decord_vs_opencv",
+  "videos": [
+    {
+      "video": "data/Videos_L21_a/video/L21_V013.mp4",
+      "source_sha256": "f04395b6c7cdcac59cbbe23dd2db688b4466646bede89daf36f797155c39090e",
+      "frame_count": 33805,
+      "candidate_count": 1253,
+      "shot_count": 315,
+      "setup_shot_source": "shared_dali_shot_ranges",
+      "repetitions": 1,
+      "summary_medians": {
+        "pyav_decord": {
+          "metadata_seconds": 0.7018443340000005,
+          "sampling_seconds": 22.045178919,
+          "combined_seconds": 22.747023253000002,
+          "peak_rss_bytes": 7319437312
+        },
+        "opencv_sequential": {
+          "metadata_seconds": 0.14420203799999953,
+          "sampling_seconds": 21.964031702999996,
+          "combined_seconds": 22.108233740999996,
+          "peak_rss_bytes": 7052464128
+        },
+        "opencv_seek": {
+          "metadata_seconds": 0.13987621300000086,
+          "sampling_seconds": 69.142426745,
+          "combined_seconds": 69.282302958,
+          "peak_rss_bytes": 7054532608
+        }
+      },
+      "measurements": [
+        {
+          "variant": "pyav_decord",
+          "metadata_seconds": 0.7018443340000005,
+          "sampling_seconds": 22.045178919,
+          "combined_seconds": 22.747023253000002,
+          "candidate_count": 1253,
+          "peak_rss_bytes": 7319437312,
+          "baseline_rss_bytes": 3519533056,
+          "incremental_peak_rss_bytes": 3799904256,
+          "metadata": {
+            "sha256": "f04395b6c7cdcac59cbbe23dd2db688b4466646bede89daf36f797155c39090e",
+            "frame_count": 33805,
+            "fps": 30.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "Decord CPU + PyAV",
+            "decoder_threads": "default"
+          },
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_sequential",
+          "metadata_seconds": 0.14420203799999953,
+          "sampling_seconds": 21.964031702999996,
+          "combined_seconds": 22.108233740999996,
+          "candidate_count": 1253,
+          "peak_rss_bytes": 7052464128,
+          "baseline_rss_bytes": 3536330752,
+          "incremental_peak_rss_bytes": 3516133376,
+          "metadata": {
+            "sha256": "f04395b6c7cdcac59cbbe23dd2db688b4466646bede89daf36f797155c39090e",
+            "frame_count": 33805,
+            "fps": 30.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 0.33333349227905273,
+          "timestamp_mean_abs_error_us": 0.2061718554827165,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_seek",
+          "metadata_seconds": 0.13987621300000086,
+          "sampling_seconds": 69.142426745,
+          "combined_seconds": 69.282302958,
+          "candidate_count": 1253,
+          "peak_rss_bytes": 7054532608,
+          "baseline_rss_bytes": 3536650240,
+          "incremental_peak_rss_bytes": 3517882368,
+          "metadata": {
+            "sha256": "f04395b6c7cdcac59cbbe23dd2db688b4466646bede89daf36f797155c39090e",
+            "frame_count": 33805,
+            "fps": 30.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 0.33333349227905273,
+          "timestamp_mean_abs_error_us": 0.2061718554827165,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        }
+      ],
+      "hardware": {
+        "gpu": "NVIDIA A10",
+        "cpu": "x86_64",
+        "cpu_allocation": 4,
+        "memory_mib": 16384
+      },
+      "versions": {
+        "opencv": "5.0.0",
+        "decord": "0.6.0",
+        "numpy": "2.5.4",
+        "torch": "2.15.0+cu132"
+      },
+      "methodology": {
+        "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
+        "model_setup": "Shot detection/reference candidate construction outside measurement",
+        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
+        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
+        "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
+        "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
+        "probe_scope": "Sparse RGB grids every32pixels from9 evenly spaced candidates, not full-video pixel equality"
+      }
+    },
+    {
+      "video": "data/Videos_L21_a/video/L21_V022.mp4",
+      "source_sha256": "f118d454f26dfe2133d75cf82631b5fc575c6df41e7ad5112350ef75c3a42618",
+      "frame_count": 29325,
+      "candidate_count": 1089,
+      "shot_count": 222,
+      "setup_shot_source": "local_detection_outside_timing",
+      "repetitions": 1,
+      "summary_medians": {
+        "pyav_decord": {
+          "metadata_seconds": 0.5655317330000003,
+          "sampling_seconds": 17.286463236000003,
+          "combined_seconds": 17.851994969000003,
+          "peak_rss_bytes": 9560608768
+        },
+        "opencv_sequential": {
+          "metadata_seconds": 0.09881851900000527,
+          "sampling_seconds": 16.340779450999996,
+          "combined_seconds": 16.43959797,
+          "peak_rss_bytes": 9505366016
+        },
+        "opencv_seek": {
+          "metadata_seconds": 0.0992268630000126,
+          "sampling_seconds": 56.34110345899998,
+          "combined_seconds": 56.440330321999994,
+          "peak_rss_bytes": 9508220928
+        }
+      },
+      "measurements": [
+        {
+          "variant": "pyav_decord",
+          "metadata_seconds": 0.5655317330000003,
+          "sampling_seconds": 17.286463236000003,
+          "combined_seconds": 17.851994969000003,
+          "candidate_count": 1089,
+          "peak_rss_bytes": 9560608768,
+          "baseline_rss_bytes": 6414237696,
+          "incremental_peak_rss_bytes": 3146371072,
+          "metadata": {
+            "sha256": "f118d454f26dfe2133d75cf82631b5fc575c6df41e7ad5112350ef75c3a42618",
+            "frame_count": 29325,
+            "fps": 30.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "Decord CPU + PyAV",
+            "decoder_threads": "default"
+          },
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_sequential",
+          "metadata_seconds": 0.09881851900000527,
+          "sampling_seconds": 16.340779450999996,
+          "combined_seconds": 16.43959797,
+          "candidate_count": 1089,
+          "peak_rss_bytes": 9505366016,
+          "baseline_rss_bytes": 6481620992,
+          "incremental_peak_rss_bytes": 3023745024,
+          "metadata": {
+            "sha256": "f118d454f26dfe2133d75cf82631b5fc575c6df41e7ad5112350ef75c3a42618",
+            "frame_count": 29325,
+            "fps": 30.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 0.3333333730697632,
+          "timestamp_mean_abs_error_us": 0.19895928792613216,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_seek",
+          "metadata_seconds": 0.0992268630000126,
+          "sampling_seconds": 56.34110345899998,
+          "combined_seconds": 56.440330321999994,
+          "candidate_count": 1089,
+          "peak_rss_bytes": 9508220928,
+          "baseline_rss_bytes": 6461988864,
+          "incremental_peak_rss_bytes": 3046232064,
+          "metadata": {
+            "sha256": "f118d454f26dfe2133d75cf82631b5fc575c6df41e7ad5112350ef75c3a42618",
+            "frame_count": 29325,
+            "fps": 30.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 0.3333333730697632,
+          "timestamp_mean_abs_error_us": 0.19895928792613216,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        }
+      ],
+      "hardware": {
+        "gpu": "NVIDIA A10",
+        "cpu": "x86_64",
+        "cpu_allocation": 4,
+        "memory_mib": 16384
+      },
+      "versions": {
+        "opencv": "5.0.0",
+        "decord": "0.6.0",
+        "numpy": "2.5.4",
+        "torch": "2.15.0+cu132"
+      },
+      "methodology": {
+        "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
+        "model_setup": "Shot detection/reference candidate construction outside measurement",
+        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
+        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
+        "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
+        "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
+        "probe_scope": "Sparse RGB grids every32pixels from9 evenly spaced candidates, not full-video pixel equality"
+      }
+    },
+    {
+      "video": "data/Videos_L21_a/video/L21_V023.mp4",
+      "source_sha256": "06666744ef3ae99813955494c77975998c22586388c54396c72e37372252bf3f",
+      "frame_count": 35391,
+      "candidate_count": 1331,
+      "shot_count": 319,
+      "setup_shot_source": "local_detection_outside_timing",
+      "repetitions": 1,
+      "summary_medians": {
+        "pyav_decord": {
+          "metadata_seconds": 0.7127889409999995,
+          "sampling_seconds": 22.386098972000006,
+          "combined_seconds": 23.098887913000006,
+          "peak_rss_bytes": 10273316864
+        },
+        "opencv_sequential": {
+          "metadata_seconds": 0.13372642299999882,
+          "sampling_seconds": 21.775495223999997,
+          "combined_seconds": 21.909221646999995,
+          "peak_rss_bytes": 10199363584
+        },
+        "opencv_seek": {
+          "metadata_seconds": 0.13221005100000127,
+          "sampling_seconds": 70.17790287999999,
+          "combined_seconds": 70.31011293099999,
+          "peak_rss_bytes": 10199617536
+        }
+      },
+      "measurements": [
+        {
+          "variant": "pyav_decord",
+          "metadata_seconds": 0.7127889409999995,
+          "sampling_seconds": 22.386098972000006,
+          "combined_seconds": 23.098887913000006,
+          "candidate_count": 1331,
+          "peak_rss_bytes": 10273316864,
+          "baseline_rss_bytes": 6409265152,
+          "incremental_peak_rss_bytes": 3864051712,
+          "metadata": {
+            "sha256": "06666744ef3ae99813955494c77975998c22586388c54396c72e37372252bf3f",
+            "frame_count": 35391,
+            "fps": 30.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "Decord CPU + PyAV",
+            "decoder_threads": "default"
+          },
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_sequential",
+          "metadata_seconds": 0.13372642299999882,
+          "sampling_seconds": 21.775495223999997,
+          "combined_seconds": 21.909221646999995,
+          "candidate_count": 1331,
+          "peak_rss_bytes": 10199363584,
+          "baseline_rss_bytes": 6488068096,
+          "incremental_peak_rss_bytes": 3711295488,
+          "metadata": {
+            "sha256": "06666744ef3ae99813955494c77975998c22586388c54396c72e37372252bf3f",
+            "frame_count": 35391,
+            "fps": 30.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 0.33333349227905273,
+          "timestamp_mean_abs_error_us": 0.17330328155658536,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_seek",
+          "metadata_seconds": 0.13221005100000127,
+          "sampling_seconds": 70.17790287999999,
+          "combined_seconds": 70.31011293099999,
+          "candidate_count": 1331,
+          "peak_rss_bytes": 10199617536,
+          "baseline_rss_bytes": 6484684800,
+          "incremental_peak_rss_bytes": 3714932736,
+          "metadata": {
+            "sha256": "06666744ef3ae99813955494c77975998c22586388c54396c72e37372252bf3f",
+            "frame_count": 35391,
+            "fps": 30.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 0.33333349227905273,
+          "timestamp_mean_abs_error_us": 0.17330328155658536,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        }
+      ],
+      "hardware": {
+        "gpu": "NVIDIA A10",
+        "cpu": "x86_64",
+        "cpu_allocation": 4,
+        "memory_mib": 16384
+      },
+      "versions": {
+        "opencv": "5.0.0",
+        "decord": "0.6.0",
+        "numpy": "2.5.4",
+        "torch": "2.15.0+cu132"
+      },
+      "methodology": {
+        "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
+        "model_setup": "Shot detection/reference candidate construction outside measurement",
+        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
+        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
+        "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
+        "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
+        "probe_scope": "Sparse RGB grids every32pixels from9 evenly spaced candidates, not full-video pixel equality"
+      }
+    },
+    {
+      "video": "data/Videos_L22_a/video/L22_V021.mp4",
+      "source_sha256": "0e3859e1ef85e7e16f9da0a775161a064b0c033262b4b3e2d98175f33d7da4ad",
+      "frame_count": 38124,
+      "candidate_count": 1435,
+      "shot_count": 363,
+      "setup_shot_source": "local_detection_outside_timing",
+      "repetitions": 1,
+      "summary_medians": {
+        "pyav_decord": {
+          "metadata_seconds": 0.7824918759999946,
+          "sampling_seconds": 24.227083052000005,
+          "combined_seconds": 25.009574928,
+          "peak_rss_bytes": 10574868480
+        },
+        "opencv_sequential": {
+          "metadata_seconds": 0.14849394400000904,
+          "sampling_seconds": 24.326753491999995,
+          "combined_seconds": 24.475247436000004,
+          "peak_rss_bytes": 10496782336
+        },
+        "opencv_seek": {
+          "metadata_seconds": 0.1515040780000021,
+          "sampling_seconds": 75.90770693699999,
+          "combined_seconds": 76.05921101499999,
+          "peak_rss_bytes": 10497957888
+        }
+      },
+      "measurements": [
+        {
+          "variant": "pyav_decord",
+          "metadata_seconds": 0.7824918759999946,
+          "sampling_seconds": 24.227083052000005,
+          "combined_seconds": 25.009574928,
+          "candidate_count": 1435,
+          "peak_rss_bytes": 10574868480,
+          "baseline_rss_bytes": 6414069760,
+          "incremental_peak_rss_bytes": 4160798720,
+          "metadata": {
+            "sha256": "0e3859e1ef85e7e16f9da0a775161a064b0c033262b4b3e2d98175f33d7da4ad",
+            "frame_count": 38124,
+            "fps": 30.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "Decord CPU + PyAV",
+            "decoder_threads": "default"
+          },
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_sequential",
+          "metadata_seconds": 0.14849394400000904,
+          "sampling_seconds": 24.326753491999995,
+          "combined_seconds": 24.475247436000004,
+          "candidate_count": 1435,
+          "peak_rss_bytes": 10496782336,
+          "baseline_rss_bytes": 6506344448,
+          "incremental_peak_rss_bytes": 3990437888,
+          "metadata": {
+            "sha256": "0e3859e1ef85e7e16f9da0a775161a064b0c033262b4b3e2d98175f33d7da4ad",
+            "frame_count": 38124,
+            "fps": 30.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 0.33333349227905273,
+          "timestamp_mean_abs_error_us": 0.19837398942558335,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_seek",
+          "metadata_seconds": 0.1515040780000021,
+          "sampling_seconds": 75.90770693699999,
+          "combined_seconds": 76.05921101499999,
+          "candidate_count": 1435,
+          "peak_rss_bytes": 10497957888,
+          "baseline_rss_bytes": 6493405184,
+          "incremental_peak_rss_bytes": 4004552704,
+          "metadata": {
+            "sha256": "0e3859e1ef85e7e16f9da0a775161a064b0c033262b4b3e2d98175f33d7da4ad",
+            "frame_count": 38124,
+            "fps": 30.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 0.33333349227905273,
+          "timestamp_mean_abs_error_us": 0.19837398942558335,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        }
+      ],
+      "hardware": {
+        "gpu": "NVIDIA A10",
+        "cpu": "x86_64",
+        "cpu_allocation": 4,
+        "memory_mib": 16384
+      },
+      "versions": {
+        "opencv": "5.0.0",
+        "decord": "0.6.0",
+        "numpy": "2.5.4",
+        "torch": "2.15.0+cu132"
+      },
+      "methodology": {
+        "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
+        "model_setup": "Shot detection/reference candidate construction outside measurement",
+        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
+        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
+        "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
+        "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
+        "probe_scope": "Sparse RGB grids every32pixels from9 evenly spaced candidates, not full-video pixel equality"
+      }
+    },
+    {
+      "video": "data/Videos_L22_a/video/L22_V026.mp4",
+      "source_sha256": "19ed088e3b963c82bd66c5ce6ffb1f27af2ec60ba17f54d00152078c584e3b97",
+      "frame_count": 34064,
+      "candidate_count": 1271,
+      "shot_count": 332,
+      "setup_shot_source": "local_detection_outside_timing",
+      "repetitions": 1,
+      "summary_medians": {
+        "pyav_decord": {
+          "metadata_seconds": 0.6853326600000003,
+          "sampling_seconds": 20.106706292000005,
+          "combined_seconds": 20.792038952000006,
+          "peak_rss_bytes": 10102206464
+        },
+        "opencv_sequential": {
+          "metadata_seconds": 0.13085944700000596,
+          "sampling_seconds": 19.819920685,
+          "combined_seconds": 19.950780132000006,
+          "peak_rss_bytes": 10027675648
+        },
+        "opencv_seek": {
+          "metadata_seconds": 0.1307680299999987,
+          "sampling_seconds": 64.363365686,
+          "combined_seconds": 64.494133716,
+          "peak_rss_bytes": 10029260800
+        }
+      },
+      "measurements": [
+        {
+          "variant": "pyav_decord",
+          "metadata_seconds": 0.6853326600000003,
+          "sampling_seconds": 20.106706292000005,
+          "combined_seconds": 20.792038952000006,
+          "candidate_count": 1271,
+          "peak_rss_bytes": 10102206464,
+          "baseline_rss_bytes": 6410784768,
+          "incremental_peak_rss_bytes": 3691421696,
+          "metadata": {
+            "sha256": "19ed088e3b963c82bd66c5ce6ffb1f27af2ec60ba17f54d00152078c584e3b97",
+            "frame_count": 34064,
+            "fps": 30.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "Decord CPU + PyAV",
+            "decoder_threads": "default"
+          },
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_sequential",
+          "metadata_seconds": 0.13085944700000596,
+          "sampling_seconds": 19.819920685,
+          "combined_seconds": 19.950780132000006,
+          "candidate_count": 1271,
+          "peak_rss_bytes": 10027675648,
+          "baseline_rss_bytes": 6489530368,
+          "incremental_peak_rss_bytes": 3538145280,
+          "metadata": {
+            "sha256": "19ed088e3b963c82bd66c5ce6ffb1f27af2ec60ba17f54d00152078c584e3b97",
+            "frame_count": 34064,
+            "fps": 30.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 0.33333349227905273,
+          "timestamp_mean_abs_error_us": 0.2045633390455717,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_seek",
+          "metadata_seconds": 0.1307680299999987,
+          "sampling_seconds": 64.363365686,
+          "combined_seconds": 64.494133716,
+          "candidate_count": 1271,
+          "peak_rss_bytes": 10029260800,
+          "baseline_rss_bytes": 6484754432,
+          "incremental_peak_rss_bytes": 3544506368,
+          "metadata": {
+            "sha256": "19ed088e3b963c82bd66c5ce6ffb1f27af2ec60ba17f54d00152078c584e3b97",
+            "frame_count": 34064,
+            "fps": 30.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 0.33333349227905273,
+          "timestamp_mean_abs_error_us": 0.2045633390455717,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        }
+      ],
+      "hardware": {
+        "gpu": "NVIDIA A10",
+        "cpu": "x86_64",
+        "cpu_allocation": 4,
+        "memory_mib": 16384
+      },
+      "versions": {
+        "opencv": "5.0.0",
+        "decord": "0.6.0",
+        "numpy": "2.5.4",
+        "torch": "2.15.0+cu132"
+      },
+      "methodology": {
+        "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
+        "model_setup": "Shot detection/reference candidate construction outside measurement",
+        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
+        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
+        "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
+        "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
+        "probe_scope": "Sparse RGB grids every32pixels from9 evenly spaced candidates, not full-video pixel equality"
+      }
+    },
+    {
+      "video": "data/Videos_L24_a/video/L24_V035.mp4",
+      "source_sha256": "6c6c28e5076bc5853c9b673c61226f7dccb28fc4168a7f33da039a7435593ea7",
+      "frame_count": 19851,
+      "candidate_count": 692,
+      "shot_count": 67,
+      "setup_shot_source": "shared_dali_shot_ranges",
+      "repetitions": 1,
+      "summary_medians": {
+        "pyav_decord": {
+          "metadata_seconds": 0.5615003569999999,
+          "sampling_seconds": 15.685475810000014,
+          "combined_seconds": 16.246976167000014,
+          "peak_rss_bytes": 5885616128
+        },
+        "opencv_sequential": {
+          "metadata_seconds": 0.1744461680000029,
+          "sampling_seconds": 16.473556091000006,
+          "combined_seconds": 16.64800225900001,
+          "peak_rss_bytes": 5790003200
+        },
+        "opencv_seek": {
+          "metadata_seconds": 0.17511163099999294,
+          "sampling_seconds": 49.89733579,
+          "combined_seconds": 50.07244742099999,
+          "peak_rss_bytes": 5778432000
+        }
+      },
+      "measurements": [
+        {
+          "variant": "pyav_decord",
+          "metadata_seconds": 0.5615003569999999,
+          "sampling_seconds": 15.685475810000014,
+          "combined_seconds": 16.246976167000014,
+          "candidate_count": 692,
+          "peak_rss_bytes": 5885616128,
+          "baseline_rss_bytes": 3794583552,
+          "incremental_peak_rss_bytes": 2091032576,
+          "metadata": {
+            "sha256": "6c6c28e5076bc5853c9b673c61226f7dccb28fc4168a7f33da039a7435593ea7",
+            "frame_count": 19851,
+            "fps": 30.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "Decord CPU + PyAV",
+            "decoder_threads": "default"
+          },
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_sequential",
+          "metadata_seconds": 0.1744461680000029,
+          "sampling_seconds": 16.473556091000006,
+          "combined_seconds": 16.64800225900001,
+          "candidate_count": 692,
+          "peak_rss_bytes": 5790003200,
+          "baseline_rss_bytes": 3839307776,
+          "incremental_peak_rss_bytes": 1950695424,
+          "metadata": {
+            "sha256": "6c6c28e5076bc5853c9b673c61226f7dccb28fc4168a7f33da039a7435593ea7",
+            "frame_count": 19851,
+            "fps": 30.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 0.3333333730697632,
+          "timestamp_mean_abs_error_us": 0.2861271685263885,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_seek",
+          "metadata_seconds": 0.17511163099999294,
+          "sampling_seconds": 49.89733579,
+          "combined_seconds": 50.07244742099999,
+          "candidate_count": 692,
+          "peak_rss_bytes": 5778432000,
+          "baseline_rss_bytes": 3831758848,
+          "incremental_peak_rss_bytes": 1946673152,
+          "metadata": {
+            "sha256": "6c6c28e5076bc5853c9b673c61226f7dccb28fc4168a7f33da039a7435593ea7",
+            "frame_count": 19851,
+            "fps": 30.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 0.3333333730697632,
+          "timestamp_mean_abs_error_us": 0.2861271685263885,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        }
+      ],
+      "hardware": {
+        "gpu": "NVIDIA A10",
+        "cpu": "x86_64",
+        "cpu_allocation": 4,
+        "memory_mib": 16384
+      },
+      "versions": {
+        "opencv": "5.0.0",
+        "decord": "0.6.0",
+        "numpy": "2.5.4",
+        "torch": "2.15.0+cu132"
+      },
+      "methodology": {
+        "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
+        "model_setup": "Shot detection/reference candidate construction outside measurement",
+        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
+        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
+        "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
+        "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
+        "probe_scope": "Sparse RGB grids every32pixels from9 evenly spaced candidates, not full-video pixel equality"
+      }
+    },
+    {
+      "video": "data/Videos_L24_a/video/L24_V044.mp4",
+      "source_sha256": "e4a8338cc81d37c326e31af787e1f9fd1a82ff31fe7f27c14f05b165308c81ae",
+      "frame_count": 933,
+      "candidate_count": 43,
+      "shot_count": 17,
+      "setup_shot_source": "shared_dali_shot_ranges",
+      "repetitions": 1,
+      "summary_medians": {
+        "pyav_decord": {
+          "metadata_seconds": 0.0511222860000089,
+          "sampling_seconds": 0.8296290979999981,
+          "combined_seconds": 0.880751384000007,
+          "peak_rss_bytes": 6662791168
+        },
+        "opencv_sequential": {
+          "metadata_seconds": 0.018748702999999978,
+          "sampling_seconds": 0.9190856129999929,
+          "combined_seconds": 0.9378343159999929,
+          "peak_rss_bytes": 6630150144
+        },
+        "opencv_seek": {
+          "metadata_seconds": 0.018751247000011517,
+          "sampling_seconds": 2.1020524209999962,
+          "combined_seconds": 2.1208036680000077,
+          "peak_rss_bytes": 6632239104
+        }
+      },
+      "measurements": [
+        {
+          "variant": "pyav_decord",
+          "metadata_seconds": 0.0511222860000089,
+          "sampling_seconds": 0.8296290979999981,
+          "combined_seconds": 0.880751384000007,
+          "candidate_count": 43,
+          "peak_rss_bytes": 6662791168,
+          "baseline_rss_bytes": 6464323584,
+          "incremental_peak_rss_bytes": 198467584,
+          "metadata": {
+            "sha256": "e4a8338cc81d37c326e31af787e1f9fd1a82ff31fe7f27c14f05b165308c81ae",
+            "frame_count": 933,
+            "fps": 26.438,
+            "width": 720,
+            "height": 1280,
+            "backend": "Decord CPU + PyAV",
+            "decoder_threads": "default"
+          },
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              1280,
+              720
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_sequential",
+          "metadata_seconds": 0.018748702999999978,
+          "sampling_seconds": 0.9190856129999929,
+          "combined_seconds": 0.9378343159999929,
+          "candidate_count": 43,
+          "peak_rss_bytes": 6630150144,
+          "baseline_rss_bytes": 6480191488,
+          "incremental_peak_rss_bytes": 149958656,
+          "metadata": {
+            "sha256": "e4a8338cc81d37c326e31af787e1f9fd1a82ff31fe7f27c14f05b165308c81ae",
+            "frame_count": 933,
+            "fps": 26.438,
+            "width": 720,
+            "height": 1280,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 0.4991300404071808,
+          "timestamp_mean_abs_error_us": 0.2206900921954129,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              1280,
+              720
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_seek",
+          "metadata_seconds": 0.018751247000011517,
+          "sampling_seconds": 2.1020524209999962,
+          "combined_seconds": 2.1208036680000077,
+          "candidate_count": 43,
+          "peak_rss_bytes": 6632239104,
+          "baseline_rss_bytes": 6485331968,
+          "incremental_peak_rss_bytes": 146907136,
+          "metadata": {
+            "sha256": "e4a8338cc81d37c326e31af787e1f9fd1a82ff31fe7f27c14f05b165308c81ae",
+            "frame_count": 933,
+            "fps": 26.438,
+            "width": 720,
+            "height": 1280,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 0.4991300404071808,
+          "timestamp_mean_abs_error_us": 0.2206900921954129,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              1280,
+              720
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        }
+      ],
+      "hardware": {
+        "gpu": "NVIDIA A10",
+        "cpu": "x86_64",
+        "cpu_allocation": 4,
+        "memory_mib": 16384
+      },
+      "versions": {
+        "opencv": "5.0.0",
+        "decord": "0.6.0",
+        "numpy": "2.5.4",
+        "torch": "2.15.0+cu132"
+      },
+      "methodology": {
+        "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
+        "model_setup": "Shot detection/reference candidate construction outside measurement",
+        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
+        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
+        "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
+        "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
+        "probe_scope": "Sparse RGB grids every32pixels from9 evenly spaced candidates, not full-video pixel equality"
+      }
+    },
+    {
+      "video": "data/Videos_L25_a/video/L25_V016.mp4",
+      "source_sha256": "aa2e3e162aadc07725593d10cbafb589aed1cc5739b9dd73e98c076112f2ce39",
+      "frame_count": 39809,
+      "candidate_count": 1335,
+      "shot_count": 132,
+      "setup_shot_source": "local_detection_outside_timing",
+      "repetitions": 1,
+      "summary_medians": {
+        "pyav_decord": {
+          "metadata_seconds": 0.9494600749999904,
+          "sampling_seconds": 23.62437729300001,
+          "combined_seconds": 24.573837368,
+          "peak_rss_bytes": 10325159936
+        },
+        "opencv_sequential": {
+          "metadata_seconds": 0.23005374600001005,
+          "sampling_seconds": 24.94278557300001,
+          "combined_seconds": 25.17283931900002,
+          "peak_rss_bytes": 10250248192
+        },
+        "opencv_seek": {
+          "metadata_seconds": 0.2313130760000206,
+          "sampling_seconds": 74.42557778199998,
+          "combined_seconds": 74.656890858,
+          "peak_rss_bytes": 10241265664
+        }
+      },
+      "measurements": [
+        {
+          "variant": "pyav_decord",
+          "metadata_seconds": 0.9494600749999904,
+          "sampling_seconds": 23.62437729300001,
+          "combined_seconds": 24.573837368,
+          "candidate_count": 1335,
+          "peak_rss_bytes": 10325159936,
+          "baseline_rss_bytes": 6501412864,
+          "incremental_peak_rss_bytes": 3823747072,
+          "metadata": {
+            "sha256": "aa2e3e162aadc07725593d10cbafb589aed1cc5739b9dd73e98c076112f2ce39",
+            "frame_count": 39809,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "Decord CPU + PyAV",
+            "decoder_threads": "default"
+          },
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_sequential",
+          "metadata_seconds": 0.23005374600001005,
+          "sampling_seconds": 24.94278557300001,
+          "combined_seconds": 25.17283931900002,
+          "candidate_count": 1335,
+          "peak_rss_bytes": 10250248192,
+          "baseline_rss_bytes": 6524354560,
+          "incremental_peak_rss_bytes": 3725893632,
+          "metadata": {
+            "sha256": "aa2e3e162aadc07725593d10cbafb589aed1cc5739b9dd73e98c076112f2ce39",
+            "frame_count": 39809,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 2.384185791015625e-07,
+          "timestamp_mean_abs_error_us": 5.736668011668916e-08,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_seek",
+          "metadata_seconds": 0.2313130760000206,
+          "sampling_seconds": 74.42557778199998,
+          "combined_seconds": 74.656890858,
+          "candidate_count": 1335,
+          "peak_rss_bytes": 10241265664,
+          "baseline_rss_bytes": 6509002752,
+          "incremental_peak_rss_bytes": 3732262912,
+          "metadata": {
+            "sha256": "aa2e3e162aadc07725593d10cbafb589aed1cc5739b9dd73e98c076112f2ce39",
+            "frame_count": 39809,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 2.384185791015625e-07,
+          "timestamp_mean_abs_error_us": 5.736668011668916e-08,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        }
+      ],
+      "hardware": {
+        "gpu": "NVIDIA A10",
+        "cpu": "x86_64",
+        "cpu_allocation": 4,
+        "memory_mib": 16384
+      },
+      "versions": {
+        "opencv": "5.0.0",
+        "decord": "0.6.0",
+        "numpy": "2.5.4",
+        "torch": "2.15.0+cu132"
+      },
+      "methodology": {
+        "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
+        "model_setup": "Shot detection/reference candidate construction outside measurement",
+        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
+        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
+        "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
+        "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
+        "probe_scope": "Sparse RGB grids every32pixels from9 evenly spaced candidates, not full-video pixel equality"
+      }
+    },
+    {
+      "video": "data/Videos_L25_a/video/L25_V075.mp4",
+      "source_sha256": "687fa4d283d4bc206e9c9024796d4cd7f9a33d493a44c2125d420812fb57fcc0",
+      "frame_count": 43403,
+      "candidate_count": 1765,
+      "shot_count": 118,
+      "setup_shot_source": "local_detection_outside_timing",
+      "repetitions": 1,
+      "summary_medians": {
+        "pyav_decord": {
+          "metadata_seconds": 0.8365431320000027,
+          "sampling_seconds": 22.920335088,
+          "combined_seconds": 23.756878220000004,
+          "peak_rss_bytes": 11491102720
+        },
+        "opencv_sequential": {
+          "metadata_seconds": 0.13527053800001454,
+          "sampling_seconds": 20.992932456999995,
+          "combined_seconds": 21.12820299500001,
+          "peak_rss_bytes": 11450826752
+        },
+        "opencv_seek": {
+          "metadata_seconds": 0.133837729000021,
+          "sampling_seconds": 65.70088116100001,
+          "combined_seconds": 65.83471889000003,
+          "peak_rss_bytes": 11439886336
+        }
+      },
+      "measurements": [
+        {
+          "variant": "pyav_decord",
+          "metadata_seconds": 0.8365431320000027,
+          "sampling_seconds": 22.920335088,
+          "combined_seconds": 23.756878220000004,
+          "candidate_count": 1765,
+          "peak_rss_bytes": 11491102720,
+          "baseline_rss_bytes": 6503129088,
+          "incremental_peak_rss_bytes": 4987973632,
+          "metadata": {
+            "sha256": "687fa4d283d4bc206e9c9024796d4cd7f9a33d493a44c2125d420812fb57fcc0",
+            "frame_count": 43403,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "Decord CPU + PyAV",
+            "decoder_threads": "default"
+          },
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_sequential",
+          "metadata_seconds": 0.13527053800001454,
+          "sampling_seconds": 20.992932456999995,
+          "combined_seconds": 21.12820299500001,
+          "candidate_count": 1765,
+          "peak_rss_bytes": 11450826752,
+          "baseline_rss_bytes": 6522105856,
+          "incremental_peak_rss_bytes": 4928720896,
+          "metadata": {
+            "sha256": "687fa4d283d4bc206e9c9024796d4cd7f9a33d493a44c2125d420812fb57fcc0",
+            "frame_count": 43403,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 2.384185791015625e-07,
+          "timestamp_mean_abs_error_us": 5.991279910036254e-08,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_seek",
+          "metadata_seconds": 0.133837729000021,
+          "sampling_seconds": 65.70088116100001,
+          "combined_seconds": 65.83471889000003,
+          "candidate_count": 1765,
+          "peak_rss_bytes": 11439886336,
+          "baseline_rss_bytes": 6514688000,
+          "incremental_peak_rss_bytes": 4925198336,
+          "metadata": {
+            "sha256": "687fa4d283d4bc206e9c9024796d4cd7f9a33d493a44c2125d420812fb57fcc0",
+            "frame_count": 43403,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 2.384185791015625e-07,
+          "timestamp_mean_abs_error_us": 5.991279910036254e-08,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        }
+      ],
+      "hardware": {
+        "gpu": "NVIDIA A10",
+        "cpu": "x86_64",
+        "cpu_allocation": 4,
+        "memory_mib": 16384
+      },
+      "versions": {
+        "opencv": "5.0.0",
+        "decord": "0.6.0",
+        "numpy": "2.5.4",
+        "torch": "2.15.0+cu132"
+      },
+      "methodology": {
+        "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
+        "model_setup": "Shot detection/reference candidate construction outside measurement",
+        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
+        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
+        "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
+        "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
+        "probe_scope": "Sparse RGB grids every32pixels from9 evenly spaced candidates, not full-video pixel equality"
+      }
+    },
+    {
+      "video": "data/Videos_L26_a/video/L26_V035.mp4",
+      "source_sha256": "9e58045530aac661af34824d383786648dc546bd6b0cd1c36d6e094e1d07c788",
+      "frame_count": 8122,
+      "candidate_count": 372,
+      "shot_count": 105,
+      "setup_shot_source": "local_detection_outside_timing",
+      "repetitions": 1,
+      "summary_medians": {
+        "pyav_decord": {
+          "metadata_seconds": 0.24951594899999918,
+          "sampling_seconds": 6.841677229999988,
+          "combined_seconds": 7.091193178999987,
+          "peak_rss_bytes": 7628218368
+        },
+        "opencv_sequential": {
+          "metadata_seconds": 0.08031915900002673,
+          "sampling_seconds": 7.171617801999986,
+          "combined_seconds": 7.251936961000013,
+          "peak_rss_bytes": 7568736256
+        },
+        "opencv_seek": {
+          "metadata_seconds": 0.0797813829999825,
+          "sampling_seconds": 19.08691453,
+          "combined_seconds": 19.166695912999984,
+          "peak_rss_bytes": 7565660160
+        }
+      },
+      "measurements": [
+        {
+          "variant": "pyav_decord",
+          "metadata_seconds": 0.24951594899999918,
+          "sampling_seconds": 6.841677229999988,
+          "combined_seconds": 7.091193178999987,
+          "candidate_count": 372,
+          "peak_rss_bytes": 7628218368,
+          "baseline_rss_bytes": 6482087936,
+          "incremental_peak_rss_bytes": 1146130432,
+          "metadata": {
+            "sha256": "9e58045530aac661af34824d383786648dc546bd6b0cd1c36d6e094e1d07c788",
+            "frame_count": 8122,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "Decord CPU + PyAV",
+            "decoder_threads": "default"
+          },
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_sequential",
+          "metadata_seconds": 0.08031915900002673,
+          "sampling_seconds": 7.171617801999986,
+          "combined_seconds": 7.251936961000013,
+          "candidate_count": 372,
+          "peak_rss_bytes": 7568736256,
+          "baseline_rss_bytes": 6494285824,
+          "incremental_peak_rss_bytes": 1074450432,
+          "metadata": {
+            "sha256": "9e58045530aac661af34824d383786648dc546bd6b0cd1c36d6e094e1d07c788",
+            "frame_count": 8122,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 5.960464477539063e-08,
+          "timestamp_mean_abs_error_us": 4.1502688120129286e-09,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_seek",
+          "metadata_seconds": 0.0797813829999825,
+          "sampling_seconds": 19.08691453,
+          "combined_seconds": 19.166695912999984,
+          "candidate_count": 372,
+          "peak_rss_bytes": 7565660160,
+          "baseline_rss_bytes": 6491795456,
+          "incremental_peak_rss_bytes": 1073864704,
+          "metadata": {
+            "sha256": "9e58045530aac661af34824d383786648dc546bd6b0cd1c36d6e094e1d07c788",
+            "frame_count": 8122,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 5.960464477539063e-08,
+          "timestamp_mean_abs_error_us": 4.1502688120129286e-09,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        }
+      ],
+      "hardware": {
+        "gpu": "NVIDIA A10",
+        "cpu": "x86_64",
+        "cpu_allocation": 4,
+        "memory_mib": 16384
+      },
+      "versions": {
+        "opencv": "5.0.0",
+        "decord": "0.6.0",
+        "numpy": "2.5.4",
+        "torch": "2.15.0+cu132"
+      },
+      "methodology": {
+        "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
+        "model_setup": "Shot detection/reference candidate construction outside measurement",
+        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
+        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
+        "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
+        "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
+        "probe_scope": "Sparse RGB grids every32pixels from9 evenly spaced candidates, not full-video pixel equality"
+      }
+    },
+    {
+      "video": "data/Videos_L26_d/video/L26_V390.mp4",
+      "source_sha256": "a4415d9adcbaf5370cf7147490a6359baad2dab49ab101b00ae6a98ed7659c03",
+      "frame_count": 7606,
+      "candidate_count": 350,
+      "shot_count": 111,
+      "setup_shot_source": "local_detection_outside_timing",
+      "repetitions": 1,
+      "summary_medians": {
+        "pyav_decord": {
+          "metadata_seconds": 0.24138275699999667,
+          "sampling_seconds": 6.583120094999998,
+          "combined_seconds": 6.824502851999995,
+          "peak_rss_bytes": 7574171648
+        },
+        "opencv_sequential": {
+          "metadata_seconds": 0.07952358299999673,
+          "sampling_seconds": 6.86692245499998,
+          "combined_seconds": 6.946446037999976,
+          "peak_rss_bytes": 7516119040
+        },
+        "opencv_seek": {
+          "metadata_seconds": 0.08017037899998058,
+          "sampling_seconds": 17.389322547000006,
+          "combined_seconds": 17.469492925999987,
+          "peak_rss_bytes": 7516094464
+        }
+      },
+      "measurements": [
+        {
+          "variant": "pyav_decord",
+          "metadata_seconds": 0.24138275699999667,
+          "sampling_seconds": 6.583120094999998,
+          "combined_seconds": 6.824502851999995,
+          "candidate_count": 350,
+          "peak_rss_bytes": 7574171648,
+          "baseline_rss_bytes": 6505086976,
+          "incremental_peak_rss_bytes": 1069084672,
+          "metadata": {
+            "sha256": "a4415d9adcbaf5370cf7147490a6359baad2dab49ab101b00ae6a98ed7659c03",
+            "frame_count": 7606,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "Decord CPU + PyAV",
+            "decoder_threads": "default"
+          },
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_sequential",
+          "metadata_seconds": 0.07952358299999673,
+          "sampling_seconds": 6.86692245499998,
+          "combined_seconds": 6.946446037999976,
+          "candidate_count": 350,
+          "peak_rss_bytes": 7516119040,
+          "baseline_rss_bytes": 6515695616,
+          "incremental_peak_rss_bytes": 1000423424,
+          "metadata": {
+            "sha256": "a4415d9adcbaf5370cf7147490a6359baad2dab49ab101b00ae6a98ed7659c03",
+            "frame_count": 7606,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 2.9802322387695312e-08,
+          "timestamp_mean_abs_error_us": 3.0514118926865712e-09,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_seek",
+          "metadata_seconds": 0.08017037899998058,
+          "sampling_seconds": 17.389322547000006,
+          "combined_seconds": 17.469492925999987,
+          "candidate_count": 350,
+          "peak_rss_bytes": 7516094464,
+          "baseline_rss_bytes": 6514782208,
+          "incremental_peak_rss_bytes": 1001312256,
+          "metadata": {
+            "sha256": "a4415d9adcbaf5370cf7147490a6359baad2dab49ab101b00ae6a98ed7659c03",
+            "frame_count": 7606,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 2.9802322387695312e-08,
+          "timestamp_mean_abs_error_us": 3.0514118926865712e-09,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        }
+      ],
+      "hardware": {
+        "gpu": "NVIDIA A10",
+        "cpu": "x86_64",
+        "cpu_allocation": 4,
+        "memory_mib": 16384
+      },
+      "versions": {
+        "opencv": "5.0.0",
+        "decord": "0.6.0",
+        "numpy": "2.5.4",
+        "torch": "2.15.0+cu132"
+      },
+      "methodology": {
+        "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
+        "model_setup": "Shot detection/reference candidate construction outside measurement",
+        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
+        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
+        "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
+        "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
+        "probe_scope": "Sparse RGB grids every32pixels from9 evenly spaced candidates, not full-video pixel equality"
+      }
+    },
+    {
+      "video": "data/Videos_L26_e/video/L26_V424.mp4",
+      "source_sha256": "a0f50e4cb42f9652bc904aa266f29105ab90071fdd8d44d101ed0005c8e4de3a",
+      "frame_count": 7700,
+      "candidate_count": 353,
+      "shot_count": 100,
+      "setup_shot_source": "local_detection_outside_timing",
+      "repetitions": 1,
+      "summary_medians": {
+        "pyav_decord": {
+          "metadata_seconds": 0.21907179799998744,
+          "sampling_seconds": 6.691689488999998,
+          "combined_seconds": 6.9107612869999855,
+          "peak_rss_bytes": 7538786304
+        },
+        "opencv_sequential": {
+          "metadata_seconds": 0.07458397600001376,
+          "sampling_seconds": 6.593101061999988,
+          "combined_seconds": 6.667685038000002,
+          "peak_rss_bytes": 7481974784
+        },
+        "opencv_seek": {
+          "metadata_seconds": 0.07463636099998894,
+          "sampling_seconds": 17.120487940000004,
+          "combined_seconds": 17.195124300999993,
+          "peak_rss_bytes": 7481212928
+        }
+      },
+      "measurements": [
+        {
+          "variant": "pyav_decord",
+          "metadata_seconds": 0.21907179799998744,
+          "sampling_seconds": 6.691689488999998,
+          "combined_seconds": 6.9107612869999855,
+          "candidate_count": 353,
+          "peak_rss_bytes": 7538786304,
+          "baseline_rss_bytes": 6457356288,
+          "incremental_peak_rss_bytes": 1081430016,
+          "metadata": {
+            "sha256": "a0f50e4cb42f9652bc904aa266f29105ab90071fdd8d44d101ed0005c8e4de3a",
+            "frame_count": 7700,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "Decord CPU + PyAV",
+            "decoder_threads": "default"
+          },
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_sequential",
+          "metadata_seconds": 0.07458397600001376,
+          "sampling_seconds": 6.593101061999988,
+          "combined_seconds": 6.667685038000002,
+          "candidate_count": 353,
+          "peak_rss_bytes": 7481974784,
+          "baseline_rss_bytes": 6480388096,
+          "incremental_peak_rss_bytes": 1001586688,
+          "metadata": {
+            "sha256": "a0f50e4cb42f9652bc904aa266f29105ab90071fdd8d44d101ed0005c8e4de3a",
+            "frame_count": 7700,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 5.960464477539063e-08,
+          "timestamp_mean_abs_error_us": 5.766680786022046e-09,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_seek",
+          "metadata_seconds": 0.07463636099998894,
+          "sampling_seconds": 17.120487940000004,
+          "combined_seconds": 17.195124300999993,
+          "candidate_count": 353,
+          "peak_rss_bytes": 7481212928,
+          "baseline_rss_bytes": 6480265216,
+          "incremental_peak_rss_bytes": 1000947712,
+          "metadata": {
+            "sha256": "a0f50e4cb42f9652bc904aa266f29105ab90071fdd8d44d101ed0005c8e4de3a",
+            "frame_count": 7700,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 5.960464477539063e-08,
+          "timestamp_mean_abs_error_us": 5.766680786022046e-09,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        }
+      ],
+      "hardware": {
+        "gpu": "NVIDIA A10",
+        "cpu": "x86_64",
+        "cpu_allocation": 4,
+        "memory_mib": 16384
+      },
+      "versions": {
+        "opencv": "5.0.0",
+        "decord": "0.6.0",
+        "numpy": "2.5.4",
+        "torch": "2.15.0+cu132"
+      },
+      "methodology": {
+        "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
+        "model_setup": "Shot detection/reference candidate construction outside measurement",
+        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
+        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
+        "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
+        "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
+        "probe_scope": "Sparse RGB grids every32pixels from9 evenly spaced candidates, not full-video pixel equality"
+      }
+    },
+    {
+      "video": "data/Videos_L28_a/video/L28_V008.mp4",
+      "source_sha256": "5e9f92e28c748912f5314038f40c408941f77372a97157e4de6bfdf99f5ddda5",
+      "frame_count": 27961,
+      "candidate_count": 1109,
+      "shot_count": 226,
+      "setup_shot_source": "local_detection_outside_timing",
+      "repetitions": 1,
+      "summary_medians": {
+        "pyav_decord": {
+          "metadata_seconds": 0.9532010490000005,
+          "sampling_seconds": 27.979506259000033,
+          "combined_seconds": 28.932707308000033,
+          "peak_rss_bytes": 9784020992
+        },
+        "opencv_sequential": {
+          "metadata_seconds": 0.3059401729999536,
+          "sampling_seconds": 27.76920469700002,
+          "combined_seconds": 28.075144869999974,
+          "peak_rss_bytes": 9621540864
+        },
+        "opencv_seek": {
+          "metadata_seconds": 0.296880821000002,
+          "sampling_seconds": 80.22677961300002,
+          "combined_seconds": 80.52366043400002,
+          "peak_rss_bytes": 9610530816
+        }
+      },
+      "measurements": [
+        {
+          "variant": "pyav_decord",
+          "metadata_seconds": 0.9532010490000005,
+          "sampling_seconds": 27.979506259000033,
+          "combined_seconds": 28.932707308000033,
+          "candidate_count": 1109,
+          "peak_rss_bytes": 9784020992,
+          "baseline_rss_bytes": 6506946560,
+          "incremental_peak_rss_bytes": 3277074432,
+          "metadata": {
+            "sha256": "5e9f92e28c748912f5314038f40c408941f77372a97157e4de6bfdf99f5ddda5",
+            "frame_count": 27961,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "Decord CPU + PyAV",
+            "decoder_threads": "default"
+          },
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_sequential",
+          "metadata_seconds": 0.3059401729999536,
+          "sampling_seconds": 27.76920469700002,
+          "combined_seconds": 28.075144869999974,
+          "candidate_count": 1109,
+          "peak_rss_bytes": 9621540864,
+          "baseline_rss_bytes": 6523678720,
+          "incremental_peak_rss_bytes": 3097862144,
+          "metadata": {
+            "sha256": "5e9f92e28c748912f5314038f40c408941f77372a97157e4de6bfdf99f5ddda5",
+            "frame_count": 27961,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 2.384185791015625e-07,
+          "timestamp_mean_abs_error_us": 1.1466436820378488e-08,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_seek",
+          "metadata_seconds": 0.296880821000002,
+          "sampling_seconds": 80.22677961300002,
+          "combined_seconds": 80.52366043400002,
+          "candidate_count": 1109,
+          "peak_rss_bytes": 9610530816,
+          "baseline_rss_bytes": 6493691904,
+          "incremental_peak_rss_bytes": 3116838912,
+          "metadata": {
+            "sha256": "5e9f92e28c748912f5314038f40c408941f77372a97157e4de6bfdf99f5ddda5",
+            "frame_count": 27961,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 2.384185791015625e-07,
+          "timestamp_mean_abs_error_us": 1.1466436820378488e-08,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        }
+      ],
+      "hardware": {
+        "gpu": "NVIDIA A10",
+        "cpu": "x86_64",
+        "cpu_allocation": 4,
+        "memory_mib": 16384
+      },
+      "versions": {
+        "opencv": "5.0.0",
+        "decord": "0.6.0",
+        "numpy": "2.5.4",
+        "torch": "2.15.0+cu132"
+      },
+      "methodology": {
+        "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
+        "model_setup": "Shot detection/reference candidate construction outside measurement",
+        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
+        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
+        "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
+        "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
+        "probe_scope": "Sparse RGB grids every32pixels from9 evenly spaced candidates, not full-video pixel equality"
+      }
+    },
+    {
+      "video": "data/Videos_L30_a/video/L30_V046.mp4",
+      "source_sha256": "db00bcd85748a89e17f3d53323e0ac0ed5c054b65e9e86e33c53698a647af162",
+      "frame_count": 6932,
+      "candidate_count": 302,
+      "shot_count": 64,
+      "setup_shot_source": "local_detection_outside_timing",
+      "repetitions": 1,
+      "summary_medians": {
+        "pyav_decord": {
+          "metadata_seconds": 0.22337277699998026,
+          "sampling_seconds": 6.42295849300001,
+          "combined_seconds": 6.64633126999999,
+          "peak_rss_bytes": 7449972736
+        },
+        "opencv_sequential": {
+          "metadata_seconds": 0.07398212399999693,
+          "sampling_seconds": 6.942566599000003,
+          "combined_seconds": 7.016548723,
+          "peak_rss_bytes": 7379849216
+        },
+        "opencv_seek": {
+          "metadata_seconds": 0.07254017299999305,
+          "sampling_seconds": 20.792901659999984,
+          "combined_seconds": 20.865441832999977,
+          "peak_rss_bytes": 7379832832
+        }
+      },
+      "measurements": [
+        {
+          "variant": "pyav_decord",
+          "metadata_seconds": 0.22337277699998026,
+          "sampling_seconds": 6.42295849300001,
+          "combined_seconds": 6.64633126999999,
+          "candidate_count": 302,
+          "peak_rss_bytes": 7449972736,
+          "baseline_rss_bytes": 6514532352,
+          "incremental_peak_rss_bytes": 935440384,
+          "metadata": {
+            "sha256": "db00bcd85748a89e17f3d53323e0ac0ed5c054b65e9e86e33c53698a647af162",
+            "frame_count": 6932,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "Decord CPU + PyAV",
+            "decoder_threads": "default"
+          },
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_sequential",
+          "metadata_seconds": 0.07398212399999693,
+          "sampling_seconds": 6.942566599000003,
+          "combined_seconds": 7.016548723,
+          "candidate_count": 302,
+          "peak_rss_bytes": 7379849216,
+          "baseline_rss_bytes": 6517653504,
+          "incremental_peak_rss_bytes": 862195712,
+          "metadata": {
+            "sha256": "db00bcd85748a89e17f3d53323e0ac0ed5c054b65e9e86e33c53698a647af162",
+            "frame_count": 6932,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 5.960464477539063e-08,
+          "timestamp_mean_abs_error_us": 3.367563746622856e-09,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_seek",
+          "metadata_seconds": 0.07254017299999305,
+          "sampling_seconds": 20.792901659999984,
+          "combined_seconds": 20.865441832999977,
+          "candidate_count": 302,
+          "peak_rss_bytes": 7379832832,
+          "baseline_rss_bytes": 6504865792,
+          "incremental_peak_rss_bytes": 874967040,
+          "metadata": {
+            "sha256": "db00bcd85748a89e17f3d53323e0ac0ed5c054b65e9e86e33c53698a647af162",
+            "frame_count": 6932,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 5.960464477539063e-08,
+          "timestamp_mean_abs_error_us": 3.367563746622856e-09,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        }
+      ],
+      "hardware": {
+        "gpu": "NVIDIA A10",
+        "cpu": "x86_64",
+        "cpu_allocation": 4,
+        "memory_mib": 16384
+      },
+      "versions": {
+        "opencv": "5.0.0",
+        "decord": "0.6.0",
+        "numpy": "2.5.4",
+        "torch": "2.15.0+cu132"
+      },
+      "methodology": {
+        "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
+        "model_setup": "Shot detection/reference candidate construction outside measurement",
+        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
+        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
+        "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
+        "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
+        "probe_scope": "Sparse RGB grids every32pixels from9 evenly spaced candidates, not full-video pixel equality"
+      }
+    },
+    {
+      "video": "data/Videos_L30_a/video/L30_V072.mp4",
+      "source_sha256": "740fb71b8fd645fb23f55686f6997e73761c005d41493115b70391ebabadb1ee",
+      "frame_count": 2169,
+      "candidate_count": 99,
+      "shot_count": 27,
+      "setup_shot_source": "local_detection_outside_timing",
+      "repetitions": 1,
+      "summary_medians": {
+        "pyav_decord": {
+          "metadata_seconds": 0.07350912799998355,
+          "sampling_seconds": 1.881968470000004,
+          "combined_seconds": 1.9554775979999874,
+          "peak_rss_bytes": 6825013248
+        },
+        "opencv_sequential": {
+          "metadata_seconds": 0.029062726999995903,
+          "sampling_seconds": 2.2119780620000142,
+          "combined_seconds": 2.24104078900001,
+          "peak_rss_bytes": 6797987840
+        },
+        "opencv_seek": {
+          "metadata_seconds": 0.0288453529999515,
+          "sampling_seconds": 5.804894877000038,
+          "combined_seconds": 5.833740229999989,
+          "peak_rss_bytes": 6798946304
+        }
+      },
+      "measurements": [
+        {
+          "variant": "pyav_decord",
+          "metadata_seconds": 0.07350912799998355,
+          "sampling_seconds": 1.881968470000004,
+          "combined_seconds": 1.9554775979999874,
+          "candidate_count": 99,
+          "peak_rss_bytes": 6825013248,
+          "baseline_rss_bytes": 6489583616,
+          "incremental_peak_rss_bytes": 335429632,
+          "metadata": {
+            "sha256": "740fb71b8fd645fb23f55686f6997e73761c005d41493115b70391ebabadb1ee",
+            "frame_count": 2169,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "Decord CPU + PyAV",
+            "decoder_threads": "default"
+          },
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_sequential",
+          "metadata_seconds": 0.029062726999995903,
+          "sampling_seconds": 2.2119780620000142,
+          "combined_seconds": 2.24104078900001,
+          "candidate_count": 99,
+          "peak_rss_bytes": 6797987840,
+          "baseline_rss_bytes": 6498156544,
+          "incremental_peak_rss_bytes": 299831296,
+          "metadata": {
+            "sha256": "740fb71b8fd645fb23f55686f6997e73761c005d41493115b70391ebabadb1ee",
+            "frame_count": 2169,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 1.4901161193847656e-08,
+          "timestamp_mean_abs_error_us": 1.0536174581508443e-09,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        },
+        {
+          "variant": "opencv_seek",
+          "metadata_seconds": 0.0288453529999515,
+          "sampling_seconds": 5.804894877000038,
+          "combined_seconds": 5.833740229999989,
+          "candidate_count": 99,
+          "peak_rss_bytes": 6798946304,
+          "baseline_rss_bytes": 6489620480,
+          "incremental_peak_rss_bytes": 309325824,
+          "metadata": {
+            "sha256": "740fb71b8fd645fb23f55686f6997e73761c005d41493115b70391ebabadb1ee",
+            "frame_count": 2169,
+            "fps": 25.0,
+            "width": 1280,
+            "height": 720,
+            "backend": "FFMPEG",
+            "decoder_threads": 4.0
+          },
+          "timestamp_max_abs_error_us": 1.4901161193847656e-08,
+          "timestamp_mean_abs_error_us": 1.0536174581508443e-09,
+          "position_mismatch_count": 0,
+          "image_shapes": [
+            [
+              3,
+              720,
+              1280
+            ]
+          ],
+          "repeat": 1,
+          "probe_comparison_to_decord": {
+            "probe_candidates": 9,
+            "exact_matching_probe_candidates": 9,
+            "mean_abs_rgb_error": 0.0,
+            "max_abs_rgb_error": 0,
+            "grid_stride_pixels": 32
+          }
+        }
+      ],
+      "hardware": {
+        "gpu": "NVIDIA A10",
+        "cpu": "x86_64",
+        "cpu_allocation": 4,
+        "memory_mib": 16384
+      },
+      "versions": {
+        "opencv": "5.0.0",
+        "decord": "0.6.0",
+        "numpy": "2.5.4",
+        "torch": "2.15.0+cu132"
+      },
+      "methodology": {
+        "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
+        "model_setup": "Shot detection/reference candidate construction outside measurement",
+        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
+        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
+        "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
+        "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
+        "probe_scope": "Sparse RGB grids every32pixels from9 evenly spaced candidates, not full-video pixel equality"
+      }
+    }
+  ],
+  "errors": []
+}
