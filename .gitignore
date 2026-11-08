@@ -18,3 +18,11 @@ wheels/
 !.env.example
 .pytest_cache/
 .ruff_cache/
+
+# Benchmark logs, intermediate runs and generated reports
+/benchmarks/*
+!/benchmarks/results/
+/benchmarks/results/*
+!/benchmarks/results/dali.json
+!/benchmarks/results/opencv.json
+!/benchmarks/results/batch-all.json
