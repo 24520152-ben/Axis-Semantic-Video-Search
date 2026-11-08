@@ -11,7 +11,9 @@ from scripts import process_videos as main
 def mock_worker(monkeypatch, results):
     worker = SimpleNamespace(
         map=Mock(return_value=iter(results)),
-        remote=Mock(side_effect=AssertionError("Batch must not use sequential remote calls")),
+        remote=Mock(
+            side_effect=AssertionError("Batch must not use sequential remote calls")
+        ),
     )
     monkeypatch.setattr(main, "process_video", worker)
     return worker

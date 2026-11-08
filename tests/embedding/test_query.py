@@ -10,7 +10,9 @@ from src.embedding.query import encode_query
 
 
 def test_query_keeps_native_bf16_bits_and_checkpoint_prompt():
-    vector = torch.nn.functional.normalize(torch.arange(1, 2049, dtype=torch.bfloat16), dim=0)
+    vector = torch.nn.functional.normalize(
+        torch.arange(1, 2049, dtype=torch.bfloat16), dim=0
+    )
     model = SimpleNamespace(encode=Mock(return_value=vector.unsqueeze(0)))
     payload = encode_query(model, "  người phụ nữ mặc áo đỏ  ")
 
@@ -41,4 +43,6 @@ def test_invalid_query_embedding_is_rejected(invalid):
     else:
         vector[0, 0] = float("nan")
     with pytest.raises(ValueError):
-        encode_query(SimpleNamespace(encode=Mock(return_value=vector)), "người mặc áo đỏ")
+        encode_query(
+            SimpleNamespace(encode=Mock(return_value=vector)), "người mặc áo đỏ"
+        )

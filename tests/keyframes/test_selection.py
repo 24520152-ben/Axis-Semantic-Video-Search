@@ -14,7 +14,9 @@ def candidates(shots, timeline):
     rows = []
     for shot_id, (start, end) in enumerate(shots):
         targets = range(timeline[start], timeline[end] + 1, 1_000_000)
-        indices = sorted({bisect.bisect_left(timeline, t, start, end + 1) for t in targets})
+        indices = sorted(
+            {bisect.bisect_left(timeline, t, start, end + 1) for t in targets}
+        )
         for frame in indices:
             rows.append(
                 {
@@ -76,7 +78,10 @@ def test_invalid_vectors_and_ranges_fail():
     rows = candidates(shots, timeline)
     with pytest.raises(ValueError):
         select_frames(
-            torch.zeros((len(rows), 2), dtype=torch.bfloat16), rows, shots, timeline_us=timeline
+            torch.zeros((len(rows), 2), dtype=torch.bfloat16),
+            rows,
+            shots,
+            timeline_us=timeline,
         )
     with pytest.raises(ValueError):
         select_frames(

@@ -49,7 +49,9 @@ def table(video_id="a", count=3, *, invalid=""):
         "frame_id": [f"sha:0:{video_id}:{index}" for index in range(count)],
         "video_id": ["other" if invalid == "video" else video_id] * count,
         "frame_idx": pa.array(range(count), type=pa.int64()),
-        "timestamp_us": pa.array([i * 1_000_000 for i in range(count)], type=pa.int64()),
+        "timestamp_us": pa.array(
+            [i * 1_000_000 for i in range(count)], type=pa.int64()
+        ),
         "image_uri": [f"images/{video_id}/{i}.jpg" for i in range(count)],
         "watch_url": ["https://youtube.com/watch?v=example"] * count,
         "embedding": pa.array(
@@ -76,7 +78,9 @@ def test_local_discovery_filters_video_and_ignores_other_files(tmp_path):
     write_shard(tmp_path, "a")
     (tmp_path / "ignored.json").write_text("{}")
     assert [video for video, _ in service.iter_record_files(tmp_path)] == ["a", "b"]
-    assert list(service.iter_record_files(tmp_path, "b")) == [("b", tmp_path / "b.parquet")]
+    assert list(service.iter_record_files(tmp_path, "b")) == [
+        ("b", tmp_path / "b.parquet")
+    ]
     with pytest.raises(FileNotFoundError):
         list(service.iter_record_files(tmp_path, "missing"))
 
@@ -97,11 +101,15 @@ def test_volume_discovery_streams_only_requested_parquet(tmp_path, monkeypatch):
     assert len(shards) == 1 and shards[0][0] == "a"
     assert pq.read_table(shards[0][1]).equals(table())
     factory.assert_called_once_with(service.config.VOLUME_NAME)
-    volume.iterdir.assert_called_once_with(service.RECORDS_DIR.as_posix(), recursive=False)
+    volume.iterdir.assert_called_once_with(
+        service.RECORDS_DIR.as_posix(), recursive=False
+    )
     volume.read_file.assert_called_once_with("data/records/a.parquet")
 
 
-def test_ingest_preserves_alignment_batches_and_verifies_visible_count(tmp_path, client):
+def test_ingest_preserves_alignment_batches_and_verifies_visible_count(
+    tmp_path, client
+):
     shards = [write_shard(tmp_path, "a", 3), write_shard(tmp_path, "b", 2)]
     report = service.ingest(client, "frames", shards, batch_size=2)
     assert report == {"upserted": 5, "collection_rows": 5}
@@ -114,7 +122,10 @@ def test_ingest_preserves_alignment_batches_and_verifies_visible_count(tmp_path,
     client.query.assert_called_once_with(
         collection_name="frames", output_fields=["count(*)"], consistency_level="Strong"
     )
-    assert [call[0] for call in client.method_calls][-2:] == ["load_collection", "query"]
+    assert [call[0] for call in client.method_calls][-2:] == [
+        "load_collection",
+        "query",
+    ]
 
 
 @pytest.mark.parametrize("invalid", ["fields", "auto_id", "primary", "dimension"])
@@ -161,7 +172,9 @@ def test_fp32_collection_is_rejected_with_bf16_setup_instructions(tmp_path, clie
 def test_old_fp32_parquet_is_rejected_before_upsert(tmp_path, client):
     path = tmp_path / "a.parquet"
     data = table().to_pydict()
-    data["embedding"] = pa.array([[1.0] + [0.0] * 2047] * 3, type=pa.list_(pa.float32(), 2048))
+    data["embedding"] = pa.array(
+        [[1.0] + [0.0] * 2047] * 3, type=pa.list_(pa.float32(), 2048)
+    )
     pq.write_table(pa.table(data), path)
     with pytest.raises(ValueError, match="embedding"):
         service.ingest(client, "frames", [("a", path)])
@@ -172,10 +185,18 @@ def test_native_sdk_preserves_bf16_payload_bits_without_float32_conversion():
     from pymilvus.client import entity_helper
     from pymilvus.grpc_gen import schema_pb2
 
-    vector = torch.nn.functional.normalize(torch.arange(1, 2049, dtype=torch.bfloat16), dim=0)
+    vector = torch.nn.functional.normalize(
+        torch.arange(1, 2049, dtype=torch.bfloat16), dim=0
+    )
     payload = vector.view(torch.uint8).numpy().tobytes()
-    field = schema_pb2.FieldData(type=service.DataType.BFLOAT16_VECTOR, field_name="embedding")
-    info = {"name": "embedding", "type": service.DataType.BFLOAT16_VECTOR, "params": {"dim": 2048}}
+    field = schema_pb2.FieldData(
+        type=service.DataType.BFLOAT16_VECTOR, field_name="embedding"
+    )
+    info = {
+        "name": "embedding",
+        "type": service.DataType.BFLOAT16_VECTOR,
+        "params": {"dim": 2048},
+    }
     cache = {}
     entity_helper.pack_field_value_to_field_data(payload, field, info, cache)
     entity_helper.flush_vector_bytes(field, cache)
@@ -185,7 +206,9 @@ def test_native_sdk_preserves_bf16_payload_bits_without_float32_conversion():
 
 
 def test_checkpoint_bf16_normalization_roundoff_is_preserved(tmp_path, client):
-    vector = torch.nn.functional.normalize(torch.arange(1, 2049, dtype=torch.bfloat16), dim=0)
+    vector = torch.nn.functional.normalize(
+        torch.arange(1, 2049, dtype=torch.bfloat16), dim=0
+    )
     assert abs(vector.float().norm().item() - 1) > 1e-4
     payload = vector.view(torch.uint8).numpy().tobytes()
     data = table(count=1).to_pydict()
@@ -223,4 +246,8 @@ def test_environment_overrides_dotenv_settings(tmp_path, monkeypatch):
         'ZILLIZ_TOKEN="file-token"\nZILLIZ_COLLECTION=" frames "\n'
     )
     monkeypatch.setenv("ZILLIZ_URI", "https://environment.example")
-    assert cli.load_settings(env) == ("https://environment.example", "file-token", "frames")
+    assert cli.load_settings(env) == (
+        "https://environment.example",
+        "file-token",
+        "frames",
+    )

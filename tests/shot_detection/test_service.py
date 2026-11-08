@@ -39,8 +39,10 @@ def test_window_ranges_match_original_assembly(monkeypatch, frame_count, overlap
 
     def model(batch):
         captured.append(batch.clone())
-        class_logits = torch.tensor([[[4., 0., -1.], [4., 0., -1.], [4., 0., -1.]]])
-        range_logits = torch.full((1, 3, 12), -10.)
+        class_logits = torch.tensor(
+            [[[4.0, 0.0, -1.0], [4.0, 0.0, -1.0], [4.0, 0.0, -1.0]]]
+        )
+        range_logits = torch.full((1, 3, 12), -10.0)
         range_logits[0, torch.arange(3), torch.tensor([3, 7, 10])] = 10
         return {
             "intra_clip_logits": class_logits,
@@ -74,8 +76,12 @@ def test_decode_uses_gpu_reader_and_removes_padding(monkeypatch):
     batches = []
     for idx in indices:
         pixels = torch.zeros((64, 2, 3, 3), dtype=torch.uint8).as_subclass(FakeGPU)
-        pixels[:, :, :, :] = torch.tensor(idx).clamp_min(0).to(torch.uint8)[:, None, None, None]
-        metadata = SimpleNamespace(as_cpu=lambda idx=idx: SimpleNamespace(as_array=lambda: idx[None]))
+        pixels[:, :, :, :] = (
+            torch.tensor(idx).clamp_min(0).to(torch.uint8)[:, None, None, None]
+        )
+        metadata = SimpleNamespace(
+            as_cpu=lambda idx=idx: SimpleNamespace(as_array=lambda: idx[None])
+        )
         batches.append(([pixels], metadata))
     pipe.run.side_effect = batches
 
@@ -84,12 +90,15 @@ def test_decode_uses_gpu_reader_and_removes_padding(monkeypatch):
             def factory():
                 assert func() == ("resized_node", "index_node")
                 return pipe
+
             return factory
+
         return decorator
 
     fake_dali = SimpleNamespace(
         fn=SimpleNamespace(
-            experimental=SimpleNamespace(readers=SimpleNamespace(video=reader)), resize=resize
+            experimental=SimpleNamespace(readers=SimpleNamespace(video=reader)),
+            resize=resize,
         ),
         pipeline_def=pipeline_def,
     )
@@ -109,7 +118,9 @@ def mock_detector(monkeypatch, ranges, labels):
     wrapper = SimpleNamespace(
         _model=object(),
         _model_args=SimpleNamespace(process_width=128, process_height=96),
-        inference=Mock(side_effect=AssertionError("Public API would copy video to CPU")),
+        inference=Mock(
+            side_effect=AssertionError("Public API would copy video to CPU")
+        ),
     )
     loader = Mock(return_value=wrapper)
     decoder = Mock(return_value=object())
@@ -130,7 +141,9 @@ def test_detector_uses_tensor_adapter_and_filters_clean_shots(monkeypatch):
     )
     assert service.detect_shots("video.mp4") == [(0, 49), (60, 69)]
     decoder.assert_called_once_with("video.mp4", 128, 96)
-    infer.assert_called_once_with(decoder.return_value, wrapper._model, wrapper._model_args)
+    infer.assert_called_once_with(
+        decoder.return_value, wrapper._model, wrapper._model_args
+    )
     wrapper.inference.assert_not_called()
     loader.assert_called_once()
 

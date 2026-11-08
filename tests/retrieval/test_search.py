@@ -47,7 +47,9 @@ def api():
 
 def test_search_preserves_vector_bits_hit_order_and_matching_metadata(api):
     with TestClient(api) as client:
-        response = client.post("/search", json={"query": "  người phụ nữ áo đỏ  ", "top_k": 2})
+        response = client.post(
+            "/search", json={"query": "  người phụ nữ áo đỏ  ", "top_k": 2}
+        )
 
     assert response.status_code == 200
     data = response.json()
@@ -96,7 +98,9 @@ def test_native_sdk_serializes_bf16_query_without_float32_conversion():
         data=[VECTOR],
         schema={"fields": [{"name": "embedding", "type": DataType.BFLOAT16_VECTOR}]},
     )
-    placeholder = common_pb2.PlaceholderGroup.FromString(request.placeholder_group).placeholders[0]
+    placeholder = common_pb2.PlaceholderGroup.FromString(
+        request.placeholder_group
+    ).placeholders[0]
     assert placeholder.type == common_pb2.PlaceholderType.BFloat16Vector
     assert list(placeholder.values) == [VECTOR]
     assert request.nq == 1
@@ -110,11 +114,19 @@ def test_invalid_remote_vector_is_rejected_before_search(vector):
     client.search.assert_not_called()
 
 
-@pytest.mark.parametrize("body", [
-    {}, {"query": ""}, {"query": "   "}, {"query": "a" * 4001},
-    {"query": "xe", "top_k": 0}, {"query": "xe", "top_k": 101},
-    {"query": "xe", "video_id": "../../private"}, {"query": "xe", "video_id": ""},
-])
+@pytest.mark.parametrize(
+    "body",
+    [
+        {},
+        {"query": ""},
+        {"query": "   "},
+        {"query": "a" * 4001},
+        {"query": "xe", "top_k": 0},
+        {"query": "xe", "top_k": 101},
+        {"query": "xe", "video_id": "../../private"},
+        {"query": "xe", "video_id": ""},
+    ],
+)
 def test_invalid_request_never_calls_model_or_database(api, body):
     with TestClient(api) as client:
         assert client.post("/search", json=body).status_code == 422
@@ -126,7 +138,8 @@ def test_empty_search_returns_no_results(api):
     api.state.client.search.return_value = [[]]
     with TestClient(api) as client:
         assert client.post("/search", json={"query": "không có"}).json() == {
-            "query": "không có", "results": []
+            "query": "không có",
+            "results": [],
         }
 
 
@@ -136,7 +149,10 @@ def test_primary_key_comes_from_sdk_hit_id_when_absent_from_entity(api):
     with TestClient(api) as client:
         response = client.post("/search", json={"query": "xe đạp"})
     assert response.status_code == 200
-    assert [row["frame_id"] for row in response.json()["results"]] == ["sha:0:125", "sha:0:600"]
+    assert [row["frame_id"] for row in response.json()["results"]] == [
+        "sha:0:125",
+        "sha:0:600",
+    ]
 
 
 def test_native_milvus_primary_field_name_is_used_instead_of_generic_id(api):
@@ -146,7 +162,10 @@ def test_native_milvus_primary_field_name_is_used_instead_of_generic_id(api):
     with TestClient(api) as client:
         response = client.post("/search", json={"query": "người mặc áo đỏ"})
     assert response.status_code == 200
-    assert [row["frame_id"] for row in response.json()["results"]] == ["sha:0:125", "sha:0:600"]
+    assert [row["frame_id"] for row in response.json()["results"]] == [
+        "sha:0:125",
+        "sha:0:600",
+    ]
 
 
 @pytest.mark.parametrize("failed", ["embedding", "search", "metadata"])
@@ -156,7 +175,9 @@ def test_upstream_failures_do_not_expose_credentials(api, failed):
     elif failed == "search":
         api.state.client.search.side_effect = RuntimeError("secret-token")
     else:
-        api.state.client.search.return_value[0][0]["entity"]["image_uri"] = "../../secret-token"
+        api.state.client.search.return_value[0][0]["entity"][
+            "image_uri"
+        ] = "../../secret-token"
     with TestClient(api) as client:
         response = client.post("/search", json={"query": "xe đạp"})
     assert response.status_code == 502
