@@ -1,10 +1,7 @@
 import hashlib
 import json
-import sys
-from contextlib import contextmanager
 from fractions import Fraction
 from pathlib import Path
-from types import SimpleNamespace
 
 import pytest
 
@@ -48,22 +45,6 @@ def test_empty_discovery_reports_error(tmp_path):
         service.list_videos(Path(tmp_path))
 
 
-def test_vfr_timeline_uses_pts_and_normalizes_nonzero_origin():
-    info = {"fps": "25", "time_base": "1/1000", "start_pts": 9000, "duration_pts": 240}
-    assert service.presentation_timeline([9000, 9040, 9100, 9200], info) == [
-        0,
-        40000,
-        100000,
-        200000,
-        240000,
-    ]
-
-
-def test_fractional_time_base_is_converted_without_float_drift():
-    info = {"fps": "30000/1001", "time_base": "1/90000", "start_pts": 9000, "duration_pts": 9009}
-    assert service.presentation_timeline([9000, 12003, 15006], info) == [0, 33367, 66733, 100100]
-
-
 def test_source_fingerprint_depends_on_file_contents(tmp_path):
     path = tmp_path / "video.mp4"
     write_video(path, [0, 40, 80])
@@ -103,205 +84,106 @@ def write_video(path, times_ms):
         container.mux(stream.encode())
 
 
-@pytest.fixture(autouse=True)
-def fake_decord(monkeypatch):
-    """Exercise real packet indexing with a CPU stand-in for Decord/DLPack."""
-    import av
-    import numpy as np
-    import torch
-
-    readers = []
-
-    class Batch:
-        def __init__(self, tensor):
-            self.tensor = tensor
-
-        def to_dlpack(self):
-            return torch.utils.dlpack.to_dlpack(self.tensor)
-
-    class Reader:
-        def __init__(self, path, *, ctx):
-            assert ctx == ("cpu", 0)
-            self.calls = []
-            with av.open(path) as container:
-                stream = container.streams.video[0]
-                self.width, self.height = stream.width, stream.height
-                pairs = sorted((p.pts, p.duration) for p in container.demux(stream) if p.size)
-                self.timestamps = np.asarray([
-                    [(pts - stream.start_time) * stream.time_base,
-                     (pts + duration - stream.start_time) * stream.time_base]
-                    for pts, duration in pairs
-                ], dtype=np.float32)
-            readers.append(self)
-
-        def __len__(self):
-            return len(self.timestamps)
-
-        def get_frame_timestamp(self, indices):
-            return self.timestamps[list(indices)]
-
-        def get_batch(self, indices):
-            self.calls.append(list(indices))
-            return Batch(torch.stack([
-                torch.full((self.height, self.width, 3), index, dtype=torch.uint8)
-                for index in indices
-            ]))
-
-    monkeypatch.setitem(sys.modules, "decord", SimpleNamespace(
-        VideoReader=Reader, cpu=lambda index: ("cpu", index)
-    ))
-    return readers
-
-
-def test_vfr_sampling_keeps_exact_pts_and_decodes_only_requested_batches(tmp_path, fake_decord):
+def test_vfr_sampling_retains_rgb_cpu_frames_with_normalized_timestamps(tmp_path):
     path = tmp_path / "vfr.mp4"
-    times_ms = [0, 400, 1100, 1400, 2700, 3100, 3500, 4600, 5100, 6200, 6400]
-    write_video(path, times_ms)
-    source, candidates, frames, timeline = service.read_candidates(path, [(0, 4), (6, 10)])
-    assert timeline[:-1] == [value * 1000 for value in times_ms]
+    times = [0, 400, 1100, 1400, 2700, 3100, 3500, 4600, 5100, 6200, 6400]
+    write_video(path, times)
+    source, candidates, frames, timeline = service.read_candidates(
+        path, [(0, 4), (6, 10)]
+    )
+    assert timeline[:-1] == [t * 1000 for t in times]
     assert timeline[-1] > timeline[-2]
-    assert "end_pts" in source
     indices = [row["frame_idx"] for row in candidates]
     assert indices == [0, 2, 4, 6, 7, 9]
-    assert [row["timestamp_us"] for row in candidates] == [times_ms[i] * 1000 for i in indices]
-    assert [row["shot_id"] for row in candidates] == [0, 0, 0, 1, 1, 1]
-    assert fake_decord[0].calls == []
-    images = frames[1:3]
-    assert fake_decord[0].calls == [[2, 4]]
-    assert [int(image[0, 0, 0]) for image in images] == [2, 4]
-    assert all(image.shape == (3, 16, 16) and image.device.type == "cpu" for image in images)
-    assert int(frames[-1][0, 0, 0]) == 9
-    assert [int(image[0, 0, 0]) for image in frames[[3, 0]]] == [6, 0]
-    assert frames[0:0] == []
+    assert [row["timestamp_us"] for row in candidates] == [
+        times[i] * 1000 for i in indices
+    ]
+    assert all(
+        frame.device.type == "cpu" and frame.shape == (3, 16, 16) for frame in frames
+    )
+    assert [round(float(frame.float().mean()) / 10) for frame in frames] == indices
     assert source["sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def test_sampling_skips_missed_targets_without_duplicating_a_frame(tmp_path):
+def test_sampling_skips_missed_targets_without_duplicate_frames(tmp_path):
     path = tmp_path / "gaps.mp4"
     write_video(path, [0, 2500, 2600, 3000, 4500])
-    _, candidates, images, _ = service.read_candidates(path, [(0, 4)])
+    _, candidates, frames, _ = service.read_candidates(path, [(0, 4)])
     assert [row["frame_idx"] for row in candidates] == [0, 1, 3, 4]
-    assert len(images) == len(candidates)
+    assert len(frames) == len(candidates)
 
 
 @pytest.mark.parametrize("shots", [[], [(-1, 0)], [(1, 0)], [(0, 1), (1, 2)], [(0, 5)]])
-def test_invalid_or_out_of_bounds_shots_are_rejected(tmp_path, shots):
+def test_invalid_shots_are_rejected(tmp_path, shots):
     path = tmp_path / "video.mp4"
     write_video(path, [0, 40, 80])
     with pytest.raises(ValueError, match="shot|Shot"):
         service.read_candidates(path, shots)
 
 
-@pytest.mark.parametrize("timestamps", [[None], [0, 0], [40, 0]])
-def test_reader_rejects_missing_or_duplicate_timestamps(tmp_path, monkeypatch, timestamps):
-    import av
+def test_sequential_capture_never_seeks_and_retrieves_only_candidates(
+    tmp_path, monkeypatch
+):
+    from unittest.mock import Mock
 
-    path = tmp_path / "video.mp4"
-    path.touch()
-    stream = SimpleNamespace(
-        index=0, average_rate=Fraction(25), time_base=Fraction(1, 1000),
-        start_time=0, duration=None,
-    )
-    @contextmanager
-    def open_video(*_):
-        yield SimpleNamespace(
-            streams=SimpleNamespace(video=[stream]),
-            demux=lambda *_: (SimpleNamespace(pts=pts, duration=40, size=1) for pts in timestamps),
-        )
-
-    monkeypatch.setattr(av, "open", open_video)
-    if timestamps == [40, 0]:
-        # B-frame packet decode order is allowed; presentation order comes from PTS.
-        _, timeline = service._read_source(path)
-        assert timeline == [0, 40000, 80000]
-    else:
-        with pytest.raises(ValueError, match="presentation timestamp"):
-            service.read_candidates(path, [(10, 10)])
-
-
-def test_metadata_index_never_decodes_pixels(tmp_path, monkeypatch):
-    import av
-
-    path = tmp_path / "video.mp4"
-    write_video(path, [0, 40, 80])
-    original_open = av.open
-
-    @contextmanager
-    def open_video(*args, **kwargs):
-        with original_open(*args, **kwargs) as container:
-            def forbidden_decode(*_, **__):
-                pytest.fail("Metadata indexing must not decode video pixels")
-            yield SimpleNamespace(
-                streams=container.streams, demux=container.demux, decode=forbidden_decode
-            )
-
-    monkeypatch.setattr(av, "open", open_video)
-    service.read_candidates(path, [(0, 2)])
-
-
-def test_decord_index_mismatch_is_rejected(tmp_path, monkeypatch):
-    import decord
+    import cv2
     import numpy as np
 
     path = tmp_path / "video.mp4"
-    write_video(path, [0, 40, 80])
-    reader_type = decord.VideoReader
+    path.touch()
+    capture = Mock()
+    position = [-1]
 
-    class WrongCount(reader_type):
-        def __len__(self):
-            return super().__len__() - 1
+    def grab():
+        position[0] += 1
+        return position[0] < 61
 
-    monkeypatch.setattr(decord, "VideoReader", WrongCount)
-    with pytest.raises(ValueError, match="frame count"):
-        service.read_candidates(path, [(0, 1)])
-
-    class WrongTimestamps(reader_type):
-        def get_frame_timestamp(self, indices):
-            return super().get_frame_timestamp(indices) + np.float32(0.01)
-
-    monkeypatch.setattr(decord, "VideoReader", WrongTimestamps)
-    with pytest.raises(ValueError, match="frame timestamps"):
-        service.read_candidates(path, [(0, 1)])
-
-
-def test_decoder_initialization_failure_is_propagated(tmp_path, monkeypatch):
-    import decord
-
-    path = tmp_path / "video.mp4"
-    write_video(path, [0, 40, 80])
-
-    def unavailable(*_, **__):
-        raise RuntimeError("Cannot open video")
-
-    monkeypatch.setattr(decord, "VideoReader", unavailable)
-    with pytest.raises(RuntimeError, match="Cannot open video"):
-        service.read_candidates(path, [(0, 2)])
+    capture.grab.side_effect = grab
+    capture.isOpened.return_value = True
+    capture.get.side_effect = lambda prop: {
+        cv2.CAP_PROP_FPS: 30,
+        cv2.CAP_PROP_FRAME_COUNT: 61,
+        cv2.CAP_PROP_POS_MSEC: position[0] * 1000 / 30,
+    }[prop]
+    capture.retrieve.return_value = (True, np.zeros((8, 8, 3), dtype=np.uint8))
+    monkeypatch.setattr(cv2, "VideoCapture", lambda *_: capture)
+    _, rows, _, _ = service.read_candidates(path, [(0, 60)])
+    assert [r["frame_idx"] for r in rows] == [0, 30, 60]
+    assert capture.retrieve.call_count == 3
+    capture.set.assert_not_called()
+    capture.release.assert_called_once()
 
 
-def test_cached_frames_are_reused_after_decoder_reaches_eof(tmp_path, fake_decord, monkeypatch):
-    path = tmp_path / 'cache.mp4'
-    write_video(path, [0, 1100, 2200, 3300])
-    _, _, frames, _ = service.read_candidates(path, [(0, 3)])
-    original = frames[:]
-    reader = fake_decord[0]
-    assert reader.calls == [[0, 1, 2, 3]]
+@pytest.mark.parametrize(
+    "failure", ["timestamps", "retrieve", "count", "fps", "open", "memory"]
+)
+def test_capture_is_released_on_invalid_input(tmp_path, monkeypatch, failure):
+    from unittest.mock import Mock
 
-    def fail(*_):
-        raise RuntimeError('EOF when decoding pixels twice')
+    import cv2
+    import numpy as np
 
-    monkeypatch.setattr(reader, 'get_batch', fail)
-    assert frames[0] is original[0]
-    assert frames[-1] is original[-1]
-    assert frames[[3, 1, 3]] == [original[3], original[1], original[3]]
-
-
-def test_cache_limit_rejects_oversized_candidates(tmp_path, monkeypatch):
     from src import config
 
-    path = tmp_path / 'cache.mp4'
-    write_video(path, [0, 1100, 2200])
-    _, _, frames, _ = service.read_candidates(path, [(0, 2)])
-    monkeypatch.setattr(config, 'MAX_FRAME_CACHE_BYTES', 3 * 16 * 16 * 3 - 1)
-    with pytest.raises(MemoryError, match='Candidate RGB cache'):
-        frames[:1]
-    assert frames.cache == {}
+    path = tmp_path / "video.mp4"
+    path.touch()
+    capture = Mock()
+    capture.isOpened.return_value = failure != "open"
+    capture.grab.side_effect = [True, True, False]
+    capture.get.side_effect = lambda prop: {
+        cv2.CAP_PROP_FPS: 0 if failure == "fps" else 25,
+        cv2.CAP_PROP_FRAME_COUNT: 3 if failure == "count" else 2,
+        cv2.CAP_PROP_POS_MSEC: (
+            0 if failure == "timestamps" else 40 * capture.grab.call_count
+        ),
+    }[prop]
+    capture.retrieve.return_value = (
+        failure != "retrieve",
+        np.zeros((8, 8, 3), dtype=np.uint8),
+    )
+    monkeypatch.setattr(cv2, "VideoCapture", lambda *_: capture)
+    if failure == "memory":
+        monkeypatch.setattr(config, "MAX_FRAME_CACHE_BYTES", 1)
+    with pytest.raises((ValueError, MemoryError)):
+        service.read_candidates(path, [(0, 1)])
+    capture.release.assert_called_once()

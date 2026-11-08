@@ -1,8 +1,7 @@
-"""Source metadata, discovery and Volume path boundaries."""
+"""Discover videos and sample RGB frames sequentially with OpenCV."""
 
 import hashlib
 import json
-from fractions import Fraction
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -16,6 +15,10 @@ def resolve_source(workspace: Path, relative_path: str) -> Path:
 
     Returns:
         Resolved file path confined to the Volume.
+
+    Raises:
+        ValueError: The path resolves outside the workspace.
+        FileNotFoundError: The resolved path is not an existing file.
     """
     # Modal mounts can be symlinks into /__modal/volumes/... .
     workspace = workspace.resolve()
@@ -35,6 +38,12 @@ def list_videos(workspace: Path, video_dir: str = "data") -> list[str]:
 
     Returns:
         Sorted source paths relative to the resolved Volume root.
+
+    Raises:
+        ValueError: The search directory resolves outside the workspace, or
+            multiple videos have the same filename stem.
+        NotADirectoryError: The search path is not an existing directory.
+        FileNotFoundError: The directory contains no MP4 videos.
     """
     workspace = workspace.resolve()
     source = (workspace / video_dir).resolve()
@@ -65,6 +74,11 @@ def load_media_info(workspace, video_id):
 
     Returns:
         Organizer metadata including the original watch URL.
+
+    Raises:
+        FileNotFoundError: The video's metadata file does not exist.
+        ValueError: The metadata path escapes the workspace, the JSON is
+            invalid, or watch_url is missing or not an HTTP(S) URL.
     """
     from src.config import MEDIA_INFO_DIR
 
@@ -77,144 +91,48 @@ def load_media_info(workspace, video_id):
     return info
 
 
-def presentation_timeline(pts, info):
-    """Normalize native PTS into microseconds and append the video endpoint.
-
-    Args:
-        pts: Strictly increasing decoded presentation timestamps.
-        info: Stream metadata and end_pts collected during decoding.
-
-    Returns:
-        Frame timestamps followed by the exclusive end time, in microseconds.
-    """
-    if not len(pts) or any(b <= a for a, b in zip(pts, pts[1:])):
-        raise ValueError("Expected increasing presentation timestamps")
-    origin, time_base = int(pts[0]), Fraction(info["time_base"])
-    times = [round((int(p) - origin) * time_base * 1_000_000) for p in pts]
-    end = times[-1] + round(1_000_000 / Fraction(info["fps"]))
-    if "end_pts" in info:
-        end = round((info["end_pts"] - origin) * time_base * 1_000_000)
-    elif info["duration_pts"] is not None and info["start_pts"] is not None:
-        end = round(
-            (info["start_pts"] + info["duration_pts"] - origin) * time_base * 1_000_000
-        )
-    if any(b <= a for a, b in zip(times, times[1:])) or end <= times[-1]:
-        raise ValueError("Invalid presentation timeline or stream duration")
-    return times + [end]
-
-
-class DecordFrames:
-    """Decode candidate frames once and retain their CPU tensors for export.
-
-    Args:
-        reader: CPU Decord VideoReader.
-        indices: Source frame indices in candidate order.
-    """
-
-    def __init__(self, reader, indices):
-        self.reader = reader
-        self.indices = indices
-        self.cache = {}
-
-    def __len__(self):
-        return len(self.indices)
-
-    def __getitem__(self, index):
-        import torch
-
-        from src.config import MAX_FRAME_CACHE_BYTES
-
-        single = isinstance(index, int)
-        if isinstance(index, slice):
-            indices = self.indices[index]
-        elif single:
-            indices = [self.indices[index]]
-        else:
-            indices = [self.indices[i] for i in index]
-        if not indices:
-            return []
-        missing = list(dict.fromkeys(i for i in indices if i not in self.cache))
-        if missing:
-            batch = self.reader.get_batch(missing)
-            # Retain the original DLPack storage; export never decodes these again.
-            tensor = (
-                batch
-                if isinstance(batch, torch.Tensor)
-                else torch.from_dlpack(batch.to_dlpack())
-            )
-            required = len(self.indices) * tensor[0].numel() * tensor.element_size()
-            if required > MAX_FRAME_CACHE_BYTES:
-                raise MemoryError(
-                    f"Candidate RGB cache needs {required / 1024**3:.1f} GiB; "
-                    f"limit is {MAX_FRAME_CACHE_BYTES / 1024**3:.1f} GiB"
-                )
-            self.cache.update(
-                zip(missing, tensor.permute(0, 3, 1, 2).unbind(0), strict=True)
-            )
-        frames = [self.cache[i] for i in indices]
-        return frames[0] if single else frames
-
-
-def _read_source(path):
-    """Read exact packet timestamps and stream metadata without decoding pixels.
-
-    Args:
-        path: Source video path.
-
-    Returns:
-        Source metadata and presentation timestamps in microseconds.
-    """
-    import av
-
-    with Path(path).open("rb") as file:
-        fingerprint = hashlib.file_digest(file, "sha256").hexdigest()
-    with av.open(str(path)) as container:
-        if len(container.streams.video) != 1:
-            raise ValueError("Expected exactly one video stream for Decord indexing")
-        stream = container.streams.video[0]
-        if not stream.average_rate or stream.average_rate <= 0 or not stream.time_base:
-            raise ValueError("Missing video FPS or time base")
-        source = {
-            "sha256": fingerprint,
-            "stream_index": stream.index,
-            "fps": str(stream.average_rate),
-            "time_base": str(stream.time_base),
-            "start_pts": stream.start_time,
-            "duration_pts": stream.duration,
-        }
-        packets = []
-        for packet in container.demux(stream):
-            if not packet.size:
-                continue
-            if packet.pts is None:
-                raise ValueError("Missing packet presentation timestamp")
-            packets.append((packet.pts, packet.duration))
-        packets.sort()
-        ends = [pts + duration for pts, duration in packets if duration > 0]
-        if ends:
-            source["end_pts"] = max(ends)
-        pts = [pts for pts, _ in packets]
-        timeline = presentation_timeline(pts, source)
-        # Decord reports seconds relative to the stream's start time, in FP32.
-        origin = source["start_pts"]
-        if origin is None:
-            raise ValueError("Missing stream start PTS for Decord timestamp validation")
-        source["first_timestamp_seconds"] = float((pts[0] - origin) * stream.time_base)
-    return source, timeline
-
-
 def read_candidates(path, shots):
-    """Index shot candidates and decode their pixels lazily on CPU.
+    """Read video once in presentation order, retaining sampled RGB CPU frames.
+
+    Advance with grab() and retrieve pixels only for candidates at roughly one
+    frame per second within each shot, always including the shot's first frame.
+    Read through the end of the video to build the complete timeline. Normalize
+    OpenCV timestamps to the first frame and estimate the exclusive endpoint
+    from the final timestamp and reported average FPS. Release the capture on
+    success and failure; returned frames remain in CPU memory for embedding
+    and export without further decoding.
 
     Args:
-        path: Source video path.
-        shots: Ordered, disjoint, inclusive frame ranges.
+        path: Filesystem path to the source video. OpenCV selects its default
+            first video stream.
+        shots: Nonempty sequence of ordered, disjoint (start, end) pairs with
+            inclusive, zero-based source frame indices.
 
     Returns:
-        Source metadata, candidate rows, lazy CPU frames and exact PTS timeline.
+        A tuple containing:
+            source: Metadata dictionary with the source SHA-256, video-stream
+                ordinal (stream_index=0), and reported FPS as a string.
+            candidates: Metadata dictionaries in presentation order, with
+                candidate_idx, shot_id, frame_idx and timestamp_us fields.
+            frames: List of RGB uint8 CPU tensors with shape (3, H, W), aligned
+                with candidates and retained independently of the capture.
+            timeline: Integer presentation timestamps in microseconds for all
+                decoded frames, followed by an estimated exclusive endpoint.
+
+    Raises:
+        OSError: The source file cannot be opened or read for hashing.
+        ValueError: Shot ranges are empty, invalid or out of bounds; the video
+            cannot be opened; FPS or timestamps are invalid; a candidate cannot
+            be retrieved; or decoded and reported positive frame counts differ.
+        MemoryError: Retained candidate RGB bytes exceed MAX_FRAME_CACHE_BYTES.
+        cv2.error: The OpenCV backend fails while decoding or converting pixels.
     """
-    import decord
-    import numpy as np
+    import math
+
+    import cv2
+    import torch
+
+    from src.config import MAX_FRAME_CACHE_BYTES
 
     previous_end = -1
     for start, end in shots:
@@ -223,43 +141,78 @@ def read_candidates(path, shots):
         previous_end = end
     if not shots:
         raise ValueError("Expected at least one shot")
-    source, timeline = _read_source(path)
-    reader = decord.VideoReader(str(path), ctx=decord.cpu(0))
-    if len(reader) != len(timeline) - 1:
-        raise ValueError("Decord frame count differs from source packet timestamps")
-    if shots[-1][1] >= len(reader):
-        raise ValueError("Shot range exceeds the indexed video")
-    reported = np.asarray(
-        reader.get_frame_timestamp(range(len(reader))), dtype=np.float64
-    )
-    expected = np.asarray(timeline[:-1], dtype=np.float64) / 1_000_000
-    expected += source.pop("first_timestamp_seconds")
-    tolerance = np.maximum(
-        np.abs(np.spacing(expected.astype(np.float32))) * 2, 0.000002
-    )
-    if (
-        reported.shape != (len(reader), 2)
-        or not np.isfinite(reported).all()
-        or np.any(np.abs(reported[:, 0] - expected) > tolerance)
-    ):
-        raise ValueError(
-            "Decord frame timestamps differ from source presentation timestamps"
-        )
-    candidates = []
-    for shot_id, (start, end) in enumerate(shots):
-        next_sample = timeline[start]
-        for frame_idx in range(start, end + 1):
-            timestamp = timeline[frame_idx]
-            if timestamp < next_sample:
-                continue
-            candidates.append(
-                {
-                    "candidate_idx": len(candidates),
-                    "shot_id": shot_id,
-                    "frame_idx": frame_idx,
-                    "timestamp_us": timestamp,
-                }
+    with Path(path).open("rb") as file:
+        fingerprint = hashlib.file_digest(file, "sha256").hexdigest()
+    capture = cv2.VideoCapture(str(path), cv2.CAP_FFMPEG)
+    frames, candidates, timeline = [], [], []
+    try:
+        if not capture.isOpened():
+            raise ValueError(f"Cannot open video: {path}")
+        fps = capture.get(cv2.CAP_PROP_FPS)
+        if not math.isfinite(fps) or fps <= 0:
+            raise ValueError("Missing video FPS")
+        shot_id, frame_idx, next_sample = 0, 0, None
+        origin, cache_bytes = None, 0
+        while capture.grab():
+            timestamp = capture.get(cv2.CAP_PROP_POS_MSEC) * 1000
+            if not math.isfinite(timestamp):
+                raise ValueError("Invalid OpenCV presentation timestamp")
+            if origin is None:
+                origin = timestamp
+            timestamp = round(timestamp - origin)
+            if timeline and timestamp <= timeline[-1]:
+                raise ValueError("Expected increasing OpenCV presentation timestamps")
+            timeline.append(timestamp)
+            while shot_id < len(shots) and frame_idx > shots[shot_id][1]:
+                shot_id += 1
+                next_sample = None
+            if shot_id < len(shots):
+                start, end = shots[shot_id]
+                if start <= frame_idx <= end:
+                    if next_sample is None:
+                        next_sample = timestamp
+                    if timestamp >= next_sample:
+                        ok, image = capture.retrieve()
+                        if not ok or image is None:
+                            raise ValueError(f"Cannot retrieve frame {frame_idx}")
+                        required = image.size
+                        if cache_bytes + required > MAX_FRAME_CACHE_BYTES:
+                            raise MemoryError(
+                                "Candidate RGB cache exceeds configured limit"
+                            )
+                        rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+                        frames.append(torch.from_numpy(rgb).permute(2, 0, 1))
+                        cache_bytes += rgb.nbytes
+                        candidates.append(
+                            {
+                                "candidate_idx": len(candidates),
+                                "shot_id": shot_id,
+                                "frame_idx": frame_idx,
+                                "timestamp_us": timestamp,
+                            }
+                        )
+                        next_sample += (
+                            (timestamp - next_sample) // 1_000_000 + 1
+                        ) * 1_000_000
+            frame_idx += 1
+        reported_count = capture.get(cv2.CAP_PROP_FRAME_COUNT)
+        if not timeline or shots[-1][1] >= frame_idx:
+            raise ValueError("Shot range exceeds decoded video")
+        if (
+            math.isfinite(reported_count)
+            and reported_count > 0
+            and round(reported_count) != frame_idx
+        ):
+            raise ValueError(
+                "Decoded frame count differs from reported video frame count"
             )
-            next_sample += ((timestamp - next_sample) // 1_000_000 + 1) * 1_000_000
-    frames = DecordFrames(reader, [row["frame_idx"] for row in candidates])
-    return source, candidates, frames, timeline
+        timeline.append(timeline[-1] + max(1, round(1_000_000 / fps)))
+        source = {
+            "sha256": fingerprint,
+            # OpenCV's default first video stream, indexed among video streams.
+            "stream_index": 0,
+            "fps": str(fps),
+        }
+        return source, candidates, frames, timeline
+    finally:
+        capture.release()

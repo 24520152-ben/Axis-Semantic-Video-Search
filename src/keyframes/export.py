@@ -139,7 +139,7 @@ def export_selected(
     Args:
         root: Output root directory.
         path: Source video path, used for its ID.
-        frames: Lazy sequence of candidate RGB uint8 CHW tensors.
+        frames: Cached sequence of candidate RGB uint8 CHW CPU tensors.
         candidates: Candidate metadata in image order.
         selection: Selected candidate indices.
         vectors: BF16 candidate tensors in the same order.

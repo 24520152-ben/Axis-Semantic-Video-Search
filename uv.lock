@@ -21,7 +21,6 @@ name = "aic-abr"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "av" },
     { name = "fastapi" },
     { name = "modal" },
     { name = "numpy" },
@@ -33,9 +32,13 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
-pipeline = [
+benchmark = [
+    { name = "av" },
     { name = "decord" },
+]
+pipeline = [
     { name = "nvidia-dali-cuda130" },
+    { name = "opencv-python" },
     { name = "sentence-transformers" },
     { name = "transformers" },
 ]
@@ -46,6 +49,7 @@ retrieval = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "av" },
     { name = "httpx2" },
     { name = "pytest" },
     { name = "ruff" },
@@ -53,13 +57,14 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "av", specifier = ">=19.0.2" },
-    { name = "decord", marker = "extra == 'pipeline'", specifier = "==0.6.0" },
+    { name = "av", marker = "extra == 'benchmark'", specifier = ">=19.0.2" },
+    { name = "decord", marker = "extra == 'benchmark'", specifier = "==0.6.0" },
     { name = "fastapi", specifier = ">=0.162.0" },
     { name = "modal", specifier = ">=1.6.3" },
     { name = "numpy", specifier = ">=2,<3" },
     { name = "nvidia-dali-cuda130", marker = "extra == 'pipeline'", specifier = "==2.4.0" },
     { name = "omnishotcut", git = "https://github.com/UVA-Computer-Vision-Lab/OmniShotCut.git" },
+    { name = "opencv-python", marker = "extra == 'pipeline'", specifier = ">=5,<6" },
     { name = "pillow", specifier = ">=11" },
     { name = "pyarrow", specifier = ">=20,<24" },
     { name = "pymilvus", marker = "extra == 'retrieval'", specifier = ">=3.0.2" },
@@ -69,10 +74,11 @@ requires-dist = [
     { name = "transformers", marker = "extra == 'pipeline'", specifier = ">=5,<6" },
     { name = "uvicorn", specifier = ">=0.54.0" },
 ]
-provides-extras = ["pipeline", "retrieval"]
+provides-extras = ["benchmark", "pipeline", "retrieval"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "av", specifier = ">=19.0.2" },
     { name = "httpx2", specifier = ">=2.16.0" },
     { name = "pytest", specifier = ">=8,<10" },
     { name = "ruff", specifier = ">=0.6" },

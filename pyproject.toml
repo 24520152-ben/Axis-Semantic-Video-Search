@@ -5,7 +5,6 @@ description = "Shot-aware keyframe selection and Qwen visual embeddings on Modal
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "av>=19.0.2",
     "fastapi>=0.162.0",
     "modal>=1.6.3",
     "numpy>=2,<3",
@@ -17,8 +16,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-pipeline = [
+benchmark = [
+    "av>=19.0.2",
     "decord==0.6.0",
+]
+pipeline = [
+    "opencv-python>=5,<6",
     "nvidia-dali-cuda130==2.4.0",
     "sentence-transformers==5.4.0",
     "transformers>=5,<6",
@@ -33,6 +36,7 @@ omnishotcut = { git = "https://github.com/UVA-Computer-Vision-Lab/OmniShotCut.gi
 
 [dependency-groups]
 dev = [
+    "av>=19.0.2",
     "httpx2>=2.16.0",
     "pytest>=8,<10",
     "ruff>=0.6",

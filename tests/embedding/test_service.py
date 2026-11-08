@@ -7,7 +7,12 @@ import pytest
 import torch
 from sentence_transformers.base.modality import InputFormatter
 from sentence_transformers.sentence_transformer.modules.normalize import Normalize
-from transformers import AutoModel, AutoProcessor, Qwen3VLConfig, Qwen3VLForConditionalGeneration
+from transformers import (
+    AutoModel,
+    AutoProcessor,
+    Qwen3VLConfig,
+    Qwen3VLForConditionalGeneration,
+)
 from transformers.models.qwen2_vl.image_processing_qwen2_vl import Qwen2VLImageProcessor
 
 from src.config import MAX_PIXELS, MODEL_ID, MODEL_REVISION
@@ -19,7 +24,9 @@ def test_bf16_checkpoint_output_is_returned_without_casting_or_renormalizing():
     raw = torch.stack([values, values.flip(0)]).to(torch.bfloat16)
     checkpoint_output = Normalize()({"sentence_embedding": raw})["sentence_embedding"]
     assert torch.max(torch.abs(checkpoint_output.float().norm(dim=1) - 1)) > 1e-4
-    model = SimpleNamespace(device=torch.device("cpu"), encode=Mock(return_value=checkpoint_output))
+    model = SimpleNamespace(
+        device=torch.device("cpu"), encode=Mock(return_value=checkpoint_output)
+    )
     frames = [torch.zeros((3, 28, 28), dtype=torch.uint8) for _ in range(2)]
 
     vectors = embed_candidates(model, frames, batch_size=2)
@@ -31,7 +38,7 @@ def test_bf16_checkpoint_output_is_returned_without_casting_or_renormalizing():
     )
 
 
-def test_lazy_frames_are_decoded_and_encoded_once_in_bounded_batches():
+def test_sliceable_frames_are_encoded_in_bounded_batches():
     class Frames:
         def __init__(self):
             self.slices = []
@@ -69,7 +76,9 @@ def test_invalid_batch_size_does_not_decode_frames(batch_size):
 
 
 def test_qwen_image_preprocessing_keeps_tensor_input_without_pil_or_cpu_copy():
-    frame = torch.arange(3 * 40 * 56, dtype=torch.int32).reshape(3, 40, 56).to(torch.uint8)
+    frame = (
+        torch.arange(3 * 40 * 56, dtype=torch.int32).reshape(3, 40, 56).to(torch.uint8)
+    )
     formatter = InputFormatter("qwen3_vl", message_format="structured")
     modality, inputs, _ = formatter.parse_inputs([frame])
     _, messages = formatter.batch_to_message(modality, inputs)
@@ -79,7 +88,9 @@ def test_qwen_image_preprocessing_keeps_tensor_input_without_pil_or_cpu_copy():
     processor = Qwen2VLImageProcessor(min_pixels=28 * 28, max_pixels=56 * 56)
     with (
         patch.object(torch.Tensor, "cpu", side_effect=AssertionError("Image CPU copy")),
-        patch.object(torch.Tensor, "numpy", side_effect=AssertionError("Image NumPy conversion")),
+        patch.object(
+            torch.Tensor, "numpy", side_effect=AssertionError("Image NumPy conversion")
+        ),
     ):
         output = processor(images=[image], return_tensors="pt")
 
@@ -116,7 +127,9 @@ def test_model_loader_kwargs_load_actual_cached_qwen_processor(monkeypatch):
         processor = _cached_processor(**processor_kwargs)
         return [SimpleNamespace(processor=processor)]
 
-    monkeypatch.setattr("sentence_transformers.SentenceTransformer", load_without_weights)
+    monkeypatch.setattr(
+        "sentence_transformers.SentenceTransformer", load_without_weights
+    )
     model = load_model(device="cpu")
 
     assert model[0].processor.image_processor.backend == "torchvision"
@@ -125,11 +138,15 @@ def test_model_loader_kwargs_load_actual_cached_qwen_processor(monkeypatch):
 
 def test_actual_qwen_chat_template_processes_tensor_without_image_cpu_copy():
     processor = _cached_processor(min_pixels=4096, max_pixels=MAX_PIXELS)
-    frame = torch.arange(3 * 40 * 56, dtype=torch.int32).reshape(3, 40, 56).to(torch.uint8)
+    frame = (
+        torch.arange(3 * 40 * 56, dtype=torch.int32).reshape(3, 40, 56).to(torch.uint8)
+    )
     messages = [[{"role": "user", "content": [{"type": "image", "image": frame}]}]]
     with (
         patch.object(torch.Tensor, "cpu", side_effect=AssertionError("Image CPU copy")),
-        patch.object(torch.Tensor, "numpy", side_effect=AssertionError("Image NumPy conversion")),
+        patch.object(
+            torch.Tensor, "numpy", side_effect=AssertionError("Image NumPy conversion")
+        ),
     ):
         output = processor.apply_chat_template(
             messages,
@@ -146,7 +163,9 @@ def test_actual_qwen_chat_template_processes_tensor_without_image_cpu_copy():
     assert output["pixel_values"].device == frame.device
     assert output["image_grid_thw"].shape == (1, 3)
     assert output["input_ids"].shape[0] == 1
-    assert "Represent the user's input." in processor.tokenizer.decode(output["input_ids"][0])
+    assert "Represent the user's input." in processor.tokenizer.decode(
+        output["input_ids"][0]
+    )
 
 
 def test_qwen_feature_extraction_loads_prefixed_checkpoint_weights(tmp_path):
@@ -188,12 +207,15 @@ def test_qwen_feature_extraction_loads_prefixed_checkpoint_weights(tmp_path):
 
 def test_embedding_transfers_only_current_batch_and_keeps_cpu_cache():
     frames = [torch.full((3, 28, 28), i, dtype=torch.uint8) for i in range(5)]
+
     # The meta device exercises cross-device transfer without requiring a local GPU.
     def encode(batch, **kwargs):
         assert all(frame.device.type == "meta" for frame in batch)
         return torch.ones((len(batch), 2048), dtype=torch.bfloat16)
 
-    model = SimpleNamespace(device=torch.device("meta"), encode=Mock(side_effect=encode))
+    model = SimpleNamespace(
+        device=torch.device("meta"), encode=Mock(side_effect=encode)
+    )
     vectors = embed_candidates(model, frames, batch_size=2)
 
     assert vectors.shape == (5, 2048) and vectors.device.type == "cpu"
