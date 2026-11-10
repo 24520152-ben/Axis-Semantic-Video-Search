@@ -4,10 +4,13 @@ import argparse
 import csv
 import html
 import json
+import math
 from pathlib import Path
 
 
 def build_report(directory, expected_videos=15, min_repeats=1):
+    if expected_videos < 1 or min_repeats < 1:
+        raise ValueError("expected_videos and min_repeats must be positive")
     rows = []
     metadata = {}
 
@@ -41,7 +44,9 @@ def build_report(directory, expected_videos=15, min_repeats=1):
                     stats["median_total_seconds"],
                     stats["successful_trials"],
                     video.get("correctness"),
-                    max((t["peak_process_tree_rss_bytes"] for t in trials), default=None),
+                    max(
+                        (t["peak_process_tree_rss_bytes"] for t in trials), default=None
+                    ),
                 )
                 add(
                     "shot_preparation",
@@ -59,8 +64,12 @@ def build_report(directory, expected_videos=15, min_repeats=1):
             for variant, stats in video["summary_medians"].items():
                 trials = [t for t in video["measurements"] if t["variant"] == variant]
                 correctness = {
-                    "max_timestamp_error_us": max(t["timestamp_max_abs_error_us"] for t in trials),
-                    "max_position_mismatches": max(t["position_mismatch_count"] for t in trials),
+                    "max_timestamp_error_us": max(
+                        t["timestamp_max_abs_error_us"] for t in trials
+                    ),
+                    "max_position_mismatches": max(
+                        t["position_mismatch_count"] for t in trials
+                    ),
                     "pixel_probes": trials[0].get("probe_comparison_to_decord"),
                 }
                 for experiment, metric in (
@@ -99,18 +108,30 @@ def build_report(directory, expected_videos=15, min_repeats=1):
                 )
 
     aggregates = []
+    qualified_videos = {}
     for experiment in sorted({row["experiment"] for row in rows}):
-        for variant in sorted({row["variant"] for row in rows if row["experiment"] == experiment}):
-            subset = [r for r in rows if r["experiment"] == experiment and r["variant"] == variant]
+        for variant in sorted(
+            {row["variant"] for row in rows if row["experiment"] == experiment}
+        ):
+            subset = [
+                r
+                for r in rows
+                if r["experiment"] == experiment and r["variant"] == variant
+            ]
             successful = [
                 r
                 for r in subset
-                if r["median_seconds"] is not None and r["successful_repeats"] >= min_repeats
+                if r["median_seconds"] is not None
+                and math.isfinite(r["median_seconds"])
+                and r["median_seconds"] > 0
+                and r["successful_repeats"] >= min_repeats
+                and (experiment != "embedding" or r["correctness_check"] is True)
             ]
             complete = (
                 len(successful) == expected_videos
                 and len({r["video"] for r in successful}) == expected_videos
             )
+            qualified_videos[(experiment, variant)] = {r["video"] for r in successful}
             aggregates.append(
                 {
                     "experiment": experiment,
@@ -118,7 +139,9 @@ def build_report(directory, expected_videos=15, min_repeats=1):
                     "videos_with_required_repeats": len(successful),
                     "complete_requested_scope": complete,
                     "sum_video_median_seconds": (
-                        sum(r["median_seconds"] for r in successful) if complete else None
+                        sum(r["median_seconds"] for r in successful)
+                        if complete
+                        else None
                     ),
                     "max_peak_memory_bytes": max(
                         (r["peak_memory_bytes"] or 0 for r in successful), default=0
@@ -137,7 +160,12 @@ def build_report(directory, expected_videos=15, min_repeats=1):
     for experiment, baseline, candidate in pairs:
         old = lookup.get((experiment, baseline), {}).get("sum_video_median_seconds")
         new = lookup.get((experiment, candidate), {}).get("sum_video_median_seconds")
-        if old and new:
+        if (
+            old
+            and new
+            and qualified_videos[(experiment, baseline)]
+            == qualified_videos[(experiment, candidate)]
+        ):
             comparisons.append(
                 {
                     "experiment": experiment,
@@ -154,7 +182,7 @@ def build_report(directory, expected_videos=15, min_repeats=1):
         "expected_videos": expected_videos,
         "min_repeats": min_repeats,
         "notes": [
-            "Only configurations completing the requested number of runs on every requested video receive a comparison.",
+            "Comparisons require matching video sets, positive finite timings and enough successful runs; embedding comparisons also require the equivalence check to pass.",
             "Negative reduction means the current implementation is slower for that measured scope.",
             "Production OpenCV builds its timeline and samples in one scan to EOF; metadata time is not separable. PyAV/Decord uses native packet timestamps. Compare combined reading time, not individual substeps.",
             "DALI memory includes unmanaged allocations outside the PyTorch allocator; PyTorch VRAM is not total device usage.",

@@ -20,7 +20,8 @@ def test_current_results_compare_complete_stages_with_batch16_reference():
     integrated_metadata = next(
         row
         for row in report["aggregates"]
-        if row["experiment"] == "candidate_metadata" and row["variant"] == "opencv_sequential"
+        if row["experiment"] == "candidate_metadata"
+        and row["variant"] == "opencv_sequential"
     )
     assert integrated_metadata["sum_video_median_seconds"] is None
     assert not integrated_metadata["complete_requested_scope"]
@@ -30,7 +31,9 @@ def test_current_results_compare_complete_stages_with_batch16_reference():
         [0.41194, 66.76632], abs=0.0001
     )
     embeddings = [row for row in comparisons if row["experiment"] == "embedding"]
-    assert len(embeddings) == 4 and all(row["candidate"] == "batch_16" for row in embeddings)
+    assert len(embeddings) == 4 and all(
+        row["candidate"] == "batch_16" for row in embeddings
+    )
 
 
 def test_incomplete_video_set_does_not_produce_all_video_speedup(tmp_path):
@@ -42,3 +45,35 @@ def test_incomplete_video_set_does_not_produce_all_video_speedup(tmp_path):
 
 def test_single_run_results_do_not_count_as_repeated_measurements():
     assert build_report(RESULTS, min_repeats=3)["comparisons"] == []
+
+
+def test_embedding_equivalence_failure_excludes_affected_configuration(tmp_path):
+    data = json.loads((RESULTS / "batch-all.json").read_text())
+    data["videos"][0]["summary"]["1"]["all_reference_agree"] = False
+    (tmp_path / "batch-all.json").write_text(json.dumps(data))
+    report = build_report(tmp_path)
+    assert len(report["comparisons"]) == 3
+    assert all(row["baseline"] != "batch_1" for row in report["comparisons"])
+
+
+def test_equal_size_but_different_video_sets_are_not_compared(tmp_path):
+    data = json.loads((RESULTS / "batch-all.json").read_text())
+    alternate = dict(data["videos"][0])
+    alternate["video"] = "different-video.mp4"
+    alternate["summary"] = {"1": alternate["summary"]["1"]}
+    del data["videos"][0]["summary"]["1"]
+    data["videos"].append(alternate)
+    (tmp_path / "batch-all.json").write_text(json.dumps(data))
+    report = build_report(tmp_path)
+    assert len(report["comparisons"]) == 3
+    assert all(row["baseline"] != "batch_1" for row in report["comparisons"])
+
+
+@pytest.mark.parametrize("seconds", [0, -1, float("nan"), float("inf")])
+def test_invalid_timings_cannot_produce_speedup(tmp_path, seconds):
+    data = json.loads((RESULTS / "batch-all.json").read_text())
+    data["videos"][0]["summary"]["1"]["median_seconds"] = seconds
+    (tmp_path / "batch-all.json").write_text(json.dumps(data))
+    assert all(
+        row["baseline"] != "batch_1" for row in build_report(tmp_path)["comparisons"]
+    )
