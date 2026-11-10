@@ -1,4 +1,4 @@
-"""Write retained keyframe images and seven-column Parquet records."""
+"""Write all uniformly sampled frame images and seven-column Parquet records."""
 
 import tempfile
 from pathlib import Path
@@ -18,9 +18,7 @@ def output_paths(root, video_id):
 def check_output(root, video_id, overwrite=False):
     """Reject existing artifacts unless replacement was requested."""
     if not overwrite and any(path.exists() for path in output_paths(root, video_id)):
-        raise FileExistsError(
-            f"Output exists for {video_id}; use --overwrite to replace it"
-        )
+        raise FileExistsError(f"Output exists for {video_id}; use --overwrite to replace it")
 
 
 def _publish(sources, targets, staging):
@@ -44,36 +42,31 @@ def _publish(sources, targets, staging):
         raise
 
 
-def _write_images(directory, frames, candidates, selected):
-    """Write only retained JPEGs, named by their source frame indices."""
+def _write_images(directory, frames, candidates):
+    """Write all candidate JPEGs, named by their source frame indices."""
     from PIL import Image
 
-    for index in selected:
+    for index in range(len(candidates)):
         frame_idx = candidates[index]["frame_idx"]
-        # Export retained pixels directly from the CPU cache.
+        # Export sampled pixels directly from the CPU cache.
         pixels = frames[index].permute(1, 2, 0).contiguous().cpu().numpy()
         Image.fromarray(pixels).save(
             directory / f"{frame_idx}.jpg", format="JPEG", quality=JPEG_QUALITY
         )
 
 
-def _validate_vectors(vectors, candidates, frames, selected):
+def _validate_vectors(vectors, candidates, frames):
     """Validate aligned rows without changing the supplied BF16 embeddings."""
     import torch
 
     if (
-        not isinstance(vectors, torch.Tensor)
+        not candidates
+        or not isinstance(vectors, torch.Tensor)
         or vectors.dtype != torch.bfloat16
         or vectors.shape != (len(candidates), EMBEDDING_DIM)
         or len(frames) != len(candidates)
     ):
         raise ValueError("Expected one bfloat16[2048] vector and frame per candidate")
-    if (
-        not selected
-        or sorted(set(selected)) != selected
-        or not 0 <= selected[0] <= selected[-1] < len(candidates)
-    ):
-        raise ValueError("Invalid selected frame indices")
     if not torch.isfinite(vectors).all() or not torch.any(vectors != 0, dim=1).all():
         raise ValueError("Invalid embedding vectors")
     indices = [row["frame_idx"] for row in candidates]
@@ -88,8 +81,8 @@ def _validate_vectors(vectors, candidates, frames, selected):
     return vectors
 
 
-def _write_records(path, video_id, source, watch_url, candidates, selected, vectors):
-    """Write only retained frames with their aligned embeddings and image URIs."""
+def _write_records(path, video_id, source, watch_url, candidates, vectors):
+    """Write all sampled frames with their aligned embeddings and image URIs."""
     import pyarrow as pa
     import pyarrow.parquet as pq
     import torch
@@ -105,12 +98,10 @@ def _write_records(path, video_id, source, watch_url, candidates, selected, vect
             pa.field("embedding", pa.binary(EMBEDDING_DIM * 2), nullable=False),
         ]
     )
-    candidates = [candidates[index] for index in selected]
-    vectors = vectors[selected].detach().cpu().contiguous().view(torch.uint8)
+    vectors = vectors.detach().cpu().contiguous().view(torch.uint8)
     data = {
         "frame_id": [
-            f"{source['sha256']}:{source['stream_index']}:{c['frame_idx']}"
-            for c in candidates
+            f"{source['sha256']}:{source['stream_index']}:{c['frame_idx']}" for c in candidates
         ],
         "video_id": [video_id] * len(candidates),
         "frame_idx": [c["frame_idx"] for c in candidates],
@@ -122,53 +113,54 @@ def _write_records(path, video_id, source, watch_url, candidates, selected, vect
     pq.write_table(pa.Table.from_pydict(data, schema=schema), path, compression="zstd")
 
 
-def export_selected(
+def export_candidates(
     root,
     path,
     frames,
     candidates,
-    selection,
     vectors,
     *,
     source,
     watch_url,
     overwrite=False,
 ):
-    """Stage and publish retained JPEGs and their matching Parquet records.
+    """Stage and publish all sampled JPEGs and their matching Parquet records.
 
     Args:
         root: Output root directory.
         path: Source video path, used for its ID.
         frames: Cached sequence of candidate RGB uint8 CHW CPU tensors.
         candidates: Candidate metadata in image order.
-        selection: Selected candidate indices.
         vectors: BF16 candidate tensors in the same order.
         source: Source fingerprint, stream identity and timing metadata.
         watch_url: Original video URL from organizer media-info.
         overwrite: Replace an existing video output when true.
 
     Returns:
-        Output paths and the number of retained frames.
+        Output paths and the number of exported sampled frames. Every candidate
+        is written, including candidates with identical embeddings.
+
+    Raises:
+        ValueError: Candidates, frame counts or BF16 embeddings are invalid.
+        FileExistsError: Output already exists and overwrite is false.
+        OSError: Staging, image writing or artifact publication fails.
     """
     root, video_id = Path(root), Path(path).stem
     check_output(root, video_id, overwrite)
-    selected = selection["selected"]
-    vectors = _validate_vectors(vectors, candidates, frames, selected)
+    vectors = _validate_vectors(vectors, candidates, frames)
     root.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix=".keyframes-", dir=root) as temporary:
         staging = Path(temporary)
         images, records = output_paths(staging, video_id)
         for directory in (images, records.parent):
             directory.mkdir(parents=True, exist_ok=True)
-        _write_records(
-            records, video_id, source, watch_url, candidates, selected, vectors
-        )
-        _write_images(images, frames, candidates, selected)
+        _write_records(records, video_id, source, watch_url, candidates, vectors)
+        _write_images(images, frames, candidates)
         check_output(root, video_id, overwrite)
         _publish((images, records), output_paths(root, video_id), staging)
     images, records = output_paths(root, video_id)
     return {
         "output_dir": str(images),
         "records_path": str(records),
-        "kept": len(selected),
+        "kept": len(candidates),
     }

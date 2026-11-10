@@ -50,7 +50,7 @@ def process_video(video_path: str, overwrite: bool = False):
         overwrite: Replace existing artifacts when true.
 
     Returns:
-        Pipeline report with output paths and selection counts.
+        Pipeline report with output paths and sampled/exported frame counts.
     """
     volume.reload()
     result = run_pipeline(video_path, overwrite=overwrite)
