@@ -18,7 +18,9 @@ def output_paths(root, video_id):
 def check_output(root, video_id, overwrite=False):
     """Reject existing artifacts unless replacement was requested."""
     if not overwrite and any(path.exists() for path in output_paths(root, video_id)):
-        raise FileExistsError(f"Output exists for {video_id}; use --overwrite to replace it")
+        raise FileExistsError(
+            f"Output exists for {video_id}; use --overwrite to replace it"
+        )
 
 
 def _publish(sources, targets, staging):
@@ -101,7 +103,8 @@ def _write_records(path, video_id, source, watch_url, candidates, vectors):
     vectors = vectors.detach().cpu().contiguous().view(torch.uint8)
     data = {
         "frame_id": [
-            f"{source['sha256']}:{source['stream_index']}:{c['frame_idx']}" for c in candidates
+            f"{source['sha256']}:{source['stream_index']}:{c['frame_idx']}"
+            for c in candidates
         ],
         "video_id": [video_id] * len(candidates),
         "frame_idx": [c["frame_idx"] for c in candidates],

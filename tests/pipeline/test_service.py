@@ -25,7 +25,9 @@ def setup_adapters(tmp_path, monkeypatch, size=16):
         container.mux(stream.encode())
     metadata = tmp_path / "data/media-info-aic25-b1/media-info/video.json"
     metadata.parent.mkdir(parents=True)
-    metadata.write_text(json.dumps({"watch_url": "https://youtube.com/watch?v=example"}))
+    metadata.write_text(
+        json.dumps({"watch_url": "https://youtube.com/watch?v=example"})
+    )
 
     monkeypatch.setattr(service, "detect_shots", lambda _: [(0, 149)])
     monkeypatch.setattr(service.embedding, "load_model", lambda: object())
@@ -57,7 +59,11 @@ def test_pipeline_decodes_samples_and_exports_aligned_records(tmp_path, monkeypa
     assert all(len(payload) == 2048 * 2 for payload in payloads)
     first_vector = torch.frombuffer(bytearray(payloads[0]), dtype=torch.bfloat16)
     assert torch.equal(first_vector, embed.return_value[0])
-    assert table.num_rows == result["kept"] == len(list((root / "images/video").glob("*.jpg")))
+    assert (
+        table.num_rows
+        == result["kept"]
+        == len(list((root / "images/video").glob("*.jpg")))
+    )
     for uri in table["image_uri"].to_pylist():
         with Image.open(root / uri) as image:
             image.verify()

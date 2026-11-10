@@ -10,7 +10,9 @@ from scripts.benchmarks import benchmark_opencv
 from src.video import service
 
 
-def test_sequential_benchmark_calls_production_reader_and_keeps_every_sample(tmp_path, monkeypatch):
+def test_sequential_benchmark_calls_production_reader_and_keeps_every_sample(
+    tmp_path, monkeypatch
+):
     path = tmp_path / "sample.mp4"
     with av.open(str(path), "w") as container:
         stream = container.add_stream("libx264", rate=25)

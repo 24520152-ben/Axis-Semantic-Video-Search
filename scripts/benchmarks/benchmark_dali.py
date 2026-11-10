@@ -56,7 +56,9 @@ def benchmark(repeats: int, run_id: str, video_path: str, video_index: int = 0):
     paths = [video_path]
     gpu_name = torch.cuda.get_device_name()
     started = time.monotonic()
-    wrapper = omnishotcut.load("uva-cv-lab/OmniShotCut_v1.5", filename="OmniShotCut_ckpt.pth")
+    wrapper = omnishotcut.load(
+        "uva-cv-lab/OmniShotCut_v1.5", filename="OmniShotCut_ckpt.pth"
+    )
     torch.cuda.synchronize()
     load_seconds = time.monotonic() - started
     args = wrapper._model_args
@@ -114,7 +116,9 @@ def benchmark(repeats: int, run_id: str, video_path: str, video_index: int = 0):
                 torch.cuda.synchronize()
                 prepared = time.monotonic()
                 stats["frame_count"] = len(frames)
-                ranges, labels, _ = _infer_ranges(frames, wrapper._model, args, overlap=10)
+                ranges, labels, _ = _infer_ranges(
+                    frames, wrapper._model, args, overlap=10
+                )
                 shots = [
                     [int(start), int(end)]
                     for (start, end), label in zip(ranges, labels, strict=True)
@@ -140,7 +144,9 @@ def benchmark(repeats: int, run_id: str, video_path: str, video_index: int = 0):
             stats.update(
                 variant=variant,
                 total_seconds=end - begin,
-                inference_and_window_preprocess_seconds=end - begin - stats["prepare_seconds"],
+                inference_and_window_preprocess_seconds=end
+                - begin
+                - stats["prepare_seconds"],
                 peak_torch_allocated_bytes=torch.cuda.max_memory_allocated(),
                 peak_torch_reserved_bytes=torch.cuda.max_memory_reserved(),
             )
@@ -151,7 +157,11 @@ def benchmark(repeats: int, run_id: str, video_path: str, video_index: int = 0):
         return stats, shots
 
     manifest_path = (
-        config.WORKSPACE / "benchmarks" / run_id / "shots" / f"{Path(video_path).stem}.json"
+        config.WORKSPACE
+        / "benchmarks"
+        / run_id
+        / "shots"
+        / f"{Path(video_path).stem}.json"
     )
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
     shot_manifest = (
@@ -164,7 +174,9 @@ def benchmark(repeats: int, run_id: str, video_path: str, video_index: int = 0):
     )
 
     def save_shots(relative, exclusive_shots):
-        shot_manifest["shots"][relative] = [[start, end - 1] for start, end in exclusive_shots]
+        shot_manifest["shots"][relative] = [
+            [start, end - 1] for start, end in exclusive_shots
+        ]
         manifest_path.write_text(json.dumps(shot_manifest, indent=2))
         volume.commit()
 
@@ -217,14 +229,20 @@ def benchmark(repeats: int, run_id: str, video_path: str, video_index: int = 0):
         ],
         "videos": [],
     }
-    result_dir = config.WORKSPACE / "benchmarks" / run_id / "videos" / Path(video_path).stem
+    result_dir = (
+        config.WORKSPACE / "benchmarks" / run_id / "videos" / Path(video_path).stem
+    )
     result_dir.mkdir(parents=True, exist_ok=True)
     for index, relative in enumerate(paths, start=video_index):
         path = config.WORKSPACE / relative
         row = {"video": relative, "trials": [], "errors": []}
         reference_shots = {}
         for repeat in range(repeats):
-            variants = ("dali", "official") if (index + repeat) % 2 == 0 else ("official", "dali")
+            variants = (
+                ("dali", "official")
+                if (index + repeat) % 2 == 0
+                else ("official", "dali")
+            )
             for variant in variants:
                 try:
                     metrics, shots = measure(path, variant)
@@ -247,23 +265,29 @@ def benchmark(repeats: int, run_id: str, video_path: str, video_index: int = 0):
             row[variant] = {
                 "successful_trials": len(trials),
                 "median_total_seconds": (
-                    statistics.median(t["total_seconds"] for t in trials) if trials else None
+                    statistics.median(t["total_seconds"] for t in trials)
+                    if trials
+                    else None
                 ),
                 "median_prepare_seconds": (
-                    statistics.median(t["prepare_seconds"] for t in trials) if trials else None
+                    statistics.median(t["prepare_seconds"] for t in trials)
+                    if trials
+                    else None
                 ),
             }
         if len(reference_shots) == 2:
             dali_ranges = {tuple(s) for s in reference_shots["dali"]}
             official_ranges = {tuple(s) for s in reference_shots["official"]}
             row["correctness"] = {
-                "exact_clean_ranges_equal": reference_shots["dali"] == reference_shots["official"],
+                "exact_clean_ranges_equal": reference_shots["dali"]
+                == reference_shots["official"],
                 "shared_exact_clean_ranges": len(dali_ranges & official_ranges),
                 "dali_only_ranges": sorted(dali_ranges - official_ranges),
                 "official_only_ranges": sorted(official_ranges - dali_ranges),
                 "dali_clean_ranges": len(dali_ranges),
                 "official_clean_ranges": len(official_ranges),
-                "frame_counts_equal": len({t["frame_count"] for t in row["trials"]}) == 1,
+                "frame_counts_equal": len({t["frame_count"] for t in row["trials"]})
+                == 1,
             }
         output["videos"].append(row)
         (result_dir / "dali.json").write_text(json.dumps(output, indent=2))
@@ -333,13 +357,18 @@ def main(video_path: str = "", repeats: int = 1):
         else:
             output["videos"].extend(result["videos"])
             output["worker_metadata"].append(
-                {key: value for key, value in result.items() if key not in ("videos", "aggregate")}
+                {
+                    key: value
+                    for key, value in result.items()
+                    if key not in ("videos", "aggregate")
+                }
             )
             print(f"COMPLETE {path}", flush=True)
         destination.write_text(json.dumps(output, indent=2))
     output["aggregate"] = {
         "videos": len(output["videos"]),
-        "errors": len(output["failures"]) + sum(len(row["errors"]) for row in output["videos"]),
+        "errors": len(output["failures"])
+        + sum(len(row["errors"]) for row in output["videos"]),
         "dali_sum_video_median_seconds": sum(
             row["dali"]["median_total_seconds"] or 0 for row in output["videos"]
         ),
@@ -349,6 +378,8 @@ def main(video_path: str = "", repeats: int = 1):
     }
     destination.write_text(json.dumps(output, indent=2))
     print(json.dumps(output["aggregate"], indent=2))
-    print(f"Results: {destination}; per-video Volume results: benchmarks/{run_id}/videos/")
+    print(
+        f"Results: {destination}; per-video Volume results: benchmarks/{run_id}/videos/"
+    )
     if output["aggregate"]["errors"]:
         raise RuntimeError(f"Benchmark trials failed; see {destination}")

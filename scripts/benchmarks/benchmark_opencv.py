@@ -23,7 +23,9 @@ app = modal.App("aic-benchmark-opencv")
 volume = modal.Volume.from_name(config.VOLUME_NAME)
 image = pipeline_image.run_commands(
     "/.uv/uv pip install --python /.uv/.venv/bin/python 'av>=19.0.2' 'decord==0.6.0'"
-).add_local_python_source("src", "scripts.process_videos", "scripts.benchmarks.legacy_video")
+).add_local_python_source(
+    "src", "scripts.process_videos", "scripts.benchmarks.legacy_video"
+)
 REMOTE_ROOT = "benchmarks/uniform1fps"
 BENCHMARK_GPU = os.environ.get("BENCHMARK_GPU", "A10G")
 VARIANTS = ("pyav_decord", "opencv_sequential", "opencv_seek")
@@ -133,7 +135,9 @@ def _pixel_probes(frames):
 
 
 def _measure(path, shots, indices, expected_timestamps, variant):
-    from scripts.benchmarks.legacy_video import read_candidates as legacy_read_candidates
+    from scripts.benchmarks.legacy_video import (
+        read_candidates as legacy_read_candidates,
+    )
     from src.video.service import read_candidates
 
     _clean()
@@ -182,11 +186,14 @@ def _measure(path, shots, indices, expected_timestamps, variant):
             sampling_end = time.perf_counter()
     probes = _pixel_probes(frames)
     timestamp_errors = [
-        abs(float(a) - float(b)) for a, b in zip(timestamps, expected_timestamps, strict=True)
+        abs(float(a) - float(b))
+        for a, b in zip(timestamps, expected_timestamps, strict=True)
     ]
     measurement = {
         "variant": variant,
-        "metadata_seconds": None if variant == "opencv_sequential" else metadata_end - start,
+        "metadata_seconds": (
+            None if variant == "opencv_sequential" else metadata_end - start
+        ),
         "sampling_seconds": sampling_end - metadata_end,
         "combined_seconds": sampling_end - start,
         "candidate_count": len(frames),
@@ -197,7 +204,8 @@ def _measure(path, shots, indices, expected_timestamps, variant):
         "timestamp_max_abs_error_us": max(timestamp_errors),
         "timestamp_mean_abs_error_us": statistics.mean(timestamp_errors),
         "position_mismatch_count": sum(
-            abs(pos - index - 1) > 0.01 for pos, index in zip(positions, indices, strict=True)
+            abs(pos - index - 1) > 0.01
+            for pos, index in zip(positions, indices, strict=True)
         ),
         "image_shapes": sorted({tuple(frame.shape) for frame in frames}),
     }
@@ -280,7 +288,9 @@ def benchmark_video(video_path: str, repetitions: int = 3, single: bool = False)
             if reference_probes is None:
                 assert variant == "pyav_decord"
                 reference_probes = probes
-            measurement["probe_comparison_to_decord"] = _probe_difference(probes, reference_probes)
+            measurement["probe_comparison_to_decord"] = _probe_difference(
+                probes, reference_probes
+            )
             measurements.append(measurement)
             print(
                 f"{path.stem} repeat={repeat + 1} {variant}: {measurement['combined_seconds']:.3f}s",
@@ -288,12 +298,14 @@ def benchmark_video(video_path: str, repetitions: int = 3, single: bool = False)
             )
     summary = {
         variant: {
-            metric: None
-            if variant == "opencv_sequential" and metric == "metadata_seconds"
-            else statistics.median(
-                row[metric]
-                for row in measurements
-                if row["variant"] == variant and row[metric] is not None
+            metric: (
+                None
+                if variant == "opencv_sequential" and metric == "metadata_seconds"
+                else statistics.median(
+                    row[metric]
+                    for row in measurements
+                    if row["variant"] == variant and row[metric] is not None
+                )
             )
             for metric in (
                 "metadata_seconds",
