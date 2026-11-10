@@ -552,7 +552,9 @@ and warmup; these are not full-pipeline times or concurrent batch makespans.
 OpenCV builds a timestamp timeline during sequential decoding while PyAV/Decord
 validates native packet timestamps. Consider these scope differences and the
 correctness diagnostics alongside speed. Configurations with OOM or
-incomplete repetitions do not receive an all-video speedup claim. A single run
+incomplete repetitions do not receive an all-video speedup claim. Comparisons
+require matching video sets and valid timings; embedding comparisons additionally
+require the reference-equivalence check to pass. A single run
 is exploratory; increase repeats when assessing measurement stability.
 
 ## Development checks

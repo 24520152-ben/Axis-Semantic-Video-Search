@@ -1,7 +1,7 @@
 [project]
 name = "aic-abr"
 version = "0.1.0"
-description = "Shot-aware keyframe selection and Qwen visual embeddings on Modal"
+description = "Uniform frame sampling within shots and Qwen visual embeddings on Modal"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
