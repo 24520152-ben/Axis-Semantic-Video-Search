@@ -3,42 +3,44 @@
   "videos": [
     {
       "video": "data/Videos_L21_a/video/L21_V013.mp4",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "sampling_policy": "all uniform 1-second candidates within clean shots; no selection",
       "source_sha256": "f04395b6c7cdcac59cbbe23dd2db688b4466646bede89daf36f797155c39090e",
       "frame_count": 33805,
       "candidate_count": 1253,
       "shot_count": 315,
-      "setup_shot_source": "shared_dali_shot_ranges",
+      "setup_shot_source": "production_detect_shots_outside_timing",
       "repetitions": 1,
       "summary_medians": {
         "pyav_decord": {
-          "metadata_seconds": 0.7018443340000005,
-          "sampling_seconds": 22.045178919,
-          "combined_seconds": 22.747023253000002,
-          "peak_rss_bytes": 7319437312
+          "metadata_seconds": 0.9015469380000098,
+          "sampling_seconds": 21.308339856999993,
+          "combined_seconds": 22.209886795000003,
+          "peak_rss_bytes": 10307649536
         },
         "opencv_sequential": {
-          "metadata_seconds": 0.14420203799999953,
-          "sampling_seconds": 21.964031702999996,
-          "combined_seconds": 22.108233740999996,
-          "peak_rss_bytes": 7052464128
+          "metadata_seconds": null,
+          "sampling_seconds": 22.445381377999993,
+          "combined_seconds": 22.445381377999993,
+          "peak_rss_bytes": 10161229824
         },
         "opencv_seek": {
-          "metadata_seconds": 0.13987621300000086,
-          "sampling_seconds": 69.142426745,
-          "combined_seconds": 69.282302958,
-          "peak_rss_bytes": 7054532608
+          "metadata_seconds": 0.13979080499998986,
+          "sampling_seconds": 69.59079349800001,
+          "combined_seconds": 69.730584303,
+          "peak_rss_bytes": 10159337472
         }
       },
       "measurements": [
         {
           "variant": "pyav_decord",
-          "metadata_seconds": 0.7018443340000005,
-          "sampling_seconds": 22.045178919,
-          "combined_seconds": 22.747023253000002,
+          "metadata_seconds": 0.9015469380000098,
+          "sampling_seconds": 21.308339856999993,
+          "combined_seconds": 22.209886795000003,
           "candidate_count": 1253,
-          "peak_rss_bytes": 7319437312,
-          "baseline_rss_bytes": 3519533056,
-          "incremental_peak_rss_bytes": 3799904256,
+          "peak_rss_bytes": 10307649536,
+          "baseline_rss_bytes": 6491987968,
+          "incremental_peak_rss_bytes": 3815661568,
           "metadata": {
             "sha256": "f04395b6c7cdcac59cbbe23dd2db688b4466646bede89daf36f797155c39090e",
             "frame_count": 33805,
@@ -69,24 +71,21 @@
         },
         {
           "variant": "opencv_sequential",
-          "metadata_seconds": 0.14420203799999953,
-          "sampling_seconds": 21.964031702999996,
-          "combined_seconds": 22.108233740999996,
+          "metadata_seconds": null,
+          "sampling_seconds": 22.445381377999993,
+          "combined_seconds": 22.445381377999993,
           "candidate_count": 1253,
-          "peak_rss_bytes": 7052464128,
-          "baseline_rss_bytes": 3536330752,
-          "incremental_peak_rss_bytes": 3516133376,
+          "peak_rss_bytes": 10161229824,
+          "baseline_rss_bytes": 6671069184,
+          "incremental_peak_rss_bytes": 3490160640,
           "metadata": {
             "sha256": "f04395b6c7cdcac59cbbe23dd2db688b4466646bede89daf36f797155c39090e",
             "frame_count": 33805,
             "fps": 30.0,
-            "width": 1280,
-            "height": 720,
-            "backend": "FFMPEG",
-            "decoder_threads": 4.0
+            "backend": "production OpenCV sequential"
           },
-          "timestamp_max_abs_error_us": 0.33333349227905273,
-          "timestamp_mean_abs_error_us": 0.2061718554827165,
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
           "position_mismatch_count": 0,
           "image_shapes": [
             [
@@ -106,13 +105,13 @@
         },
         {
           "variant": "opencv_seek",
-          "metadata_seconds": 0.13987621300000086,
-          "sampling_seconds": 69.142426745,
-          "combined_seconds": 69.282302958,
+          "metadata_seconds": 0.13979080499998986,
+          "sampling_seconds": 69.59079349800001,
+          "combined_seconds": 69.730584303,
           "candidate_count": 1253,
-          "peak_rss_bytes": 7054532608,
-          "baseline_rss_bytes": 3536650240,
-          "incremental_peak_rss_bytes": 3517882368,
+          "peak_rss_bytes": 10159337472,
+          "baseline_rss_bytes": 6656008192,
+          "incremental_peak_rss_bytes": 3503329280,
           "metadata": {
             "sha256": "f04395b6c7cdcac59cbbe23dd2db688b4466646bede89daf36f797155c39090e",
             "frame_count": 33805,
@@ -157,8 +156,8 @@
       "methodology": {
         "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
         "model_setup": "Shot detection/reference candidate construction outside measurement",
-        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
-        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "metadata_scope": "SHA-256 in all branches. Production OpenCV builds timeline inside its scan: metadata_seconds=null, sampling_seconds includes metadata. Other paths index separately.",
+        "sampling_scope": "Production read_candidates scans to EOF, builds timeline and retains all sampled RGB tensors. Alternatives use the same candidate indices; Decord batches of4 and OpenCV seek stop at last candidate.",
         "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
         "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
         "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
@@ -167,42 +166,44 @@
     },
     {
       "video": "data/Videos_L21_a/video/L21_V022.mp4",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "sampling_policy": "all uniform 1-second candidates within clean shots; no selection",
       "source_sha256": "f118d454f26dfe2133d75cf82631b5fc575c6df41e7ad5112350ef75c3a42618",
       "frame_count": 29325,
       "candidate_count": 1089,
       "shot_count": 222,
-      "setup_shot_source": "local_detection_outside_timing",
+      "setup_shot_source": "production_detect_shots_outside_timing",
       "repetitions": 1,
       "summary_medians": {
         "pyav_decord": {
-          "metadata_seconds": 0.5655317330000003,
-          "sampling_seconds": 17.286463236000003,
-          "combined_seconds": 17.851994969000003,
-          "peak_rss_bytes": 9560608768
+          "metadata_seconds": 0.7544831189999996,
+          "sampling_seconds": 16.04368376,
+          "combined_seconds": 16.798166879,
+          "peak_rss_bytes": 9733353472
         },
         "opencv_sequential": {
-          "metadata_seconds": 0.09881851900000527,
-          "sampling_seconds": 16.340779450999996,
-          "combined_seconds": 16.43959797,
-          "peak_rss_bytes": 9505366016
+          "metadata_seconds": null,
+          "sampling_seconds": 16.443544970999994,
+          "combined_seconds": 16.443544970999994,
+          "peak_rss_bytes": 9665531904
         },
         "opencv_seek": {
-          "metadata_seconds": 0.0992268630000126,
-          "sampling_seconds": 56.34110345899998,
-          "combined_seconds": 56.440330321999994,
-          "peak_rss_bytes": 9508220928
+          "metadata_seconds": 0.0968620379999976,
+          "sampling_seconds": 55.216380298999994,
+          "combined_seconds": 55.31324233699999,
+          "peak_rss_bytes": 9665191936
         }
       },
       "measurements": [
         {
           "variant": "pyav_decord",
-          "metadata_seconds": 0.5655317330000003,
-          "sampling_seconds": 17.286463236000003,
-          "combined_seconds": 17.851994969000003,
+          "metadata_seconds": 0.7544831189999996,
+          "sampling_seconds": 16.04368376,
+          "combined_seconds": 16.798166879,
           "candidate_count": 1089,
-          "peak_rss_bytes": 9560608768,
-          "baseline_rss_bytes": 6414237696,
-          "incremental_peak_rss_bytes": 3146371072,
+          "peak_rss_bytes": 9733353472,
+          "baseline_rss_bytes": 6469398528,
+          "incremental_peak_rss_bytes": 3263954944,
           "metadata": {
             "sha256": "f118d454f26dfe2133d75cf82631b5fc575c6df41e7ad5112350ef75c3a42618",
             "frame_count": 29325,
@@ -233,24 +234,21 @@
         },
         {
           "variant": "opencv_sequential",
-          "metadata_seconds": 0.09881851900000527,
-          "sampling_seconds": 16.340779450999996,
-          "combined_seconds": 16.43959797,
+          "metadata_seconds": null,
+          "sampling_seconds": 16.443544970999994,
+          "combined_seconds": 16.443544970999994,
           "candidate_count": 1089,
-          "peak_rss_bytes": 9505366016,
-          "baseline_rss_bytes": 6481620992,
-          "incremental_peak_rss_bytes": 3023745024,
+          "peak_rss_bytes": 9665531904,
+          "baseline_rss_bytes": 6633586688,
+          "incremental_peak_rss_bytes": 3031945216,
           "metadata": {
             "sha256": "f118d454f26dfe2133d75cf82631b5fc575c6df41e7ad5112350ef75c3a42618",
             "frame_count": 29325,
             "fps": 30.0,
-            "width": 1280,
-            "height": 720,
-            "backend": "FFMPEG",
-            "decoder_threads": 4.0
+            "backend": "production OpenCV sequential"
           },
-          "timestamp_max_abs_error_us": 0.3333333730697632,
-          "timestamp_mean_abs_error_us": 0.19895928792613216,
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
           "position_mismatch_count": 0,
           "image_shapes": [
             [
@@ -270,13 +268,13 @@
         },
         {
           "variant": "opencv_seek",
-          "metadata_seconds": 0.0992268630000126,
-          "sampling_seconds": 56.34110345899998,
-          "combined_seconds": 56.440330321999994,
+          "metadata_seconds": 0.0968620379999976,
+          "sampling_seconds": 55.216380298999994,
+          "combined_seconds": 55.31324233699999,
           "candidate_count": 1089,
-          "peak_rss_bytes": 9508220928,
-          "baseline_rss_bytes": 6461988864,
-          "incremental_peak_rss_bytes": 3046232064,
+          "peak_rss_bytes": 9665191936,
+          "baseline_rss_bytes": 6630916096,
+          "incremental_peak_rss_bytes": 3034275840,
           "metadata": {
             "sha256": "f118d454f26dfe2133d75cf82631b5fc575c6df41e7ad5112350ef75c3a42618",
             "frame_count": 29325,
@@ -321,8 +319,8 @@
       "methodology": {
         "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
         "model_setup": "Shot detection/reference candidate construction outside measurement",
-        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
-        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "metadata_scope": "SHA-256 in all branches. Production OpenCV builds timeline inside its scan: metadata_seconds=null, sampling_seconds includes metadata. Other paths index separately.",
+        "sampling_scope": "Production read_candidates scans to EOF, builds timeline and retains all sampled RGB tensors. Alternatives use the same candidate indices; Decord batches of4 and OpenCV seek stop at last candidate.",
         "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
         "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
         "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
@@ -331,42 +329,44 @@
     },
     {
       "video": "data/Videos_L21_a/video/L21_V023.mp4",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "sampling_policy": "all uniform 1-second candidates within clean shots; no selection",
       "source_sha256": "06666744ef3ae99813955494c77975998c22586388c54396c72e37372252bf3f",
       "frame_count": 35391,
       "candidate_count": 1331,
       "shot_count": 319,
-      "setup_shot_source": "local_detection_outside_timing",
+      "setup_shot_source": "production_detect_shots_outside_timing",
       "repetitions": 1,
       "summary_medians": {
         "pyav_decord": {
-          "metadata_seconds": 0.7127889409999995,
-          "sampling_seconds": 22.386098972000006,
-          "combined_seconds": 23.098887913000006,
-          "peak_rss_bytes": 10273316864
+          "metadata_seconds": 0.8907574629999999,
+          "sampling_seconds": 21.752253140999997,
+          "combined_seconds": 22.643010603999997,
+          "peak_rss_bytes": 10570530816
         },
         "opencv_sequential": {
-          "metadata_seconds": 0.13372642299999882,
-          "sampling_seconds": 21.775495223999997,
-          "combined_seconds": 21.909221646999995,
-          "peak_rss_bytes": 10199363584
+          "metadata_seconds": null,
+          "sampling_seconds": 21.73278882800001,
+          "combined_seconds": 21.73278882800001,
+          "peak_rss_bytes": 10372091904
         },
         "opencv_seek": {
-          "metadata_seconds": 0.13221005100000127,
-          "sampling_seconds": 70.17790287999999,
-          "combined_seconds": 70.31011293099999,
-          "peak_rss_bytes": 10199617536
+          "metadata_seconds": 0.14166109299999619,
+          "sampling_seconds": 72.533954902,
+          "combined_seconds": 72.675615995,
+          "peak_rss_bytes": 10372272128
         }
       },
       "measurements": [
         {
           "variant": "pyav_decord",
-          "metadata_seconds": 0.7127889409999995,
-          "sampling_seconds": 22.386098972000006,
-          "combined_seconds": 23.098887913000006,
+          "metadata_seconds": 0.8907574629999999,
+          "sampling_seconds": 21.752253140999997,
+          "combined_seconds": 22.643010603999997,
           "candidate_count": 1331,
-          "peak_rss_bytes": 10273316864,
-          "baseline_rss_bytes": 6409265152,
-          "incremental_peak_rss_bytes": 3864051712,
+          "peak_rss_bytes": 10570530816,
+          "baseline_rss_bytes": 6535069696,
+          "incremental_peak_rss_bytes": 4035461120,
           "metadata": {
             "sha256": "06666744ef3ae99813955494c77975998c22586388c54396c72e37372252bf3f",
             "frame_count": 35391,
@@ -397,24 +397,21 @@
         },
         {
           "variant": "opencv_sequential",
-          "metadata_seconds": 0.13372642299999882,
-          "sampling_seconds": 21.775495223999997,
-          "combined_seconds": 21.909221646999995,
+          "metadata_seconds": null,
+          "sampling_seconds": 21.73278882800001,
+          "combined_seconds": 21.73278882800001,
           "candidate_count": 1331,
-          "peak_rss_bytes": 10199363584,
-          "baseline_rss_bytes": 6488068096,
-          "incremental_peak_rss_bytes": 3711295488,
+          "peak_rss_bytes": 10372091904,
+          "baseline_rss_bytes": 6705901568,
+          "incremental_peak_rss_bytes": 3666190336,
           "metadata": {
             "sha256": "06666744ef3ae99813955494c77975998c22586388c54396c72e37372252bf3f",
             "frame_count": 35391,
             "fps": 30.0,
-            "width": 1280,
-            "height": 720,
-            "backend": "FFMPEG",
-            "decoder_threads": 4.0
+            "backend": "production OpenCV sequential"
           },
-          "timestamp_max_abs_error_us": 0.33333349227905273,
-          "timestamp_mean_abs_error_us": 0.17330328155658536,
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
           "position_mismatch_count": 0,
           "image_shapes": [
             [
@@ -434,13 +431,13 @@
         },
         {
           "variant": "opencv_seek",
-          "metadata_seconds": 0.13221005100000127,
-          "sampling_seconds": 70.17790287999999,
-          "combined_seconds": 70.31011293099999,
+          "metadata_seconds": 0.14166109299999619,
+          "sampling_seconds": 72.533954902,
+          "combined_seconds": 72.675615995,
           "candidate_count": 1331,
-          "peak_rss_bytes": 10199617536,
-          "baseline_rss_bytes": 6484684800,
-          "incremental_peak_rss_bytes": 3714932736,
+          "peak_rss_bytes": 10372272128,
+          "baseline_rss_bytes": 6704156672,
+          "incremental_peak_rss_bytes": 3668115456,
           "metadata": {
             "sha256": "06666744ef3ae99813955494c77975998c22586388c54396c72e37372252bf3f",
             "frame_count": 35391,
@@ -485,8 +482,8 @@
       "methodology": {
         "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
         "model_setup": "Shot detection/reference candidate construction outside measurement",
-        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
-        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "metadata_scope": "SHA-256 in all branches. Production OpenCV builds timeline inside its scan: metadata_seconds=null, sampling_seconds includes metadata. Other paths index separately.",
+        "sampling_scope": "Production read_candidates scans to EOF, builds timeline and retains all sampled RGB tensors. Alternatives use the same candidate indices; Decord batches of4 and OpenCV seek stop at last candidate.",
         "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
         "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
         "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
@@ -495,42 +492,44 @@
     },
     {
       "video": "data/Videos_L22_a/video/L22_V021.mp4",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "sampling_policy": "all uniform 1-second candidates within clean shots; no selection",
       "source_sha256": "0e3859e1ef85e7e16f9da0a775161a064b0c033262b4b3e2d98175f33d7da4ad",
       "frame_count": 38124,
       "candidate_count": 1435,
       "shot_count": 363,
-      "setup_shot_source": "local_detection_outside_timing",
+      "setup_shot_source": "production_detect_shots_outside_timing",
       "repetitions": 1,
       "summary_medians": {
         "pyav_decord": {
-          "metadata_seconds": 0.7824918759999946,
-          "sampling_seconds": 24.227083052000005,
-          "combined_seconds": 25.009574928,
-          "peak_rss_bytes": 10574868480
+          "metadata_seconds": 0.9826653310000069,
+          "sampling_seconds": 23.95617916399999,
+          "combined_seconds": 24.938844494999998,
+          "peak_rss_bytes": 10857750528
         },
         "opencv_sequential": {
-          "metadata_seconds": 0.14849394400000904,
-          "sampling_seconds": 24.326753491999995,
-          "combined_seconds": 24.475247436000004,
-          "peak_rss_bytes": 10496782336
+          "metadata_seconds": null,
+          "sampling_seconds": 25.108863373000005,
+          "combined_seconds": 25.108863373000005,
+          "peak_rss_bytes": 10681286656
         },
         "opencv_seek": {
-          "metadata_seconds": 0.1515040780000021,
-          "sampling_seconds": 75.90770693699999,
-          "combined_seconds": 76.05921101499999,
-          "peak_rss_bytes": 10497957888
+          "metadata_seconds": 0.15003787899999566,
+          "sampling_seconds": 75.56633441000001,
+          "combined_seconds": 75.716372289,
+          "peak_rss_bytes": 10679660544
         }
       },
       "measurements": [
         {
           "variant": "pyav_decord",
-          "metadata_seconds": 0.7824918759999946,
-          "sampling_seconds": 24.227083052000005,
-          "combined_seconds": 25.009574928,
+          "metadata_seconds": 0.9826653310000069,
+          "sampling_seconds": 23.95617916399999,
+          "combined_seconds": 24.938844494999998,
           "candidate_count": 1435,
-          "peak_rss_bytes": 10574868480,
-          "baseline_rss_bytes": 6414069760,
-          "incremental_peak_rss_bytes": 4160798720,
+          "peak_rss_bytes": 10857750528,
+          "baseline_rss_bytes": 6505992192,
+          "incremental_peak_rss_bytes": 4351758336,
           "metadata": {
             "sha256": "0e3859e1ef85e7e16f9da0a775161a064b0c033262b4b3e2d98175f33d7da4ad",
             "frame_count": 38124,
@@ -561,24 +560,21 @@
         },
         {
           "variant": "opencv_sequential",
-          "metadata_seconds": 0.14849394400000904,
-          "sampling_seconds": 24.326753491999995,
-          "combined_seconds": 24.475247436000004,
+          "metadata_seconds": null,
+          "sampling_seconds": 25.108863373000005,
+          "combined_seconds": 25.108863373000005,
           "candidate_count": 1435,
-          "peak_rss_bytes": 10496782336,
-          "baseline_rss_bytes": 6506344448,
-          "incremental_peak_rss_bytes": 3990437888,
+          "peak_rss_bytes": 10681286656,
+          "baseline_rss_bytes": 6692896768,
+          "incremental_peak_rss_bytes": 3988389888,
           "metadata": {
             "sha256": "0e3859e1ef85e7e16f9da0a775161a064b0c033262b4b3e2d98175f33d7da4ad",
             "frame_count": 38124,
             "fps": 30.0,
-            "width": 1280,
-            "height": 720,
-            "backend": "FFMPEG",
-            "decoder_threads": 4.0
+            "backend": "production OpenCV sequential"
           },
-          "timestamp_max_abs_error_us": 0.33333349227905273,
-          "timestamp_mean_abs_error_us": 0.19837398942558335,
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
           "position_mismatch_count": 0,
           "image_shapes": [
             [
@@ -598,13 +594,13 @@
         },
         {
           "variant": "opencv_seek",
-          "metadata_seconds": 0.1515040780000021,
-          "sampling_seconds": 75.90770693699999,
-          "combined_seconds": 76.05921101499999,
+          "metadata_seconds": 0.15003787899999566,
+          "sampling_seconds": 75.56633441000001,
+          "combined_seconds": 75.716372289,
           "candidate_count": 1435,
-          "peak_rss_bytes": 10497957888,
-          "baseline_rss_bytes": 6493405184,
-          "incremental_peak_rss_bytes": 4004552704,
+          "peak_rss_bytes": 10679660544,
+          "baseline_rss_bytes": 6682583040,
+          "incremental_peak_rss_bytes": 3997077504,
           "metadata": {
             "sha256": "0e3859e1ef85e7e16f9da0a775161a064b0c033262b4b3e2d98175f33d7da4ad",
             "frame_count": 38124,
@@ -649,8 +645,8 @@
       "methodology": {
         "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
         "model_setup": "Shot detection/reference candidate construction outside measurement",
-        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
-        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "metadata_scope": "SHA-256 in all branches. Production OpenCV builds timeline inside its scan: metadata_seconds=null, sampling_seconds includes metadata. Other paths index separately.",
+        "sampling_scope": "Production read_candidates scans to EOF, builds timeline and retains all sampled RGB tensors. Alternatives use the same candidate indices; Decord batches of4 and OpenCV seek stop at last candidate.",
         "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
         "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
         "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
@@ -659,42 +655,44 @@
     },
     {
       "video": "data/Videos_L22_a/video/L22_V026.mp4",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "sampling_policy": "all uniform 1-second candidates within clean shots; no selection",
       "source_sha256": "19ed088e3b963c82bd66c5ce6ffb1f27af2ec60ba17f54d00152078c584e3b97",
       "frame_count": 34064,
       "candidate_count": 1271,
       "shot_count": 332,
-      "setup_shot_source": "local_detection_outside_timing",
+      "setup_shot_source": "production_detect_shots_outside_timing",
       "repetitions": 1,
       "summary_medians": {
         "pyav_decord": {
-          "metadata_seconds": 0.6853326600000003,
-          "sampling_seconds": 20.106706292000005,
-          "combined_seconds": 20.792038952000006,
-          "peak_rss_bytes": 10102206464
+          "metadata_seconds": 0.8952039189999965,
+          "sampling_seconds": 21.672581516000008,
+          "combined_seconds": 22.567785435000005,
+          "peak_rss_bytes": 10414714880
         },
         "opencv_sequential": {
-          "metadata_seconds": 0.13085944700000596,
-          "sampling_seconds": 19.819920685,
-          "combined_seconds": 19.950780132000006,
-          "peak_rss_bytes": 10027675648
+          "metadata_seconds": null,
+          "sampling_seconds": 21.31569657899999,
+          "combined_seconds": 21.31569657899999,
+          "peak_rss_bytes": 10202566656
         },
         "opencv_seek": {
-          "metadata_seconds": 0.1307680299999987,
-          "sampling_seconds": 64.363365686,
-          "combined_seconds": 64.494133716,
-          "peak_rss_bytes": 10029260800
+          "metadata_seconds": 0.13689955899999973,
+          "sampling_seconds": 68.790986986,
+          "combined_seconds": 68.92788654499999,
+          "peak_rss_bytes": 10200199168
         }
       },
       "measurements": [
         {
           "variant": "pyav_decord",
-          "metadata_seconds": 0.6853326600000003,
-          "sampling_seconds": 20.106706292000005,
-          "combined_seconds": 20.792038952000006,
+          "metadata_seconds": 0.8952039189999965,
+          "sampling_seconds": 21.672581516000008,
+          "combined_seconds": 22.567785435000005,
           "candidate_count": 1271,
-          "peak_rss_bytes": 10102206464,
-          "baseline_rss_bytes": 6410784768,
-          "incremental_peak_rss_bytes": 3691421696,
+          "peak_rss_bytes": 10414714880,
+          "baseline_rss_bytes": 6498312192,
+          "incremental_peak_rss_bytes": 3916402688,
           "metadata": {
             "sha256": "19ed088e3b963c82bd66c5ce6ffb1f27af2ec60ba17f54d00152078c584e3b97",
             "frame_count": 34064,
@@ -725,24 +723,21 @@
         },
         {
           "variant": "opencv_sequential",
-          "metadata_seconds": 0.13085944700000596,
-          "sampling_seconds": 19.819920685,
-          "combined_seconds": 19.950780132000006,
+          "metadata_seconds": null,
+          "sampling_seconds": 21.31569657899999,
+          "combined_seconds": 21.31569657899999,
           "candidate_count": 1271,
-          "peak_rss_bytes": 10027675648,
-          "baseline_rss_bytes": 6489530368,
-          "incremental_peak_rss_bytes": 3538145280,
+          "peak_rss_bytes": 10202566656,
+          "baseline_rss_bytes": 6666199040,
+          "incremental_peak_rss_bytes": 3536367616,
           "metadata": {
             "sha256": "19ed088e3b963c82bd66c5ce6ffb1f27af2ec60ba17f54d00152078c584e3b97",
             "frame_count": 34064,
             "fps": 30.0,
-            "width": 1280,
-            "height": 720,
-            "backend": "FFMPEG",
-            "decoder_threads": 4.0
+            "backend": "production OpenCV sequential"
           },
-          "timestamp_max_abs_error_us": 0.33333349227905273,
-          "timestamp_mean_abs_error_us": 0.2045633390455717,
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
           "position_mismatch_count": 0,
           "image_shapes": [
             [
@@ -762,13 +757,13 @@
         },
         {
           "variant": "opencv_seek",
-          "metadata_seconds": 0.1307680299999987,
-          "sampling_seconds": 64.363365686,
-          "combined_seconds": 64.494133716,
+          "metadata_seconds": 0.13689955899999973,
+          "sampling_seconds": 68.790986986,
+          "combined_seconds": 68.92788654499999,
           "candidate_count": 1271,
-          "peak_rss_bytes": 10029260800,
-          "baseline_rss_bytes": 6484754432,
-          "incremental_peak_rss_bytes": 3544506368,
+          "peak_rss_bytes": 10200199168,
+          "baseline_rss_bytes": 6662529024,
+          "incremental_peak_rss_bytes": 3537670144,
           "metadata": {
             "sha256": "19ed088e3b963c82bd66c5ce6ffb1f27af2ec60ba17f54d00152078c584e3b97",
             "frame_count": 34064,
@@ -813,8 +808,8 @@
       "methodology": {
         "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
         "model_setup": "Shot detection/reference candidate construction outside measurement",
-        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
-        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "metadata_scope": "SHA-256 in all branches. Production OpenCV builds timeline inside its scan: metadata_seconds=null, sampling_seconds includes metadata. Other paths index separately.",
+        "sampling_scope": "Production read_candidates scans to EOF, builds timeline and retains all sampled RGB tensors. Alternatives use the same candidate indices; Decord batches of4 and OpenCV seek stop at last candidate.",
         "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
         "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
         "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
@@ -823,42 +818,44 @@
     },
     {
       "video": "data/Videos_L24_a/video/L24_V035.mp4",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "sampling_policy": "all uniform 1-second candidates within clean shots; no selection",
       "source_sha256": "6c6c28e5076bc5853c9b673c61226f7dccb28fc4168a7f33da039a7435593ea7",
       "frame_count": 19851,
       "candidate_count": 692,
       "shot_count": 67,
-      "setup_shot_source": "shared_dali_shot_ranges",
+      "setup_shot_source": "production_detect_shots_outside_timing",
       "repetitions": 1,
       "summary_medians": {
         "pyav_decord": {
-          "metadata_seconds": 0.5615003569999999,
-          "sampling_seconds": 15.685475810000014,
-          "combined_seconds": 16.246976167000014,
-          "peak_rss_bytes": 5885616128
+          "metadata_seconds": 0.5565669510000077,
+          "sampling_seconds": 15.893862127000006,
+          "combined_seconds": 16.450429078000013,
+          "peak_rss_bytes": 8965410816
         },
         "opencv_sequential": {
-          "metadata_seconds": 0.1744461680000029,
-          "sampling_seconds": 16.473556091000006,
-          "combined_seconds": 16.64800225900001,
-          "peak_rss_bytes": 5790003200
+          "metadata_seconds": null,
+          "sampling_seconds": 16.401221746000004,
+          "combined_seconds": 16.401221746000004,
+          "peak_rss_bytes": 8593055744
         },
         "opencv_seek": {
-          "metadata_seconds": 0.17511163099999294,
-          "sampling_seconds": 49.89733579,
-          "combined_seconds": 50.07244742099999,
-          "peak_rss_bytes": 5778432000
+          "metadata_seconds": 0.16750841500001457,
+          "sampling_seconds": 48.51956510900001,
+          "combined_seconds": 48.68707352400003,
+          "peak_rss_bytes": 8590983168
         }
       },
       "measurements": [
         {
           "variant": "pyav_decord",
-          "metadata_seconds": 0.5615003569999999,
-          "sampling_seconds": 15.685475810000014,
-          "combined_seconds": 16.246976167000014,
+          "metadata_seconds": 0.5565669510000077,
+          "sampling_seconds": 15.893862127000006,
+          "combined_seconds": 16.450429078000013,
           "candidate_count": 692,
-          "peak_rss_bytes": 5885616128,
-          "baseline_rss_bytes": 3794583552,
-          "incremental_peak_rss_bytes": 2091032576,
+          "peak_rss_bytes": 8965410816,
+          "baseline_rss_bytes": 6631710720,
+          "incremental_peak_rss_bytes": 2333700096,
           "metadata": {
             "sha256": "6c6c28e5076bc5853c9b673c61226f7dccb28fc4168a7f33da039a7435593ea7",
             "frame_count": 19851,
@@ -889,24 +886,21 @@
         },
         {
           "variant": "opencv_sequential",
-          "metadata_seconds": 0.1744461680000029,
-          "sampling_seconds": 16.473556091000006,
-          "combined_seconds": 16.64800225900001,
+          "metadata_seconds": null,
+          "sampling_seconds": 16.401221746000004,
+          "combined_seconds": 16.401221746000004,
           "candidate_count": 692,
-          "peak_rss_bytes": 5790003200,
-          "baseline_rss_bytes": 3839307776,
-          "incremental_peak_rss_bytes": 1950695424,
+          "peak_rss_bytes": 8593055744,
+          "baseline_rss_bytes": 6647824384,
+          "incremental_peak_rss_bytes": 1945231360,
           "metadata": {
             "sha256": "6c6c28e5076bc5853c9b673c61226f7dccb28fc4168a7f33da039a7435593ea7",
             "frame_count": 19851,
             "fps": 30.0,
-            "width": 1280,
-            "height": 720,
-            "backend": "FFMPEG",
-            "decoder_threads": 4.0
+            "backend": "production OpenCV sequential"
           },
-          "timestamp_max_abs_error_us": 0.3333333730697632,
-          "timestamp_mean_abs_error_us": 0.2861271685263885,
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
           "position_mismatch_count": 0,
           "image_shapes": [
             [
@@ -926,13 +920,13 @@
         },
         {
           "variant": "opencv_seek",
-          "metadata_seconds": 0.17511163099999294,
-          "sampling_seconds": 49.89733579,
-          "combined_seconds": 50.07244742099999,
+          "metadata_seconds": 0.16750841500001457,
+          "sampling_seconds": 48.51956510900001,
+          "combined_seconds": 48.68707352400003,
           "candidate_count": 692,
-          "peak_rss_bytes": 5778432000,
-          "baseline_rss_bytes": 3831758848,
-          "incremental_peak_rss_bytes": 1946673152,
+          "peak_rss_bytes": 8590983168,
+          "baseline_rss_bytes": 6649724928,
+          "incremental_peak_rss_bytes": 1941258240,
           "metadata": {
             "sha256": "6c6c28e5076bc5853c9b673c61226f7dccb28fc4168a7f33da039a7435593ea7",
             "frame_count": 19851,
@@ -977,8 +971,8 @@
       "methodology": {
         "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
         "model_setup": "Shot detection/reference candidate construction outside measurement",
-        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
-        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "metadata_scope": "SHA-256 in all branches. Production OpenCV builds timeline inside its scan: metadata_seconds=null, sampling_seconds includes metadata. Other paths index separately.",
+        "sampling_scope": "Production read_candidates scans to EOF, builds timeline and retains all sampled RGB tensors. Alternatives use the same candidate indices; Decord batches of4 and OpenCV seek stop at last candidate.",
         "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
         "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
         "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
@@ -987,42 +981,44 @@
     },
     {
       "video": "data/Videos_L24_a/video/L24_V044.mp4",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "sampling_policy": "all uniform 1-second candidates within clean shots; no selection",
       "source_sha256": "e4a8338cc81d37c326e31af787e1f9fd1a82ff31fe7f27c14f05b165308c81ae",
       "frame_count": 933,
       "candidate_count": 43,
       "shot_count": 17,
-      "setup_shot_source": "shared_dali_shot_ranges",
+      "setup_shot_source": "production_detect_shots_outside_timing",
       "repetitions": 1,
       "summary_medians": {
         "pyav_decord": {
-          "metadata_seconds": 0.0511222860000089,
-          "sampling_seconds": 0.8296290979999981,
-          "combined_seconds": 0.880751384000007,
-          "peak_rss_bytes": 6662791168
+          "metadata_seconds": 0.04497682199999531,
+          "sampling_seconds": 0.817199732000006,
+          "combined_seconds": 0.8621765540000013,
+          "peak_rss_bytes": 6842363904
         },
         "opencv_sequential": {
-          "metadata_seconds": 0.018748702999999978,
-          "sampling_seconds": 0.9190856129999929,
-          "combined_seconds": 0.9378343159999929,
-          "peak_rss_bytes": 6630150144
+          "metadata_seconds": null,
+          "sampling_seconds": 0.9690459680000174,
+          "combined_seconds": 0.9690459680000174,
+          "peak_rss_bytes": 6840352768
         },
         "opencv_seek": {
-          "metadata_seconds": 0.018751247000011517,
-          "sampling_seconds": 2.1020524209999962,
-          "combined_seconds": 2.1208036680000077,
-          "peak_rss_bytes": 6632239104
+          "metadata_seconds": 0.018842641999981424,
+          "sampling_seconds": 2.1324580420000245,
+          "combined_seconds": 2.151300684000006,
+          "peak_rss_bytes": 6836953088
         }
       },
       "measurements": [
         {
           "variant": "pyav_decord",
-          "metadata_seconds": 0.0511222860000089,
-          "sampling_seconds": 0.8296290979999981,
-          "combined_seconds": 0.880751384000007,
+          "metadata_seconds": 0.04497682199999531,
+          "sampling_seconds": 0.817199732000006,
+          "combined_seconds": 0.8621765540000013,
           "candidate_count": 43,
-          "peak_rss_bytes": 6662791168,
-          "baseline_rss_bytes": 6464323584,
-          "incremental_peak_rss_bytes": 198467584,
+          "peak_rss_bytes": 6842363904,
+          "baseline_rss_bytes": 6683750400,
+          "incremental_peak_rss_bytes": 158613504,
           "metadata": {
             "sha256": "e4a8338cc81d37c326e31af787e1f9fd1a82ff31fe7f27c14f05b165308c81ae",
             "frame_count": 933,
@@ -1053,24 +1049,21 @@
         },
         {
           "variant": "opencv_sequential",
-          "metadata_seconds": 0.018748702999999978,
-          "sampling_seconds": 0.9190856129999929,
-          "combined_seconds": 0.9378343159999929,
+          "metadata_seconds": null,
+          "sampling_seconds": 0.9690459680000174,
+          "combined_seconds": 0.9690459680000174,
           "candidate_count": 43,
-          "peak_rss_bytes": 6630150144,
-          "baseline_rss_bytes": 6480191488,
-          "incremental_peak_rss_bytes": 149958656,
+          "peak_rss_bytes": 6840352768,
+          "baseline_rss_bytes": 6695239680,
+          "incremental_peak_rss_bytes": 145113088,
           "metadata": {
             "sha256": "e4a8338cc81d37c326e31af787e1f9fd1a82ff31fe7f27c14f05b165308c81ae",
             "frame_count": 933,
             "fps": 26.438,
-            "width": 720,
-            "height": 1280,
-            "backend": "FFMPEG",
-            "decoder_threads": 4.0
+            "backend": "production OpenCV sequential"
           },
-          "timestamp_max_abs_error_us": 0.4991300404071808,
-          "timestamp_mean_abs_error_us": 0.2206900921954129,
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
           "position_mismatch_count": 0,
           "image_shapes": [
             [
@@ -1090,13 +1083,13 @@
         },
         {
           "variant": "opencv_seek",
-          "metadata_seconds": 0.018751247000011517,
-          "sampling_seconds": 2.1020524209999962,
-          "combined_seconds": 2.1208036680000077,
+          "metadata_seconds": 0.018842641999981424,
+          "sampling_seconds": 2.1324580420000245,
+          "combined_seconds": 2.151300684000006,
           "candidate_count": 43,
-          "peak_rss_bytes": 6632239104,
-          "baseline_rss_bytes": 6485331968,
-          "incremental_peak_rss_bytes": 146907136,
+          "peak_rss_bytes": 6836953088,
+          "baseline_rss_bytes": 6694395904,
+          "incremental_peak_rss_bytes": 142557184,
           "metadata": {
             "sha256": "e4a8338cc81d37c326e31af787e1f9fd1a82ff31fe7f27c14f05b165308c81ae",
             "frame_count": 933,
@@ -1141,8 +1134,8 @@
       "methodology": {
         "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
         "model_setup": "Shot detection/reference candidate construction outside measurement",
-        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
-        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "metadata_scope": "SHA-256 in all branches. Production OpenCV builds timeline inside its scan: metadata_seconds=null, sampling_seconds includes metadata. Other paths index separately.",
+        "sampling_scope": "Production read_candidates scans to EOF, builds timeline and retains all sampled RGB tensors. Alternatives use the same candidate indices; Decord batches of4 and OpenCV seek stop at last candidate.",
         "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
         "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
         "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
@@ -1151,42 +1144,44 @@
     },
     {
       "video": "data/Videos_L25_a/video/L25_V016.mp4",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "sampling_policy": "all uniform 1-second candidates within clean shots; no selection",
       "source_sha256": "aa2e3e162aadc07725593d10cbafb589aed1cc5739b9dd73e98c076112f2ce39",
       "frame_count": 39809,
       "candidate_count": 1335,
       "shot_count": 132,
-      "setup_shot_source": "local_detection_outside_timing",
+      "setup_shot_source": "production_detect_shots_outside_timing",
       "repetitions": 1,
       "summary_medians": {
         "pyav_decord": {
-          "metadata_seconds": 0.9494600749999904,
-          "sampling_seconds": 23.62437729300001,
-          "combined_seconds": 24.573837368,
-          "peak_rss_bytes": 10325159936
+          "metadata_seconds": 0.9332985080000071,
+          "sampling_seconds": 24.174985883999966,
+          "combined_seconds": 25.108284391999973,
+          "peak_rss_bytes": 10511843328
         },
         "opencv_sequential": {
-          "metadata_seconds": 0.23005374600001005,
-          "sampling_seconds": 24.94278557300001,
-          "combined_seconds": 25.17283931900002,
-          "peak_rss_bytes": 10250248192
+          "metadata_seconds": null,
+          "sampling_seconds": 27.466848870000035,
+          "combined_seconds": 27.466848870000035,
+          "peak_rss_bytes": 10405441536
         },
         "opencv_seek": {
-          "metadata_seconds": 0.2313130760000206,
-          "sampling_seconds": 74.42557778199998,
-          "combined_seconds": 74.656890858,
-          "peak_rss_bytes": 10241265664
+          "metadata_seconds": 0.2217187189999663,
+          "sampling_seconds": 79.38782735200004,
+          "combined_seconds": 79.60954607100001,
+          "peak_rss_bytes": 10403799040
         }
       },
       "measurements": [
         {
           "variant": "pyav_decord",
-          "metadata_seconds": 0.9494600749999904,
-          "sampling_seconds": 23.62437729300001,
-          "combined_seconds": 24.573837368,
+          "metadata_seconds": 0.9332985080000071,
+          "sampling_seconds": 24.174985883999966,
+          "combined_seconds": 25.108284391999973,
           "candidate_count": 1335,
-          "peak_rss_bytes": 10325159936,
-          "baseline_rss_bytes": 6501412864,
-          "incremental_peak_rss_bytes": 3823747072,
+          "peak_rss_bytes": 10511843328,
+          "baseline_rss_bytes": 6652383232,
+          "incremental_peak_rss_bytes": 3859460096,
           "metadata": {
             "sha256": "aa2e3e162aadc07725593d10cbafb589aed1cc5739b9dd73e98c076112f2ce39",
             "frame_count": 39809,
@@ -1217,24 +1212,21 @@
         },
         {
           "variant": "opencv_sequential",
-          "metadata_seconds": 0.23005374600001005,
-          "sampling_seconds": 24.94278557300001,
-          "combined_seconds": 25.17283931900002,
+          "metadata_seconds": null,
+          "sampling_seconds": 27.466848870000035,
+          "combined_seconds": 27.466848870000035,
           "candidate_count": 1335,
-          "peak_rss_bytes": 10250248192,
-          "baseline_rss_bytes": 6524354560,
-          "incremental_peak_rss_bytes": 3725893632,
+          "peak_rss_bytes": 10405441536,
+          "baseline_rss_bytes": 6674505728,
+          "incremental_peak_rss_bytes": 3730935808,
           "metadata": {
             "sha256": "aa2e3e162aadc07725593d10cbafb589aed1cc5739b9dd73e98c076112f2ce39",
             "frame_count": 39809,
             "fps": 25.0,
-            "width": 1280,
-            "height": 720,
-            "backend": "FFMPEG",
-            "decoder_threads": 4.0
+            "backend": "production OpenCV sequential"
           },
-          "timestamp_max_abs_error_us": 2.384185791015625e-07,
-          "timestamp_mean_abs_error_us": 5.736668011668916e-08,
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
           "position_mismatch_count": 0,
           "image_shapes": [
             [
@@ -1254,13 +1246,13 @@
         },
         {
           "variant": "opencv_seek",
-          "metadata_seconds": 0.2313130760000206,
-          "sampling_seconds": 74.42557778199998,
-          "combined_seconds": 74.656890858,
+          "metadata_seconds": 0.2217187189999663,
+          "sampling_seconds": 79.38782735200004,
+          "combined_seconds": 79.60954607100001,
           "candidate_count": 1335,
-          "peak_rss_bytes": 10241265664,
-          "baseline_rss_bytes": 6509002752,
-          "incremental_peak_rss_bytes": 3732262912,
+          "peak_rss_bytes": 10403799040,
+          "baseline_rss_bytes": 6679244800,
+          "incremental_peak_rss_bytes": 3724554240,
           "metadata": {
             "sha256": "aa2e3e162aadc07725593d10cbafb589aed1cc5739b9dd73e98c076112f2ce39",
             "frame_count": 39809,
@@ -1305,8 +1297,8 @@
       "methodology": {
         "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
         "model_setup": "Shot detection/reference candidate construction outside measurement",
-        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
-        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "metadata_scope": "SHA-256 in all branches. Production OpenCV builds timeline inside its scan: metadata_seconds=null, sampling_seconds includes metadata. Other paths index separately.",
+        "sampling_scope": "Production read_candidates scans to EOF, builds timeline and retains all sampled RGB tensors. Alternatives use the same candidate indices; Decord batches of4 and OpenCV seek stop at last candidate.",
         "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
         "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
         "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
@@ -1315,42 +1307,44 @@
     },
     {
       "video": "data/Videos_L25_a/video/L25_V075.mp4",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "sampling_policy": "all uniform 1-second candidates within clean shots; no selection",
       "source_sha256": "687fa4d283d4bc206e9c9024796d4cd7f9a33d493a44c2125d420812fb57fcc0",
       "frame_count": 43403,
       "candidate_count": 1765,
       "shot_count": 118,
-      "setup_shot_source": "local_detection_outside_timing",
+      "setup_shot_source": "production_detect_shots_outside_timing",
       "repetitions": 1,
       "summary_medians": {
         "pyav_decord": {
-          "metadata_seconds": 0.8365431320000027,
-          "sampling_seconds": 22.920335088,
-          "combined_seconds": 23.756878220000004,
-          "peak_rss_bytes": 11491102720
+          "metadata_seconds": 0.8497730049999745,
+          "sampling_seconds": 24.338214721000043,
+          "combined_seconds": 25.187987726000017,
+          "peak_rss_bytes": 11686264832
         },
         "opencv_sequential": {
-          "metadata_seconds": 0.13527053800001454,
-          "sampling_seconds": 20.992932456999995,
-          "combined_seconds": 21.12820299500001,
-          "peak_rss_bytes": 11450826752
+          "metadata_seconds": null,
+          "sampling_seconds": 22.763759782000022,
+          "combined_seconds": 22.763759782000022,
+          "peak_rss_bytes": 11622883328
         },
         "opencv_seek": {
-          "metadata_seconds": 0.133837729000021,
-          "sampling_seconds": 65.70088116100001,
-          "combined_seconds": 65.83471889000003,
-          "peak_rss_bytes": 11439886336
+          "metadata_seconds": 0.13571527600004174,
+          "sampling_seconds": 70.20940822299997,
+          "combined_seconds": 70.34512349900001,
+          "peak_rss_bytes": 11616202752
         }
       },
       "measurements": [
         {
           "variant": "pyav_decord",
-          "metadata_seconds": 0.8365431320000027,
-          "sampling_seconds": 22.920335088,
-          "combined_seconds": 23.756878220000004,
+          "metadata_seconds": 0.8497730049999745,
+          "sampling_seconds": 24.338214721000043,
+          "combined_seconds": 25.187987726000017,
           "candidate_count": 1765,
-          "peak_rss_bytes": 11491102720,
-          "baseline_rss_bytes": 6503129088,
-          "incremental_peak_rss_bytes": 4987973632,
+          "peak_rss_bytes": 11686264832,
+          "baseline_rss_bytes": 6706122752,
+          "incremental_peak_rss_bytes": 4980142080,
           "metadata": {
             "sha256": "687fa4d283d4bc206e9c9024796d4cd7f9a33d493a44c2125d420812fb57fcc0",
             "frame_count": 43403,
@@ -1381,24 +1375,21 @@
         },
         {
           "variant": "opencv_sequential",
-          "metadata_seconds": 0.13527053800001454,
-          "sampling_seconds": 20.992932456999995,
-          "combined_seconds": 21.12820299500001,
+          "metadata_seconds": null,
+          "sampling_seconds": 22.763759782000022,
+          "combined_seconds": 22.763759782000022,
           "candidate_count": 1765,
-          "peak_rss_bytes": 11450826752,
-          "baseline_rss_bytes": 6522105856,
-          "incremental_peak_rss_bytes": 4928720896,
+          "peak_rss_bytes": 11622883328,
+          "baseline_rss_bytes": 6743339008,
+          "incremental_peak_rss_bytes": 4879544320,
           "metadata": {
             "sha256": "687fa4d283d4bc206e9c9024796d4cd7f9a33d493a44c2125d420812fb57fcc0",
             "frame_count": 43403,
             "fps": 25.0,
-            "width": 1280,
-            "height": 720,
-            "backend": "FFMPEG",
-            "decoder_threads": 4.0
+            "backend": "production OpenCV sequential"
           },
-          "timestamp_max_abs_error_us": 2.384185791015625e-07,
-          "timestamp_mean_abs_error_us": 5.991279910036254e-08,
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
           "position_mismatch_count": 0,
           "image_shapes": [
             [
@@ -1418,13 +1409,13 @@
         },
         {
           "variant": "opencv_seek",
-          "metadata_seconds": 0.133837729000021,
-          "sampling_seconds": 65.70088116100001,
-          "combined_seconds": 65.83471889000003,
+          "metadata_seconds": 0.13571527600004174,
+          "sampling_seconds": 70.20940822299997,
+          "combined_seconds": 70.34512349900001,
           "candidate_count": 1765,
-          "peak_rss_bytes": 11439886336,
-          "baseline_rss_bytes": 6514688000,
-          "incremental_peak_rss_bytes": 4925198336,
+          "peak_rss_bytes": 11616202752,
+          "baseline_rss_bytes": 6744850432,
+          "incremental_peak_rss_bytes": 4871352320,
           "metadata": {
             "sha256": "687fa4d283d4bc206e9c9024796d4cd7f9a33d493a44c2125d420812fb57fcc0",
             "frame_count": 43403,
@@ -1469,8 +1460,8 @@
       "methodology": {
         "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
         "model_setup": "Shot detection/reference candidate construction outside measurement",
-        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
-        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "metadata_scope": "SHA-256 in all branches. Production OpenCV builds timeline inside its scan: metadata_seconds=null, sampling_seconds includes metadata. Other paths index separately.",
+        "sampling_scope": "Production read_candidates scans to EOF, builds timeline and retains all sampled RGB tensors. Alternatives use the same candidate indices; Decord batches of4 and OpenCV seek stop at last candidate.",
         "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
         "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
         "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
@@ -1479,42 +1470,44 @@
     },
     {
       "video": "data/Videos_L26_a/video/L26_V035.mp4",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "sampling_policy": "all uniform 1-second candidates within clean shots; no selection",
       "source_sha256": "9e58045530aac661af34824d383786648dc546bd6b0cd1c36d6e094e1d07c788",
       "frame_count": 8122,
       "candidate_count": 372,
       "shot_count": 105,
-      "setup_shot_source": "local_detection_outside_timing",
+      "setup_shot_source": "production_detect_shots_outside_timing",
       "repetitions": 1,
       "summary_medians": {
         "pyav_decord": {
-          "metadata_seconds": 0.24951594899999918,
-          "sampling_seconds": 6.841677229999988,
-          "combined_seconds": 7.091193178999987,
-          "peak_rss_bytes": 7628218368
+          "metadata_seconds": 0.25952389899998707,
+          "sampling_seconds": 7.079510755000001,
+          "combined_seconds": 7.339034653999988,
+          "peak_rss_bytes": 7836983296
         },
         "opencv_sequential": {
-          "metadata_seconds": 0.08031915900002673,
-          "sampling_seconds": 7.171617801999986,
-          "combined_seconds": 7.251936961000013,
-          "peak_rss_bytes": 7568736256
+          "metadata_seconds": null,
+          "sampling_seconds": 7.158737338000009,
+          "combined_seconds": 7.158737338000009,
+          "peak_rss_bytes": 7750418432
         },
         "opencv_seek": {
-          "metadata_seconds": 0.0797813829999825,
-          "sampling_seconds": 19.08691453,
-          "combined_seconds": 19.166695912999984,
-          "peak_rss_bytes": 7565660160
+          "metadata_seconds": 0.08131189600001676,
+          "sampling_seconds": 18.226063879999998,
+          "combined_seconds": 18.307375776000015,
+          "peak_rss_bytes": 7746056192
         }
       },
       "measurements": [
         {
           "variant": "pyav_decord",
-          "metadata_seconds": 0.24951594899999918,
-          "sampling_seconds": 6.841677229999988,
-          "combined_seconds": 7.091193178999987,
+          "metadata_seconds": 0.25952389899998707,
+          "sampling_seconds": 7.079510755000001,
+          "combined_seconds": 7.339034653999988,
           "candidate_count": 372,
-          "peak_rss_bytes": 7628218368,
-          "baseline_rss_bytes": 6482087936,
-          "incremental_peak_rss_bytes": 1146130432,
+          "peak_rss_bytes": 7836983296,
+          "baseline_rss_bytes": 6687461376,
+          "incremental_peak_rss_bytes": 1149521920,
           "metadata": {
             "sha256": "9e58045530aac661af34824d383786648dc546bd6b0cd1c36d6e094e1d07c788",
             "frame_count": 8122,
@@ -1545,24 +1538,21 @@
         },
         {
           "variant": "opencv_sequential",
-          "metadata_seconds": 0.08031915900002673,
-          "sampling_seconds": 7.171617801999986,
-          "combined_seconds": 7.251936961000013,
+          "metadata_seconds": null,
+          "sampling_seconds": 7.158737338000009,
+          "combined_seconds": 7.158737338000009,
           "candidate_count": 372,
-          "peak_rss_bytes": 7568736256,
-          "baseline_rss_bytes": 6494285824,
-          "incremental_peak_rss_bytes": 1074450432,
+          "peak_rss_bytes": 7750418432,
+          "baseline_rss_bytes": 6694572032,
+          "incremental_peak_rss_bytes": 1055846400,
           "metadata": {
             "sha256": "9e58045530aac661af34824d383786648dc546bd6b0cd1c36d6e094e1d07c788",
             "frame_count": 8122,
             "fps": 25.0,
-            "width": 1280,
-            "height": 720,
-            "backend": "FFMPEG",
-            "decoder_threads": 4.0
+            "backend": "production OpenCV sequential"
           },
-          "timestamp_max_abs_error_us": 5.960464477539063e-08,
-          "timestamp_mean_abs_error_us": 4.1502688120129286e-09,
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
           "position_mismatch_count": 0,
           "image_shapes": [
             [
@@ -1582,13 +1572,13 @@
         },
         {
           "variant": "opencv_seek",
-          "metadata_seconds": 0.0797813829999825,
-          "sampling_seconds": 19.08691453,
-          "combined_seconds": 19.166695912999984,
+          "metadata_seconds": 0.08131189600001676,
+          "sampling_seconds": 18.226063879999998,
+          "combined_seconds": 18.307375776000015,
           "candidate_count": 372,
-          "peak_rss_bytes": 7565660160,
-          "baseline_rss_bytes": 6491795456,
-          "incremental_peak_rss_bytes": 1073864704,
+          "peak_rss_bytes": 7746056192,
+          "baseline_rss_bytes": 6682955776,
+          "incremental_peak_rss_bytes": 1063100416,
           "metadata": {
             "sha256": "9e58045530aac661af34824d383786648dc546bd6b0cd1c36d6e094e1d07c788",
             "frame_count": 8122,
@@ -1633,8 +1623,8 @@
       "methodology": {
         "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
         "model_setup": "Shot detection/reference candidate construction outside measurement",
-        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
-        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "metadata_scope": "SHA-256 in all branches. Production OpenCV builds timeline inside its scan: metadata_seconds=null, sampling_seconds includes metadata. Other paths index separately.",
+        "sampling_scope": "Production read_candidates scans to EOF, builds timeline and retains all sampled RGB tensors. Alternatives use the same candidate indices; Decord batches of4 and OpenCV seek stop at last candidate.",
         "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
         "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
         "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
@@ -1643,42 +1633,44 @@
     },
     {
       "video": "data/Videos_L26_d/video/L26_V390.mp4",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "sampling_policy": "all uniform 1-second candidates within clean shots; no selection",
       "source_sha256": "a4415d9adcbaf5370cf7147490a6359baad2dab49ab101b00ae6a98ed7659c03",
       "frame_count": 7606,
       "candidate_count": 350,
       "shot_count": 111,
-      "setup_shot_source": "local_detection_outside_timing",
+      "setup_shot_source": "production_detect_shots_outside_timing",
       "repetitions": 1,
       "summary_medians": {
         "pyav_decord": {
-          "metadata_seconds": 0.24138275699999667,
-          "sampling_seconds": 6.583120094999998,
-          "combined_seconds": 6.824502851999995,
-          "peak_rss_bytes": 7574171648
+          "metadata_seconds": 0.2483043200000168,
+          "sampling_seconds": 6.773804009000003,
+          "combined_seconds": 7.0221083290000195,
+          "peak_rss_bytes": 7763406848
         },
         "opencv_sequential": {
-          "metadata_seconds": 0.07952358299999673,
-          "sampling_seconds": 6.86692245499998,
-          "combined_seconds": 6.946446037999976,
-          "peak_rss_bytes": 7516119040
+          "metadata_seconds": null,
+          "sampling_seconds": 7.204397158000006,
+          "combined_seconds": 7.204397158000006,
+          "peak_rss_bytes": 7694262272
         },
         "opencv_seek": {
-          "metadata_seconds": 0.08017037899998058,
-          "sampling_seconds": 17.389322547000006,
-          "combined_seconds": 17.469492925999987,
-          "peak_rss_bytes": 7516094464
+          "metadata_seconds": 0.08038963799998555,
+          "sampling_seconds": 17.374443869000004,
+          "combined_seconds": 17.45483350699999,
+          "peak_rss_bytes": 7690293248
         }
       },
       "measurements": [
         {
           "variant": "pyav_decord",
-          "metadata_seconds": 0.24138275699999667,
-          "sampling_seconds": 6.583120094999998,
-          "combined_seconds": 6.824502851999995,
+          "metadata_seconds": 0.2483043200000168,
+          "sampling_seconds": 6.773804009000003,
+          "combined_seconds": 7.0221083290000195,
           "candidate_count": 350,
-          "peak_rss_bytes": 7574171648,
-          "baseline_rss_bytes": 6505086976,
-          "incremental_peak_rss_bytes": 1069084672,
+          "peak_rss_bytes": 7763406848,
+          "baseline_rss_bytes": 6684774400,
+          "incremental_peak_rss_bytes": 1078632448,
           "metadata": {
             "sha256": "a4415d9adcbaf5370cf7147490a6359baad2dab49ab101b00ae6a98ed7659c03",
             "frame_count": 7606,
@@ -1709,24 +1701,21 @@
         },
         {
           "variant": "opencv_sequential",
-          "metadata_seconds": 0.07952358299999673,
-          "sampling_seconds": 6.86692245499998,
-          "combined_seconds": 6.946446037999976,
+          "metadata_seconds": null,
+          "sampling_seconds": 7.204397158000006,
+          "combined_seconds": 7.204397158000006,
           "candidate_count": 350,
-          "peak_rss_bytes": 7516119040,
-          "baseline_rss_bytes": 6515695616,
-          "incremental_peak_rss_bytes": 1000423424,
+          "peak_rss_bytes": 7694262272,
+          "baseline_rss_bytes": 6697111552,
+          "incremental_peak_rss_bytes": 997150720,
           "metadata": {
             "sha256": "a4415d9adcbaf5370cf7147490a6359baad2dab49ab101b00ae6a98ed7659c03",
             "frame_count": 7606,
             "fps": 25.0,
-            "width": 1280,
-            "height": 720,
-            "backend": "FFMPEG",
-            "decoder_threads": 4.0
+            "backend": "production OpenCV sequential"
           },
-          "timestamp_max_abs_error_us": 2.9802322387695312e-08,
-          "timestamp_mean_abs_error_us": 3.0514118926865712e-09,
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
           "position_mismatch_count": 0,
           "image_shapes": [
             [
@@ -1746,13 +1735,13 @@
         },
         {
           "variant": "opencv_seek",
-          "metadata_seconds": 0.08017037899998058,
-          "sampling_seconds": 17.389322547000006,
-          "combined_seconds": 17.469492925999987,
+          "metadata_seconds": 0.08038963799998555,
+          "sampling_seconds": 17.374443869000004,
+          "combined_seconds": 17.45483350699999,
           "candidate_count": 350,
-          "peak_rss_bytes": 7516094464,
-          "baseline_rss_bytes": 6514782208,
-          "incremental_peak_rss_bytes": 1001312256,
+          "peak_rss_bytes": 7690293248,
+          "baseline_rss_bytes": 6693097472,
+          "incremental_peak_rss_bytes": 997195776,
           "metadata": {
             "sha256": "a4415d9adcbaf5370cf7147490a6359baad2dab49ab101b00ae6a98ed7659c03",
             "frame_count": 7606,
@@ -1797,8 +1786,8 @@
       "methodology": {
         "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
         "model_setup": "Shot detection/reference candidate construction outside measurement",
-        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
-        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "metadata_scope": "SHA-256 in all branches. Production OpenCV builds timeline inside its scan: metadata_seconds=null, sampling_seconds includes metadata. Other paths index separately.",
+        "sampling_scope": "Production read_candidates scans to EOF, builds timeline and retains all sampled RGB tensors. Alternatives use the same candidate indices; Decord batches of4 and OpenCV seek stop at last candidate.",
         "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
         "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
         "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
@@ -1807,42 +1796,44 @@
     },
     {
       "video": "data/Videos_L26_e/video/L26_V424.mp4",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "sampling_policy": "all uniform 1-second candidates within clean shots; no selection",
       "source_sha256": "a0f50e4cb42f9652bc904aa266f29105ab90071fdd8d44d101ed0005c8e4de3a",
       "frame_count": 7700,
       "candidate_count": 353,
       "shot_count": 100,
-      "setup_shot_source": "local_detection_outside_timing",
+      "setup_shot_source": "production_detect_shots_outside_timing",
       "repetitions": 1,
       "summary_medians": {
         "pyav_decord": {
-          "metadata_seconds": 0.21907179799998744,
-          "sampling_seconds": 6.691689488999998,
-          "combined_seconds": 6.9107612869999855,
-          "peak_rss_bytes": 7538786304
+          "metadata_seconds": 0.2296818890000054,
+          "sampling_seconds": 6.622299277999957,
+          "combined_seconds": 6.851981166999963,
+          "peak_rss_bytes": 7773409280
         },
         "opencv_sequential": {
-          "metadata_seconds": 0.07458397600001376,
-          "sampling_seconds": 6.593101061999988,
-          "combined_seconds": 6.667685038000002,
-          "peak_rss_bytes": 7481974784
+          "metadata_seconds": null,
+          "sampling_seconds": 6.8425439449999885,
+          "combined_seconds": 6.8425439449999885,
+          "peak_rss_bytes": 7713075200
         },
         "opencv_seek": {
-          "metadata_seconds": 0.07463636099998894,
-          "sampling_seconds": 17.120487940000004,
-          "combined_seconds": 17.195124300999993,
-          "peak_rss_bytes": 7481212928
+          "metadata_seconds": 0.07226150200000347,
+          "sampling_seconds": 17.135071202000006,
+          "combined_seconds": 17.20733270400001,
+          "peak_rss_bytes": 7709519872
         }
       },
       "measurements": [
         {
           "variant": "pyav_decord",
-          "metadata_seconds": 0.21907179799998744,
-          "sampling_seconds": 6.691689488999998,
-          "combined_seconds": 6.9107612869999855,
+          "metadata_seconds": 0.2296818890000054,
+          "sampling_seconds": 6.622299277999957,
+          "combined_seconds": 6.851981166999963,
           "candidate_count": 353,
-          "peak_rss_bytes": 7538786304,
-          "baseline_rss_bytes": 6457356288,
-          "incremental_peak_rss_bytes": 1081430016,
+          "peak_rss_bytes": 7773409280,
+          "baseline_rss_bytes": 6685409280,
+          "incremental_peak_rss_bytes": 1088000000,
           "metadata": {
             "sha256": "a0f50e4cb42f9652bc904aa266f29105ab90071fdd8d44d101ed0005c8e4de3a",
             "frame_count": 7700,
@@ -1873,24 +1864,21 @@
         },
         {
           "variant": "opencv_sequential",
-          "metadata_seconds": 0.07458397600001376,
-          "sampling_seconds": 6.593101061999988,
-          "combined_seconds": 6.667685038000002,
+          "metadata_seconds": null,
+          "sampling_seconds": 6.8425439449999885,
+          "combined_seconds": 6.8425439449999885,
           "candidate_count": 353,
-          "peak_rss_bytes": 7481974784,
-          "baseline_rss_bytes": 6480388096,
-          "incremental_peak_rss_bytes": 1001586688,
+          "peak_rss_bytes": 7713075200,
+          "baseline_rss_bytes": 6702968832,
+          "incremental_peak_rss_bytes": 1010106368,
           "metadata": {
             "sha256": "a0f50e4cb42f9652bc904aa266f29105ab90071fdd8d44d101ed0005c8e4de3a",
             "frame_count": 7700,
             "fps": 25.0,
-            "width": 1280,
-            "height": 720,
-            "backend": "FFMPEG",
-            "decoder_threads": 4.0
+            "backend": "production OpenCV sequential"
           },
-          "timestamp_max_abs_error_us": 5.960464477539063e-08,
-          "timestamp_mean_abs_error_us": 5.766680786022046e-09,
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
           "position_mismatch_count": 0,
           "image_shapes": [
             [
@@ -1910,13 +1898,13 @@
         },
         {
           "variant": "opencv_seek",
-          "metadata_seconds": 0.07463636099998894,
-          "sampling_seconds": 17.120487940000004,
-          "combined_seconds": 17.195124300999993,
+          "metadata_seconds": 0.07226150200000347,
+          "sampling_seconds": 17.135071202000006,
+          "combined_seconds": 17.20733270400001,
           "candidate_count": 353,
-          "peak_rss_bytes": 7481212928,
-          "baseline_rss_bytes": 6480265216,
-          "incremental_peak_rss_bytes": 1000947712,
+          "peak_rss_bytes": 7709519872,
+          "baseline_rss_bytes": 6699184128,
+          "incremental_peak_rss_bytes": 1010335744,
           "metadata": {
             "sha256": "a0f50e4cb42f9652bc904aa266f29105ab90071fdd8d44d101ed0005c8e4de3a",
             "frame_count": 7700,
@@ -1961,8 +1949,8 @@
       "methodology": {
         "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
         "model_setup": "Shot detection/reference candidate construction outside measurement",
-        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
-        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "metadata_scope": "SHA-256 in all branches. Production OpenCV builds timeline inside its scan: metadata_seconds=null, sampling_seconds includes metadata. Other paths index separately.",
+        "sampling_scope": "Production read_candidates scans to EOF, builds timeline and retains all sampled RGB tensors. Alternatives use the same candidate indices; Decord batches of4 and OpenCV seek stop at last candidate.",
         "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
         "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
         "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
@@ -1971,42 +1959,44 @@
     },
     {
       "video": "data/Videos_L28_a/video/L28_V008.mp4",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "sampling_policy": "all uniform 1-second candidates within clean shots; no selection",
       "source_sha256": "5e9f92e28c748912f5314038f40c408941f77372a97157e4de6bfdf99f5ddda5",
       "frame_count": 27961,
       "candidate_count": 1109,
       "shot_count": 226,
-      "setup_shot_source": "local_detection_outside_timing",
+      "setup_shot_source": "production_detect_shots_outside_timing",
       "repetitions": 1,
       "summary_medians": {
         "pyav_decord": {
-          "metadata_seconds": 0.9532010490000005,
-          "sampling_seconds": 27.979506259000033,
-          "combined_seconds": 28.932707308000033,
-          "peak_rss_bytes": 9784020992
+          "metadata_seconds": 0.9131165890000261,
+          "sampling_seconds": 28.773672110999996,
+          "combined_seconds": 29.686788700000022,
+          "peak_rss_bytes": 10696343552
         },
         "opencv_sequential": {
-          "metadata_seconds": 0.3059401729999536,
-          "sampling_seconds": 27.76920469700002,
-          "combined_seconds": 28.075144869999974,
-          "peak_rss_bytes": 9621540864
+          "metadata_seconds": null,
+          "sampling_seconds": 30.098976202000017,
+          "combined_seconds": 30.098976202000017,
+          "peak_rss_bytes": 9820770304
         },
         "opencv_seek": {
-          "metadata_seconds": 0.296880821000002,
-          "sampling_seconds": 80.22677961300002,
-          "combined_seconds": 80.52366043400002,
-          "peak_rss_bytes": 9610530816
+          "metadata_seconds": 0.30905247599997665,
+          "sampling_seconds": 84.90022290500002,
+          "combined_seconds": 85.209275381,
+          "peak_rss_bytes": 9803436032
         }
       },
       "measurements": [
         {
           "variant": "pyav_decord",
-          "metadata_seconds": 0.9532010490000005,
-          "sampling_seconds": 27.979506259000033,
-          "combined_seconds": 28.932707308000033,
+          "metadata_seconds": 0.9131165890000261,
+          "sampling_seconds": 28.773672110999996,
+          "combined_seconds": 29.686788700000022,
           "candidate_count": 1109,
-          "peak_rss_bytes": 9784020992,
-          "baseline_rss_bytes": 6506946560,
-          "incremental_peak_rss_bytes": 3277074432,
+          "peak_rss_bytes": 10696343552,
+          "baseline_rss_bytes": 6698545152,
+          "incremental_peak_rss_bytes": 3997798400,
           "metadata": {
             "sha256": "5e9f92e28c748912f5314038f40c408941f77372a97157e4de6bfdf99f5ddda5",
             "frame_count": 27961,
@@ -2037,24 +2027,21 @@
         },
         {
           "variant": "opencv_sequential",
-          "metadata_seconds": 0.3059401729999536,
-          "sampling_seconds": 27.76920469700002,
-          "combined_seconds": 28.075144869999974,
+          "metadata_seconds": null,
+          "sampling_seconds": 30.098976202000017,
+          "combined_seconds": 30.098976202000017,
           "candidate_count": 1109,
-          "peak_rss_bytes": 9621540864,
-          "baseline_rss_bytes": 6523678720,
-          "incremental_peak_rss_bytes": 3097862144,
+          "peak_rss_bytes": 9820770304,
+          "baseline_rss_bytes": 6714437632,
+          "incremental_peak_rss_bytes": 3106332672,
           "metadata": {
             "sha256": "5e9f92e28c748912f5314038f40c408941f77372a97157e4de6bfdf99f5ddda5",
             "frame_count": 27961,
             "fps": 25.0,
-            "width": 1280,
-            "height": 720,
-            "backend": "FFMPEG",
-            "decoder_threads": 4.0
+            "backend": "production OpenCV sequential"
           },
-          "timestamp_max_abs_error_us": 2.384185791015625e-07,
-          "timestamp_mean_abs_error_us": 1.1466436820378488e-08,
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
           "position_mismatch_count": 0,
           "image_shapes": [
             [
@@ -2074,13 +2061,13 @@
         },
         {
           "variant": "opencv_seek",
-          "metadata_seconds": 0.296880821000002,
-          "sampling_seconds": 80.22677961300002,
-          "combined_seconds": 80.52366043400002,
+          "metadata_seconds": 0.30905247599997665,
+          "sampling_seconds": 84.90022290500002,
+          "combined_seconds": 85.209275381,
           "candidate_count": 1109,
-          "peak_rss_bytes": 9610530816,
-          "baseline_rss_bytes": 6493691904,
-          "incremental_peak_rss_bytes": 3116838912,
+          "peak_rss_bytes": 9803436032,
+          "baseline_rss_bytes": 6694797312,
+          "incremental_peak_rss_bytes": 3108638720,
           "metadata": {
             "sha256": "5e9f92e28c748912f5314038f40c408941f77372a97157e4de6bfdf99f5ddda5",
             "frame_count": 27961,
@@ -2125,8 +2112,8 @@
       "methodology": {
         "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
         "model_setup": "Shot detection/reference candidate construction outside measurement",
-        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
-        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "metadata_scope": "SHA-256 in all branches. Production OpenCV builds timeline inside its scan: metadata_seconds=null, sampling_seconds includes metadata. Other paths index separately.",
+        "sampling_scope": "Production read_candidates scans to EOF, builds timeline and retains all sampled RGB tensors. Alternatives use the same candidate indices; Decord batches of4 and OpenCV seek stop at last candidate.",
         "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
         "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
         "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
@@ -2135,42 +2122,44 @@
     },
     {
       "video": "data/Videos_L30_a/video/L30_V046.mp4",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "sampling_policy": "all uniform 1-second candidates within clean shots; no selection",
       "source_sha256": "db00bcd85748a89e17f3d53323e0ac0ed5c054b65e9e86e33c53698a647af162",
       "frame_count": 6932,
       "candidate_count": 302,
       "shot_count": 64,
-      "setup_shot_source": "local_detection_outside_timing",
+      "setup_shot_source": "production_detect_shots_outside_timing",
       "repetitions": 1,
       "summary_medians": {
         "pyav_decord": {
-          "metadata_seconds": 0.22337277699998026,
-          "sampling_seconds": 6.42295849300001,
-          "combined_seconds": 6.64633126999999,
-          "peak_rss_bytes": 7449972736
+          "metadata_seconds": 0.22745379100001628,
+          "sampling_seconds": 6.3956320400000095,
+          "combined_seconds": 6.623085831000026,
+          "peak_rss_bytes": 7579217920
         },
         "opencv_sequential": {
-          "metadata_seconds": 0.07398212399999693,
-          "sampling_seconds": 6.942566599000003,
-          "combined_seconds": 7.016548723,
-          "peak_rss_bytes": 7379849216
+          "metadata_seconds": null,
+          "sampling_seconds": 7.078972577999991,
+          "combined_seconds": 7.078972577999991,
+          "peak_rss_bytes": 7521939456
         },
         "opencv_seek": {
-          "metadata_seconds": 0.07254017299999305,
-          "sampling_seconds": 20.792901659999984,
-          "combined_seconds": 20.865441832999977,
-          "peak_rss_bytes": 7379832832
+          "metadata_seconds": 0.07540604600001188,
+          "sampling_seconds": 20.810461757999974,
+          "combined_seconds": 20.885867803999986,
+          "peak_rss_bytes": 7518765056
         }
       },
       "measurements": [
         {
           "variant": "pyav_decord",
-          "metadata_seconds": 0.22337277699998026,
-          "sampling_seconds": 6.42295849300001,
-          "combined_seconds": 6.64633126999999,
+          "metadata_seconds": 0.22745379100001628,
+          "sampling_seconds": 6.3956320400000095,
+          "combined_seconds": 6.623085831000026,
           "candidate_count": 302,
-          "peak_rss_bytes": 7449972736,
-          "baseline_rss_bytes": 6514532352,
-          "incremental_peak_rss_bytes": 935440384,
+          "peak_rss_bytes": 7579217920,
+          "baseline_rss_bytes": 6645501952,
+          "incremental_peak_rss_bytes": 933715968,
           "metadata": {
             "sha256": "db00bcd85748a89e17f3d53323e0ac0ed5c054b65e9e86e33c53698a647af162",
             "frame_count": 6932,
@@ -2201,24 +2190,21 @@
         },
         {
           "variant": "opencv_sequential",
-          "metadata_seconds": 0.07398212399999693,
-          "sampling_seconds": 6.942566599000003,
-          "combined_seconds": 7.016548723,
+          "metadata_seconds": null,
+          "sampling_seconds": 7.078972577999991,
+          "combined_seconds": 7.078972577999991,
           "candidate_count": 302,
-          "peak_rss_bytes": 7379849216,
-          "baseline_rss_bytes": 6517653504,
-          "incremental_peak_rss_bytes": 862195712,
+          "peak_rss_bytes": 7521939456,
+          "baseline_rss_bytes": 6667902976,
+          "incremental_peak_rss_bytes": 854036480,
           "metadata": {
             "sha256": "db00bcd85748a89e17f3d53323e0ac0ed5c054b65e9e86e33c53698a647af162",
             "frame_count": 6932,
             "fps": 25.0,
-            "width": 1280,
-            "height": 720,
-            "backend": "FFMPEG",
-            "decoder_threads": 4.0
+            "backend": "production OpenCV sequential"
           },
-          "timestamp_max_abs_error_us": 5.960464477539063e-08,
-          "timestamp_mean_abs_error_us": 3.367563746622856e-09,
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
           "position_mismatch_count": 0,
           "image_shapes": [
             [
@@ -2238,13 +2224,13 @@
         },
         {
           "variant": "opencv_seek",
-          "metadata_seconds": 0.07254017299999305,
-          "sampling_seconds": 20.792901659999984,
-          "combined_seconds": 20.865441832999977,
+          "metadata_seconds": 0.07540604600001188,
+          "sampling_seconds": 20.810461757999974,
+          "combined_seconds": 20.885867803999986,
           "candidate_count": 302,
-          "peak_rss_bytes": 7379832832,
-          "baseline_rss_bytes": 6504865792,
-          "incremental_peak_rss_bytes": 874967040,
+          "peak_rss_bytes": 7518765056,
+          "baseline_rss_bytes": 6661480448,
+          "incremental_peak_rss_bytes": 857284608,
           "metadata": {
             "sha256": "db00bcd85748a89e17f3d53323e0ac0ed5c054b65e9e86e33c53698a647af162",
             "frame_count": 6932,
@@ -2289,8 +2275,8 @@
       "methodology": {
         "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
         "model_setup": "Shot detection/reference candidate construction outside measurement",
-        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
-        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "metadata_scope": "SHA-256 in all branches. Production OpenCV builds timeline inside its scan: metadata_seconds=null, sampling_seconds includes metadata. Other paths index separately.",
+        "sampling_scope": "Production read_candidates scans to EOF, builds timeline and retains all sampled RGB tensors. Alternatives use the same candidate indices; Decord batches of4 and OpenCV seek stop at last candidate.",
         "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
         "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
         "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
@@ -2299,42 +2285,44 @@
     },
     {
       "video": "data/Videos_L30_a/video/L30_V072.mp4",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "sampling_policy": "all uniform 1-second candidates within clean shots; no selection",
       "source_sha256": "740fb71b8fd645fb23f55686f6997e73761c005d41493115b70391ebabadb1ee",
       "frame_count": 2169,
       "candidate_count": 99,
       "shot_count": 27,
-      "setup_shot_source": "local_detection_outside_timing",
+      "setup_shot_source": "production_detect_shots_outside_timing",
       "repetitions": 1,
       "summary_medians": {
         "pyav_decord": {
-          "metadata_seconds": 0.07350912799998355,
-          "sampling_seconds": 1.881968470000004,
-          "combined_seconds": 1.9554775979999874,
-          "peak_rss_bytes": 6825013248
+          "metadata_seconds": 0.07639614600003597,
+          "sampling_seconds": 1.85405270199999,
+          "combined_seconds": 1.930448848000026,
+          "peak_rss_bytes": 7021604864
         },
         "opencv_sequential": {
-          "metadata_seconds": 0.029062726999995903,
-          "sampling_seconds": 2.2119780620000142,
-          "combined_seconds": 2.24104078900001,
-          "peak_rss_bytes": 6797987840
+          "metadata_seconds": null,
+          "sampling_seconds": 2.2161523600000237,
+          "combined_seconds": 2.2161523600000237,
+          "peak_rss_bytes": 7011733504
         },
         "opencv_seek": {
-          "metadata_seconds": 0.0288453529999515,
-          "sampling_seconds": 5.804894877000038,
-          "combined_seconds": 5.833740229999989,
-          "peak_rss_bytes": 6798946304
+          "metadata_seconds": 0.028732262999994873,
+          "sampling_seconds": 5.606835558,
+          "combined_seconds": 5.635567820999995,
+          "peak_rss_bytes": 7010742272
         }
       },
       "measurements": [
         {
           "variant": "pyav_decord",
-          "metadata_seconds": 0.07350912799998355,
-          "sampling_seconds": 1.881968470000004,
-          "combined_seconds": 1.9554775979999874,
+          "metadata_seconds": 0.07639614600003597,
+          "sampling_seconds": 1.85405270199999,
+          "combined_seconds": 1.930448848000026,
           "candidate_count": 99,
-          "peak_rss_bytes": 6825013248,
-          "baseline_rss_bytes": 6489583616,
-          "incremental_peak_rss_bytes": 335429632,
+          "peak_rss_bytes": 7021604864,
+          "baseline_rss_bytes": 6694322176,
+          "incremental_peak_rss_bytes": 327282688,
           "metadata": {
             "sha256": "740fb71b8fd645fb23f55686f6997e73761c005d41493115b70391ebabadb1ee",
             "frame_count": 2169,
@@ -2365,24 +2353,21 @@
         },
         {
           "variant": "opencv_sequential",
-          "metadata_seconds": 0.029062726999995903,
-          "sampling_seconds": 2.2119780620000142,
-          "combined_seconds": 2.24104078900001,
+          "metadata_seconds": null,
+          "sampling_seconds": 2.2161523600000237,
+          "combined_seconds": 2.2161523600000237,
           "candidate_count": 99,
-          "peak_rss_bytes": 6797987840,
-          "baseline_rss_bytes": 6498156544,
-          "incremental_peak_rss_bytes": 299831296,
+          "peak_rss_bytes": 7011733504,
+          "baseline_rss_bytes": 6703460352,
+          "incremental_peak_rss_bytes": 308273152,
           "metadata": {
             "sha256": "740fb71b8fd645fb23f55686f6997e73761c005d41493115b70391ebabadb1ee",
             "frame_count": 2169,
             "fps": 25.0,
-            "width": 1280,
-            "height": 720,
-            "backend": "FFMPEG",
-            "decoder_threads": 4.0
+            "backend": "production OpenCV sequential"
           },
-          "timestamp_max_abs_error_us": 1.4901161193847656e-08,
-          "timestamp_mean_abs_error_us": 1.0536174581508443e-09,
+          "timestamp_max_abs_error_us": 0.0,
+          "timestamp_mean_abs_error_us": 0.0,
           "position_mismatch_count": 0,
           "image_shapes": [
             [
@@ -2402,13 +2387,13 @@
         },
         {
           "variant": "opencv_seek",
-          "metadata_seconds": 0.0288453529999515,
-          "sampling_seconds": 5.804894877000038,
-          "combined_seconds": 5.833740229999989,
+          "metadata_seconds": 0.028732262999994873,
+          "sampling_seconds": 5.606835558,
+          "combined_seconds": 5.635567820999995,
           "candidate_count": 99,
-          "peak_rss_bytes": 6798946304,
-          "baseline_rss_bytes": 6489620480,
-          "incremental_peak_rss_bytes": 309325824,
+          "peak_rss_bytes": 7010742272,
+          "baseline_rss_bytes": 6703398912,
+          "incremental_peak_rss_bytes": 307343360,
           "metadata": {
             "sha256": "740fb71b8fd645fb23f55686f6997e73761c005d41493115b70391ebabadb1ee",
             "frame_count": 2169,
@@ -2453,8 +2438,8 @@
       "methodology": {
         "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
         "model_setup": "Shot detection/reference candidate construction outside measurement",
-        "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
-        "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; current Decord get_batch batches of4",
+        "metadata_scope": "SHA-256 in all branches. Production OpenCV builds timeline inside its scan: metadata_seconds=null, sampling_seconds includes metadata. Other paths index separately.",
+        "sampling_scope": "Production read_candidates scans to EOF, builds timeline and retains all sampled RGB tensors. Alternatives use the same candidate indices; Decord batches of4 and OpenCV seek stop at last candidate.",
         "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
         "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
         "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",

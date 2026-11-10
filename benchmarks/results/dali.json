@@ -1,6 +1,6 @@
 {
   "benchmark": "DALI vs official OmniShotCut file-path API",
-  "run_id": "dali-20261108T154909",
+  "run_id": "dali-20261110T051614",
   "repeats": 1,
   "max_containers": 5,
   "source_videos": [
@@ -26,28 +26,28 @@
       "trials": [
         {
           "frame_count": 33805,
-          "prepare_seconds": 29.519489828000005,
+          "prepare_seconds": 32.305321477,
           "variant": "dali",
-          "total_seconds": 37.291924196000004,
-          "inference_and_window_preprocess_seconds": 7.772434367999999,
+          "total_seconds": 39.783366442,
+          "inference_and_window_preprocess_seconds": 7.478044965000002,
           "peak_torch_allocated_bytes": 2709910528,
           "peak_torch_reserved_bytes": 3112173568,
-          "peak_process_tree_rss_bytes": 6280007680,
-          "baseline_process_rss_bytes": 5541273600,
+          "peak_process_tree_rss_bytes": 6282317824,
+          "baseline_process_rss_bytes": 5542277120,
           "shot_count": 315,
           "ranges_sha256": "2e281fd95e8092c35bce70dbebf08e1089d2d73a2dc6088ce21ed939e3ec779d",
           "repeat": 0
         },
         {
-          "prepare_seconds": 26.99070963399999,
+          "prepare_seconds": 35.323188259,
           "frame_count": 33805,
           "variant": "official",
-          "total_seconds": 39.16800526400001,
-          "inference_and_window_preprocess_seconds": 12.177295630000017,
+          "total_seconds": 50.390918474,
+          "inference_and_window_preprocess_seconds": 15.067730215000005,
           "peak_torch_allocated_bytes": 487693312,
           "peak_torch_reserved_bytes": 497025024,
-          "peak_process_tree_rss_bytes": 12558221312,
-          "baseline_process_rss_bytes": 6279094272,
+          "peak_process_tree_rss_bytes": 9603371008,
+          "baseline_process_rss_bytes": 6281404416,
           "shot_count": 315,
           "ranges_sha256": "719b714abed4eb6b234ddfb9033a5d377b824c68c2a70f8099488171ce705c48",
           "repeat": 0
@@ -56,13 +56,13 @@
       "errors": [],
       "dali": {
         "successful_trials": 1,
-        "median_total_seconds": 37.291924196000004,
-        "median_prepare_seconds": 29.519489828000005
+        "median_total_seconds": 39.783366442,
+        "median_prepare_seconds": 32.305321477
       },
       "official": {
         "successful_trials": 1,
-        "median_total_seconds": 39.16800526400001,
-        "median_prepare_seconds": 26.99070963399999
+        "median_total_seconds": 50.390918474,
+        "median_prepare_seconds": 35.323188259
       },
       "correctness": {
         "exact_clean_ranges_equal": false,
@@ -200,29 +200,29 @@
       "video": "data/Videos_L21_a/video/L21_V022.mp4",
       "trials": [
         {
-          "prepare_seconds": 22.584765415,
+          "prepare_seconds": 22.702908659000002,
           "frame_count": 29325,
           "variant": "official",
-          "total_seconds": 32.891406539,
-          "inference_and_window_preprocess_seconds": 10.306641124000002,
+          "total_seconds": 33.002737232,
+          "inference_and_window_preprocess_seconds": 10.299828573,
           "peak_torch_allocated_bytes": 487693312,
           "peak_torch_reserved_bytes": 497025024,
-          "peak_process_tree_rss_bytes": 11081760768,
-          "baseline_process_rss_bytes": 5538766848,
+          "peak_process_tree_rss_bytes": 11080417280,
+          "baseline_process_rss_bytes": 5538095104,
           "shot_count": 220,
           "ranges_sha256": "36df777da39cd96f97761b4dd0ba275f696218f3a6320abc52cdba4ee5e6133d",
           "repeat": 0
         },
         {
           "frame_count": 29325,
-          "prepare_seconds": 25.323838367999997,
+          "prepare_seconds": 25.357249138999997,
           "variant": "dali",
-          "total_seconds": 32.136825955000006,
-          "inference_and_window_preprocess_seconds": 6.812987587000009,
+          "total_seconds": 32.111622589,
+          "inference_and_window_preprocess_seconds": 6.754373450000003,
           "peak_torch_allocated_bytes": 2379609088,
           "peak_torch_reserved_bytes": 2757754880,
-          "peak_process_tree_rss_bytes": 7341162496,
-          "baseline_process_rss_bytes": 6623621120,
+          "peak_process_tree_rss_bytes": 7338561536,
+          "baseline_process_rss_bytes": 6622932992,
           "shot_count": 222,
           "ranges_sha256": "0375cd794bee1804209626508c1da10d151b1e06f63799db6ab5ab614663cbcb",
           "repeat": 0
@@ -231,13 +231,13 @@
       "errors": [],
       "dali": {
         "successful_trials": 1,
-        "median_total_seconds": 32.136825955000006,
-        "median_prepare_seconds": 25.323838367999997
+        "median_total_seconds": 32.111622589,
+        "median_prepare_seconds": 25.357249138999997
       },
       "official": {
         "successful_trials": 1,
-        "median_total_seconds": 32.891406539,
-        "median_prepare_seconds": 22.584765415
+        "median_total_seconds": 33.002737232,
+        "median_prepare_seconds": 22.702908659000002
       },
       "correctness": {
         "exact_clean_ranges_equal": false,
@@ -272,28 +272,28 @@
       "trials": [
         {
           "frame_count": 35391,
-          "prepare_seconds": 31.236031048,
+          "prepare_seconds": 31.976527096,
           "variant": "dali",
-          "total_seconds": 39.350513715000005,
-          "inference_and_window_preprocess_seconds": 8.114482667000004,
+          "total_seconds": 39.93304207,
+          "inference_and_window_preprocess_seconds": 7.956514973999997,
           "peak_torch_allocated_bytes": 2826843136,
           "peak_torch_reserved_bytes": 3233808384,
-          "peak_process_tree_rss_bytes": 6277607424,
-          "baseline_process_rss_bytes": 5537550336,
+          "peak_process_tree_rss_bytes": 6280859648,
+          "baseline_process_rss_bytes": 5538582528,
           "shot_count": 319,
           "ranges_sha256": "5456eea3bcd0635c12aaf3eef04ab2ca8150c443ff42829e28c22f05dfe7647e",
           "repeat": 0
         },
         {
-          "prepare_seconds": 27.311273291999996,
+          "prepare_seconds": 25.971130624000004,
           "frame_count": 35391,
           "variant": "official",
-          "total_seconds": 40.06704186899999,
-          "inference_and_window_preprocess_seconds": 12.755768576999998,
+          "total_seconds": 38.066116747,
+          "inference_and_window_preprocess_seconds": 12.094986122999998,
           "peak_torch_allocated_bytes": 487693312,
           "peak_torch_reserved_bytes": 497025024,
-          "peak_process_tree_rss_bytes": 9700003840,
-          "baseline_process_rss_bytes": 6276390912,
+          "peak_process_tree_rss_bytes": 12557574144,
+          "baseline_process_rss_bytes": 6278770688,
           "shot_count": 311,
           "ranges_sha256": "237c084eaf6a6c6da8ed6c46910a172fab1ea75d41aeffb5b98279a77eb6d232",
           "repeat": 0
@@ -302,13 +302,13 @@
       "errors": [],
       "dali": {
         "successful_trials": 1,
-        "median_total_seconds": 39.350513715000005,
-        "median_prepare_seconds": 31.236031048
+        "median_total_seconds": 39.93304207,
+        "median_prepare_seconds": 31.976527096
       },
       "official": {
         "successful_trials": 1,
-        "median_total_seconds": 40.06704186899999,
-        "median_prepare_seconds": 27.311273291999996
+        "median_total_seconds": 38.066116747,
+        "median_prepare_seconds": 25.971130624000004
       },
       "correctness": {
         "exact_clean_ranges_equal": false,
@@ -478,29 +478,29 @@
       "video": "data/Videos_L22_a/video/L22_V021.mp4",
       "trials": [
         {
-          "prepare_seconds": 30.363609796,
+          "prepare_seconds": 39.225919339,
           "frame_count": 38124,
           "variant": "official",
-          "total_seconds": 43.946397239999996,
-          "inference_and_window_preprocess_seconds": 13.582787443999997,
+          "total_seconds": 55.938313095999995,
+          "inference_and_window_preprocess_seconds": 16.712393756999994,
           "peak_torch_allocated_bytes": 487693312,
           "peak_torch_reserved_bytes": 497025024,
-          "peak_process_tree_rss_bytes": 11078295552,
-          "baseline_process_rss_bytes": 5537034240,
+          "peak_process_tree_rss_bytes": 11086692352,
+          "baseline_process_rss_bytes": 5541232640,
           "shot_count": 358,
           "ranges_sha256": "9c7ed74d1b77e3d19812bf51b7f3d3517ad2ed29b57cacc77dff564ed39732ee",
           "repeat": 0
         },
         {
           "frame_count": 38124,
-          "prepare_seconds": 32.82649457000001,
+          "prepare_seconds": 34.60251040199999,
           "variant": "dali",
-          "total_seconds": 41.618935588,
-          "inference_and_window_preprocess_seconds": 8.792441017999991,
+          "total_seconds": 43.042355093,
+          "inference_and_window_preprocess_seconds": 8.439844691000005,
           "peak_torch_allocated_bytes": 3028816896,
           "peak_torch_reserved_bytes": 3439329280,
-          "peak_process_tree_rss_bytes": 7668301824,
-          "baseline_process_rss_bytes": 6948675584,
+          "peak_process_tree_rss_bytes": 7674003456,
+          "baseline_process_rss_bytes": 6952894464,
           "shot_count": 363,
           "ranges_sha256": "cb9679cfa2c76f33876c6b99021e65a12eae7f4753a57fa85c7ea27b7a1b5879",
           "repeat": 0
@@ -509,13 +509,13 @@
       "errors": [],
       "dali": {
         "successful_trials": 1,
-        "median_total_seconds": 41.618935588,
-        "median_prepare_seconds": 32.82649457000001
+        "median_total_seconds": 43.042355093,
+        "median_prepare_seconds": 34.60251040199999
       },
       "official": {
         "successful_trials": 1,
-        "median_total_seconds": 43.946397239999996,
-        "median_prepare_seconds": 30.363609796
+        "median_total_seconds": 55.938313095999995,
+        "median_prepare_seconds": 39.225919339
       },
       "correctness": {
         "exact_clean_ranges_equal": false,
@@ -602,28 +602,28 @@
       "trials": [
         {
           "frame_count": 34064,
-          "prepare_seconds": 29.762785894,
+          "prepare_seconds": 31.582320069,
           "variant": "dali",
-          "total_seconds": 37.733153988,
-          "inference_and_window_preprocess_seconds": 7.970368093999998,
+          "total_seconds": 39.08311908099999,
+          "inference_and_window_preprocess_seconds": 7.500799011999991,
           "peak_torch_allocated_bytes": 2729464832,
           "peak_torch_reserved_bytes": 3120562176,
-          "peak_process_tree_rss_bytes": 6278672384,
-          "baseline_process_rss_bytes": 5536583680,
+          "peak_process_tree_rss_bytes": 6285045760,
+          "baseline_process_rss_bytes": 5541957632,
           "shot_count": 332,
           "ranges_sha256": "209a0cbd32dbfba27d65e525d213b70c2bd4501920fa23ed1c8d04bb658e25e8",
           "repeat": 0
         },
         {
-          "prepare_seconds": 27.598798533,
+          "prepare_seconds": 34.563427353,
           "frame_count": 34064,
           "variant": "official",
-          "total_seconds": 39.945620702,
-          "inference_and_window_preprocess_seconds": 12.346822169,
+          "total_seconds": 50.059038934,
+          "inference_and_window_preprocess_seconds": 15.495611580999999,
           "peak_torch_allocated_bytes": 487693312,
           "peak_torch_reserved_bytes": 497025024,
-          "peak_process_tree_rss_bytes": 12553199616,
-          "baseline_process_rss_bytes": 6276583424,
+          "peak_process_tree_rss_bytes": 12565946368,
+          "baseline_process_rss_bytes": 6282956800,
           "shot_count": 326,
           "ranges_sha256": "eabf9895520a0f9a07a5d61066a70919d58129ffb0feb4e12f974e49e0d498a1",
           "repeat": 0
@@ -632,13 +632,13 @@
       "errors": [],
       "dali": {
         "successful_trials": 1,
-        "median_total_seconds": 37.733153988,
-        "median_prepare_seconds": 29.762785894
+        "median_total_seconds": 39.08311908099999,
+        "median_prepare_seconds": 31.582320069
       },
       "official": {
         "successful_trials": 1,
-        "median_total_seconds": 39.945620702,
-        "median_prepare_seconds": 27.598798533
+        "median_total_seconds": 50.059038934,
+        "median_prepare_seconds": 34.563427353
       },
       "correctness": {
         "exact_clean_ranges_equal": false,
@@ -800,29 +800,29 @@
       "video": "data/Videos_L24_a/video/L24_V035.mp4",
       "trials": [
         {
-          "prepare_seconds": 19.002444548,
+          "prepare_seconds": 19.13566470699999,
           "frame_count": 19851,
           "variant": "official",
-          "total_seconds": 26.145516383,
-          "inference_and_window_preprocess_seconds": 7.143071835000001,
+          "total_seconds": 26.258518210999995,
+          "inference_and_window_preprocess_seconds": 7.122853504000005,
           "peak_torch_allocated_bytes": 487693312,
           "peak_torch_reserved_bytes": 497025024,
-          "peak_process_tree_rss_bytes": 14682349568,
-          "baseline_process_rss_bytes": 7341158400,
+          "peak_process_tree_rss_bytes": 14677147648,
+          "baseline_process_rss_bytes": 7338557440,
           "shot_count": 67,
           "ranges_sha256": "0cb415d36b7d3f0eb4192448a732443e668eaa50957be9c03aa60a489faed179",
           "repeat": 0
         },
         {
           "frame_count": 19851,
-          "prepare_seconds": 15.092373120000005,
+          "prepare_seconds": 15.219018032000008,
           "variant": "dali",
-          "total_seconds": 19.714661346,
-          "inference_and_window_preprocess_seconds": 4.622288225999995,
+          "total_seconds": 19.769285918999998,
+          "inference_and_window_preprocess_seconds": 4.55026788699999,
           "peak_torch_allocated_bytes": 1681228800,
           "peak_torch_reserved_bytes": 2009071616,
-          "peak_process_tree_rss_bytes": 7352340480,
-          "baseline_process_rss_bytes": 7341158400,
+          "peak_process_tree_rss_bytes": 7349227520,
+          "baseline_process_rss_bytes": 7338557440,
           "shot_count": 67,
           "ranges_sha256": "a390b1b7404048afa50f7f5f2f09dec5305a80f24a72a3ed75d61fe5eb10d995",
           "repeat": 0
@@ -831,13 +831,13 @@
       "errors": [],
       "dali": {
         "successful_trials": 1,
-        "median_total_seconds": 19.714661346,
-        "median_prepare_seconds": 15.092373120000005
+        "median_total_seconds": 19.769285918999998,
+        "median_prepare_seconds": 15.219018032000008
       },
       "official": {
         "successful_trials": 1,
-        "median_total_seconds": 26.145516383,
-        "median_prepare_seconds": 19.002444548
+        "median_total_seconds": 26.258518210999995,
+        "median_prepare_seconds": 19.13566470699999
       },
       "correctness": {
         "exact_clean_ranges_equal": false,
@@ -880,28 +880,28 @@
       "trials": [
         {
           "frame_count": 933,
-          "prepare_seconds": 0.9151550589999999,
+          "prepare_seconds": 0.8847776499999895,
           "variant": "dali",
-          "total_seconds": 1.140937240999989,
-          "inference_and_window_preprocess_seconds": 0.225782181999989,
+          "total_seconds": 1.1118187719999924,
+          "inference_and_window_preprocess_seconds": 0.22704112200000282,
           "peak_torch_allocated_bytes": 521202688,
           "peak_torch_reserved_bytes": 553648128,
-          "peak_process_tree_rss_bytes": 8148996096,
-          "baseline_process_rss_bytes": 8128880640,
+          "peak_process_tree_rss_bytes": 8212992000,
+          "baseline_process_rss_bytes": 8192753664,
           "shot_count": 17,
           "ranges_sha256": "c645253554b75f69030b1f3b8e6c2ddea4044fd99080f2c9c1d9db4d708706c8",
           "repeat": 0
         },
         {
-          "prepare_seconds": 1.1664186609999945,
+          "prepare_seconds": 1.133618374000008,
           "frame_count": 933,
           "variant": "official",
-          "total_seconds": 1.5262812889999964,
-          "inference_and_window_preprocess_seconds": 0.3598626280000019,
+          "total_seconds": 1.4842676469999958,
+          "inference_and_window_preprocess_seconds": 0.3506492729999877,
           "peak_torch_allocated_bytes": 487595008,
           "peak_torch_reserved_bytes": 509607936,
-          "peak_process_tree_rss_bytes": 16297992192,
-          "baseline_process_rss_bytes": 8148979712,
+          "peak_process_tree_rss_bytes": 16425984000,
+          "baseline_process_rss_bytes": 8212975616,
           "shot_count": 17,
           "ranges_sha256": "c645253554b75f69030b1f3b8e6c2ddea4044fd99080f2c9c1d9db4d708706c8",
           "repeat": 0
@@ -910,13 +910,13 @@
       "errors": [],
       "dali": {
         "successful_trials": 1,
-        "median_total_seconds": 1.140937240999989,
-        "median_prepare_seconds": 0.9151550589999999
+        "median_total_seconds": 1.1118187719999924,
+        "median_prepare_seconds": 0.8847776499999895
       },
       "official": {
         "successful_trials": 1,
-        "median_total_seconds": 1.5262812889999964,
-        "median_prepare_seconds": 1.1664186609999945
+        "median_total_seconds": 1.4842676469999958,
+        "median_prepare_seconds": 1.133618374000008
       },
       "correctness": {
         "exact_clean_ranges_equal": true,
@@ -932,29 +932,29 @@
       "video": "data/Videos_L25_a/video/L25_V016.mp4",
       "trials": [
         {
-          "prepare_seconds": 34.53802179499999,
+          "prepare_seconds": 33.592963002999994,
           "frame_count": 39809,
           "variant": "official",
-          "total_seconds": 48.606230847000006,
-          "inference_and_window_preprocess_seconds": 14.068209052000014,
-          "peak_torch_allocated_bytes": 487595008,
-          "peak_torch_reserved_bytes": 509607936,
-          "peak_process_tree_rss_bytes": 16275464192,
-          "baseline_process_rss_bytes": 8137715712,
+          "total_seconds": 47.527545845999995,
+          "inference_and_window_preprocess_seconds": 13.934582843000001,
+          "peak_torch_allocated_bytes": 485284864,
+          "peak_torch_reserved_bytes": 505413632,
+          "peak_process_tree_rss_bytes": 16426000384,
+          "baseline_process_rss_bytes": 8212983808,
           "shot_count": 132,
           "ranges_sha256": "295556b7501194cffcf173a77707dee16f6c7913acd14b9a96b897d1db0ca1a9",
           "repeat": 0
         },
         {
           "frame_count": 39809,
-          "prepare_seconds": 31.45831954100001,
+          "prepare_seconds": 33.20197550899999,
           "variant": "dali",
-          "total_seconds": 40.815872360000014,
-          "inference_and_window_preprocess_seconds": 9.357552819000006,
-          "peak_torch_allocated_bytes": 3152946176,
-          "peak_torch_reserved_bytes": 3579838464,
-          "peak_process_tree_rss_bytes": 8168914944,
-          "baseline_process_rss_bytes": 8152543232,
+          "total_seconds": 42.172815192,
+          "inference_and_window_preprocess_seconds": 8.970839683000008,
+          "peak_torch_allocated_bytes": 3150652416,
+          "peak_torch_reserved_bytes": 3571449856,
+          "peak_process_tree_rss_bytes": 8256950272,
+          "baseline_process_rss_bytes": 8242745344,
           "shot_count": 132,
           "ranges_sha256": "be5ab4ff376bf8d7a3bf09e1d21b048c9d1456e3fddfd9db4ef6d52f4eede8ce",
           "repeat": 0
@@ -963,13 +963,13 @@
       "errors": [],
       "dali": {
         "successful_trials": 1,
-        "median_total_seconds": 40.815872360000014,
-        "median_prepare_seconds": 31.45831954100001
+        "median_total_seconds": 42.172815192,
+        "median_prepare_seconds": 33.20197550899999
       },
       "official": {
         "successful_trials": 1,
-        "median_total_seconds": 48.606230847000006,
-        "median_prepare_seconds": 34.53802179499999
+        "median_total_seconds": 47.527545845999995,
+        "median_prepare_seconds": 33.592963002999994
       },
       "correctness": {
         "exact_clean_ranges_equal": false,
@@ -1172,28 +1172,28 @@
       "trials": [
         {
           "frame_count": 43403,
-          "prepare_seconds": 35.35394330099999,
+          "prepare_seconds": 36.707370342999994,
           "variant": "dali",
-          "total_seconds": 45.32785789100001,
-          "inference_and_window_preprocess_seconds": 9.973914590000021,
+          "total_seconds": 46.312480476999994,
+          "inference_and_window_preprocess_seconds": 9.605110134,
           "peak_torch_allocated_bytes": 3417555968,
           "peak_torch_reserved_bytes": 3858759680,
-          "peak_process_tree_rss_bytes": 8208408576,
-          "baseline_process_rss_bytes": 8190263296,
+          "peak_process_tree_rss_bytes": 8144330752,
+          "baseline_process_rss_bytes": 8129777664,
           "shot_count": 118,
           "ranges_sha256": "727ea1db9bc0259a3c9aca776428174b1b0ab53ec0820b7fd04392aa8b4404c8",
           "repeat": 0
         },
         {
-          "prepare_seconds": 33.35936742199999,
+          "prepare_seconds": 45.707316749,
           "frame_count": 43403,
           "variant": "official",
-          "total_seconds": 48.37342266900001,
-          "inference_and_window_preprocess_seconds": 15.014055247000016,
+          "total_seconds": 65.243769563,
+          "inference_and_window_preprocess_seconds": 19.536452814,
           "peak_torch_allocated_bytes": 487595008,
           "peak_torch_reserved_bytes": 509607936,
-          "peak_process_tree_rss_bytes": 16416817152,
-          "baseline_process_rss_bytes": 8208392192,
+          "peak_process_tree_rss_bytes": 10186129408,
+          "baseline_process_rss_bytes": 8142290944,
           "shot_count": 123,
           "ranges_sha256": "3eed6749bc749dd142ee169a491d91594cd48d864f1f1b8f00d2d0dcf5fb2f7f",
           "repeat": 0
@@ -1202,13 +1202,13 @@
       "errors": [],
       "dali": {
         "successful_trials": 1,
-        "median_total_seconds": 45.32785789100001,
-        "median_prepare_seconds": 35.35394330099999
+        "median_total_seconds": 46.312480476999994,
+        "median_prepare_seconds": 36.707370342999994
       },
       "official": {
         "successful_trials": 1,
-        "median_total_seconds": 48.37342266900001,
-        "median_prepare_seconds": 33.35936742199999
+        "median_total_seconds": 65.243769563,
+        "median_prepare_seconds": 45.707316749
       },
       "correctness": {
         "exact_clean_ranges_equal": false,
@@ -1398,29 +1398,29 @@
       "video": "data/Videos_L26_a/video/L26_V035.mp4",
       "trials": [
         {
-          "prepare_seconds": 8.144162705,
+          "prepare_seconds": 9.741600738000002,
           "frame_count": 8122,
           "variant": "official",
-          "total_seconds": 11.063215916000004,
-          "inference_and_window_preprocess_seconds": 2.919053211000005,
-          "peak_torch_allocated_bytes": 485284864,
-          "peak_torch_reserved_bytes": 505413632,
-          "peak_process_tree_rss_bytes": 16327770112,
-          "baseline_process_rss_bytes": 8163868672,
+          "total_seconds": 13.316533537000012,
+          "inference_and_window_preprocess_seconds": 3.5749327990000097,
+          "peak_torch_allocated_bytes": 487595008,
+          "peak_torch_reserved_bytes": 509607936,
+          "peak_process_tree_rss_bytes": 16282189824,
+          "baseline_process_rss_bytes": 8141078528,
           "shot_count": 106,
           "ranges_sha256": "ba48430af0c1d539096166886903db7558e4a8c6db6c2f944201fbd670d6cb0e",
           "repeat": 0
         },
         {
           "frame_count": 8122,
-          "prepare_seconds": 6.485589930000003,
+          "prepare_seconds": 6.675113980000006,
           "variant": "dali",
-          "total_seconds": 8.386456518000003,
-          "inference_and_window_preprocess_seconds": 1.9008665879999995,
-          "peak_torch_allocated_bytes": 814429184,
-          "peak_torch_reserved_bytes": 1103101952,
-          "peak_process_tree_rss_bytes": 8187277312,
-          "baseline_process_rss_bytes": 8178749440,
+          "total_seconds": 8.48827937,
+          "inference_and_window_preprocess_seconds": 1.8131653899999947,
+          "peak_torch_allocated_bytes": 816722944,
+          "peak_torch_reserved_bytes": 1111490560,
+          "peak_process_tree_rss_bytes": 8149585920,
+          "baseline_process_rss_bytes": 8141078528,
           "shot_count": 105,
           "ranges_sha256": "4965cc69d69f75152f804056870937a67262aad5a5c511fb5d1f47a1fda47ebb",
           "repeat": 0
@@ -1429,13 +1429,13 @@
       "errors": [],
       "dali": {
         "successful_trials": 1,
-        "median_total_seconds": 8.386456518000003,
-        "median_prepare_seconds": 6.485589930000003
+        "median_total_seconds": 8.48827937,
+        "median_prepare_seconds": 6.675113980000006
       },
       "official": {
         "successful_trials": 1,
-        "median_total_seconds": 11.063215916000004,
-        "median_prepare_seconds": 8.144162705
+        "median_total_seconds": 13.316533537000012,
+        "median_prepare_seconds": 9.741600738000002
       },
       "correctness": {
         "exact_clean_ranges_equal": false,
@@ -1482,28 +1482,28 @@
       "trials": [
         {
           "frame_count": 7606,
-          "prepare_seconds": 6.039153949999999,
+          "prepare_seconds": 6.299453180000015,
           "variant": "dali",
-          "total_seconds": 7.805062673999998,
-          "inference_and_window_preprocess_seconds": 1.765908723999999,
+          "total_seconds": 7.985911680000001,
+          "inference_and_window_preprocess_seconds": 1.6864584999999863,
           "peak_torch_allocated_bytes": 779047936,
           "peak_torch_reserved_bytes": 1054867456,
-          "peak_process_tree_rss_bytes": 7676866560,
-          "baseline_process_rss_bytes": 7668297728,
+          "peak_process_tree_rss_bytes": 7682736128,
+          "baseline_process_rss_bytes": 7673999360,
           "shot_count": 111,
           "ranges_sha256": "f59fdab9b5a0c29b412ef9cee6cd864d185ad2b7629f255ffdf49e3a72623410",
           "repeat": 0
         },
         {
-          "prepare_seconds": 7.635789754000001,
+          "prepare_seconds": 9.560457573999997,
           "frame_count": 7606,
           "variant": "official",
-          "total_seconds": 10.463248101999994,
-          "inference_and_window_preprocess_seconds": 2.8274583479999933,
+          "total_seconds": 13.034358896000015,
+          "inference_and_window_preprocess_seconds": 3.4739013220000174,
           "peak_torch_allocated_bytes": 487693312,
           "peak_torch_reserved_bytes": 497025024,
-          "peak_process_tree_rss_bytes": 15353733120,
-          "baseline_process_rss_bytes": 7676850176,
+          "peak_process_tree_rss_bytes": 9725124608,
+          "baseline_process_rss_bytes": 7682719744,
           "shot_count": 112,
           "ranges_sha256": "d83bde22de8ac6044fc2dbe03bc566677944f3a21b119fcfd5fb5c42c222e528",
           "repeat": 0
@@ -1512,13 +1512,13 @@
       "errors": [],
       "dali": {
         "successful_trials": 1,
-        "median_total_seconds": 7.805062673999998,
-        "median_prepare_seconds": 6.039153949999999
+        "median_total_seconds": 7.985911680000001,
+        "median_prepare_seconds": 6.299453180000015
       },
       "official": {
         "successful_trials": 1,
-        "median_total_seconds": 10.463248101999994,
-        "median_prepare_seconds": 7.635789754000001
+        "median_total_seconds": 13.034358896000015,
+        "median_prepare_seconds": 9.560457573999997
       },
       "correctness": {
         "exact_clean_ranges_equal": false,
@@ -1564,29 +1564,29 @@
       "video": "data/Videos_L26_e/video/L26_V424.mp4",
       "trials": [
         {
-          "prepare_seconds": 7.730817599000005,
+          "prepare_seconds": 7.6246492209999985,
           "frame_count": 7700,
           "variant": "official",
-          "total_seconds": 10.501453480999999,
-          "inference_and_window_preprocess_seconds": 2.7706358819999934,
-          "peak_torch_allocated_bytes": 487595008,
-          "peak_torch_reserved_bytes": 509607936,
-          "peak_process_tree_rss_bytes": 15353741312,
-          "baseline_process_rss_bytes": 7676854272,
+          "total_seconds": 10.385306971000006,
+          "inference_and_window_preprocess_seconds": 2.760657750000007,
+          "peak_torch_allocated_bytes": 487693312,
+          "peak_torch_reserved_bytes": 497025024,
+          "peak_process_tree_rss_bytes": 14698463232,
+          "baseline_process_rss_bytes": 7349215232,
           "shot_count": 100,
           "ranges_sha256": "18d62a21923a30fc14a968ddb276e760a8d51ed27e524bbcfe68c099bf367f01",
           "repeat": 0
         },
         {
           "frame_count": 7700,
-          "prepare_seconds": 5.9262363170000185,
+          "prepare_seconds": 5.950442113999998,
           "variant": "dali",
-          "total_seconds": 7.706656314000014,
-          "inference_and_window_preprocess_seconds": 1.7804199969999956,
-          "peak_torch_allocated_bytes": 785126400,
-          "peak_torch_reserved_bytes": 1075838976,
-          "peak_process_tree_rss_bytes": 7685242880,
-          "baseline_process_rss_bytes": 7676854272,
+          "total_seconds": 7.7320905640000035,
+          "inference_and_window_preprocess_seconds": 1.7816484500000058,
+          "peak_torch_allocated_bytes": 785241088,
+          "peak_torch_reserved_bytes": 1080033280,
+          "peak_process_tree_rss_bytes": 7350206464,
+          "baseline_process_rss_bytes": 7349215232,
           "shot_count": 100,
           "ranges_sha256": "94ac45fa65aa5d8cee5b4e32b5e6fb70914806dab44e95ee0005044c44b57484",
           "repeat": 0
@@ -1595,13 +1595,13 @@
       "errors": [],
       "dali": {
         "successful_trials": 1,
-        "median_total_seconds": 7.706656314000014,
-        "median_prepare_seconds": 5.9262363170000185
+        "median_total_seconds": 7.7320905640000035,
+        "median_prepare_seconds": 5.950442113999998
       },
       "official": {
         "successful_trials": 1,
-        "median_total_seconds": 10.501453480999999,
-        "median_prepare_seconds": 7.730817599000005
+        "median_total_seconds": 10.385306971000006,
+        "median_prepare_seconds": 7.6246492209999985
       },
       "correctness": {
         "exact_clean_ranges_equal": false,
@@ -1636,28 +1636,28 @@
       "trials": [
         {
           "frame_count": 27961,
-          "prepare_seconds": 21.943703182999997,
+          "prepare_seconds": 23.42463259599998,
           "variant": "dali",
-          "total_seconds": 28.427145346999993,
-          "inference_and_window_preprocess_seconds": 6.483442163999996,
-          "peak_torch_allocated_bytes": 2277680128,
-          "peak_torch_reserved_bytes": 2652897280,
-          "peak_process_tree_rss_bytes": 8187703296,
-          "baseline_process_rss_bytes": 8187260928,
+          "total_seconds": 29.57650727799998,
+          "inference_and_window_preprocess_seconds": 6.151874681999999,
+          "peak_torch_allocated_bytes": 2279973888,
+          "peak_torch_reserved_bytes": 2640314368,
+          "peak_process_tree_rss_bytes": 8149680128,
+          "baseline_process_rss_bytes": 8149573632,
           "shot_count": 226,
           "ranges_sha256": "83d921e92d24ce28b59600b34758f6a27d8b84a1d0949a8441b75b01ca348e0c",
           "repeat": 0
         },
         {
-          "prepare_seconds": 31.600896801999994,
+          "prepare_seconds": 35.645005940999994,
           "frame_count": 27961,
           "variant": "official",
-          "total_seconds": 41.66002225700001,
-          "inference_and_window_preprocess_seconds": 10.059125455000014,
-          "peak_torch_allocated_bytes": 485284864,
-          "peak_torch_reserved_bytes": 505413632,
-          "peak_process_tree_rss_bytes": 16375283712,
-          "baseline_process_rss_bytes": 8187625472,
+          "total_seconds": 47.71856776300001,
+          "inference_and_window_preprocess_seconds": 12.073561822000016,
+          "peak_torch_allocated_bytes": 487595008,
+          "peak_torch_reserved_bytes": 509607936,
+          "peak_process_tree_rss_bytes": 10112065536,
+          "baseline_process_rss_bytes": 8149573632,
           "shot_count": 227,
           "ranges_sha256": "a75d7b4e43bf7cab18f6a590bb1835c828d6e4048017e71d9ed1b51700e7538d",
           "repeat": 0
@@ -1666,13 +1666,13 @@
       "errors": [],
       "dali": {
         "successful_trials": 1,
-        "median_total_seconds": 28.427145346999993,
-        "median_prepare_seconds": 21.943703182999997
+        "median_total_seconds": 29.57650727799998,
+        "median_prepare_seconds": 23.42463259599998
       },
       "official": {
         "successful_trials": 1,
-        "median_total_seconds": 41.66002225700001,
-        "median_prepare_seconds": 31.600896801999994
+        "median_total_seconds": 47.71856776300001,
+        "median_prepare_seconds": 35.645005940999994
       },
       "correctness": {
         "exact_clean_ranges_equal": false,
@@ -1830,29 +1830,29 @@
       "video": "data/Videos_L30_a/video/L30_V046.mp4",
       "trials": [
         {
-          "prepare_seconds": 7.622660617000008,
+          "prepare_seconds": 9.937764386999987,
           "frame_count": 6932,
           "variant": "official",
-          "total_seconds": 10.064553335,
-          "inference_and_window_preprocess_seconds": 2.441892717999991,
-          "peak_torch_allocated_bytes": 487693312,
-          "peak_torch_reserved_bytes": 497025024,
-          "peak_process_tree_rss_bytes": 14704689152,
-          "baseline_process_rss_bytes": 7352328192,
+          "total_seconds": 13.106860785999999,
+          "inference_and_window_preprocess_seconds": 3.1690963990000114,
+          "peak_torch_allocated_bytes": 487595008,
+          "peak_torch_reserved_bytes": 509607936,
+          "peak_process_tree_rss_bytes": 15365480448,
+          "baseline_process_rss_bytes": 7682723840,
           "shot_count": 64,
           "ranges_sha256": "7395a26b9ce2b48523d4003eee48f7639505c76adbd9502f78f06371e709ba10",
           "repeat": 0
         },
         {
           "frame_count": 6932,
-          "prepare_seconds": 5.446840659000003,
+          "prepare_seconds": 5.861985580999999,
           "variant": "dali",
-          "total_seconds": 7.063102392000019,
-          "inference_and_window_preprocess_seconds": 1.616261733000016,
-          "peak_torch_allocated_bytes": 743533568,
-          "peak_torch_reserved_bytes": 1008730112,
-          "peak_process_tree_rss_bytes": 7360860160,
-          "baseline_process_rss_bytes": 7352328192,
+          "total_seconds": 7.3935190839999905,
+          "inference_and_window_preprocess_seconds": 1.5315335029999915,
+          "peak_torch_allocated_bytes": 742632448,
+          "peak_torch_reserved_bytes": 1004535808,
+          "peak_process_tree_rss_bytes": 7690960896,
+          "baseline_process_rss_bytes": 7682723840,
           "shot_count": 64,
           "ranges_sha256": "7395a26b9ce2b48523d4003eee48f7639505c76adbd9502f78f06371e709ba10",
           "repeat": 0
@@ -1861,13 +1861,13 @@
       "errors": [],
       "dali": {
         "successful_trials": 1,
-        "median_total_seconds": 7.063102392000019,
-        "median_prepare_seconds": 5.446840659000003
+        "median_total_seconds": 7.3935190839999905,
+        "median_prepare_seconds": 5.861985580999999
       },
       "official": {
         "successful_trials": 1,
-        "median_total_seconds": 10.064553335,
-        "median_prepare_seconds": 7.622660617000008
+        "median_total_seconds": 13.106860785999999,
+        "median_prepare_seconds": 9.937764386999987
       },
       "correctness": {
         "exact_clean_ranges_equal": true,
@@ -1884,28 +1884,28 @@
       "trials": [
         {
           "frame_count": 2169,
-          "prepare_seconds": 1.8624508510000055,
+          "prepare_seconds": 1.8302291920000187,
           "variant": "dali",
-          "total_seconds": 2.3585803249999913,
-          "inference_and_window_preprocess_seconds": 0.49612947399998575,
-          "peak_torch_allocated_bytes": 567340032,
-          "peak_torch_reserved_bytes": 641728512,
-          "peak_process_tree_rss_bytes": 7685672960,
-          "baseline_process_rss_bytes": 7685230592,
+          "total_seconds": 2.3254986590000044,
+          "inference_and_window_preprocess_seconds": 0.49526946699998575,
+          "peak_torch_allocated_bytes": 567639040,
+          "peak_torch_reserved_bytes": 645922816,
+          "peak_process_tree_rss_bytes": 7350202368,
+          "baseline_process_rss_bytes": 7349219328,
           "shot_count": 27,
           "ranges_sha256": "6a26acbfc24ae1821ed40b997a520be4363d7ce2f4394c9d0c1936341506d3d7",
           "repeat": 0
         },
         {
-          "prepare_seconds": 2.392602191000009,
+          "prepare_seconds": 2.3915572509999947,
           "frame_count": 2169,
           "variant": "official",
-          "total_seconds": 3.159834582000002,
-          "inference_and_window_preprocess_seconds": 0.7672323909999932,
-          "peak_torch_allocated_bytes": 487595008,
-          "peak_torch_reserved_bytes": 509607936,
-          "peak_process_tree_rss_bytes": 15370493952,
-          "baseline_process_rss_bytes": 7685230592,
+          "total_seconds": 3.15428115200001,
+          "inference_and_window_preprocess_seconds": 0.7627239010000153,
+          "peak_torch_allocated_bytes": 487693312,
+          "peak_torch_reserved_bytes": 497025024,
+          "peak_process_tree_rss_bytes": 9261535232,
+          "baseline_process_rss_bytes": 7349219328,
           "shot_count": 27,
           "ranges_sha256": "6a26acbfc24ae1821ed40b997a520be4363d7ce2f4394c9d0c1936341506d3d7",
           "repeat": 0
@@ -1914,13 +1914,13 @@
       "errors": [],
       "dali": {
         "successful_trials": 1,
-        "median_total_seconds": 2.3585803249999913,
-        "median_prepare_seconds": 1.8624508510000055
+        "median_total_seconds": 2.3254986590000044,
+        "median_prepare_seconds": 1.8302291920000187
       },
       "official": {
         "successful_trials": 1,
-        "median_total_seconds": 3.159834582000002,
-        "median_prepare_seconds": 2.392602191000009
+        "median_total_seconds": 3.15428115200001,
+        "median_prepare_seconds": 2.3915572509999947
       },
       "correctness": {
         "exact_clean_ranges_equal": true,
@@ -1937,8 +1937,9 @@
   "worker_metadata": [
     {
       "benchmark": "DALI vs official OmniShotCut file-path API",
-      "run_id": "dali-20261108T154909",
-      "gpu": "NVIDIA A10",
+      "run_id": "dali-20261110T051614",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "gpu": "NVIDIA A10G",
       "cpu_cores": 4,
       "memory_mib": 16384,
       "torch_num_threads": 4,
@@ -1952,8 +1953,8 @@
         "opencv-python": "5.0.0.93"
       },
       "repeats": 1,
-      "model_load_seconds_excluded": 3.0483050169999997,
-      "warmup_seconds_excluded": 0.6600871779999995,
+      "model_load_seconds_excluded": 3.442017759999999,
+      "warmup_seconds_excluded": 0.9073666839999994,
       "notes": [
         "Both variants use the same loaded GPU model and overlap=10.",
         "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
@@ -1967,7 +1968,8 @@
     },
     {
       "benchmark": "DALI vs official OmniShotCut file-path API",
-      "run_id": "dali-20261108T154909",
+      "run_id": "dali-20261110T051614",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
       "gpu": "NVIDIA A10",
       "cpu_cores": 4,
       "memory_mib": 16384,
@@ -1982,8 +1984,8 @@
         "opencv-python": "5.0.0.93"
       },
       "repeats": 1,
-      "model_load_seconds_excluded": 3.194853105000001,
-      "warmup_seconds_excluded": 0.6775438769999997,
+      "model_load_seconds_excluded": 3.0131357570000006,
+      "warmup_seconds_excluded": 0.663051341000001,
       "notes": [
         "Both variants use the same loaded GPU model and overlap=10.",
         "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
@@ -1997,7 +1999,8 @@
     },
     {
       "benchmark": "DALI vs official OmniShotCut file-path API",
-      "run_id": "dali-20261108T154909",
+      "run_id": "dali-20261110T051614",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
       "gpu": "NVIDIA A10",
       "cpu_cores": 4,
       "memory_mib": 16384,
@@ -2012,8 +2015,8 @@
         "opencv-python": "5.0.0.93"
       },
       "repeats": 1,
-      "model_load_seconds_excluded": 2.7595165240000004,
-      "warmup_seconds_excluded": 0.6706504659999997,
+      "model_load_seconds_excluded": 3.027150786999999,
+      "warmup_seconds_excluded": 0.6359114120000005,
       "notes": [
         "Both variants use the same loaded GPU model and overlap=10.",
         "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
@@ -2027,8 +2030,9 @@
     },
     {
       "benchmark": "DALI vs official OmniShotCut file-path API",
-      "run_id": "dali-20261108T154909",
-      "gpu": "NVIDIA A10",
+      "run_id": "dali-20261110T051614",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "gpu": "NVIDIA A10G",
       "cpu_cores": 4,
       "memory_mib": 16384,
       "torch_num_threads": 4,
@@ -2042,8 +2046,8 @@
         "opencv-python": "5.0.0.93"
       },
       "repeats": 1,
-      "model_load_seconds_excluded": 3.163676842,
-      "warmup_seconds_excluded": 0.7262371430000005,
+      "model_load_seconds_excluded": 3.508811971,
+      "warmup_seconds_excluded": 0.9027433290000015,
       "notes": [
         "Both variants use the same loaded GPU model and overlap=10.",
         "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
@@ -2057,8 +2061,9 @@
     },
     {
       "benchmark": "DALI vs official OmniShotCut file-path API",
-      "run_id": "dali-20261108T154909",
-      "gpu": "NVIDIA A10",
+      "run_id": "dali-20261110T051614",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "gpu": "NVIDIA A10G",
       "cpu_cores": 4,
       "memory_mib": 16384,
       "torch_num_threads": 4,
@@ -2072,8 +2077,8 @@
         "opencv-python": "5.0.0.93"
       },
       "repeats": 1,
-      "model_load_seconds_excluded": 3.5215691609999995,
-      "warmup_seconds_excluded": 0.6676085780000012,
+      "model_load_seconds_excluded": 3.47571722,
+      "warmup_seconds_excluded": 0.914332777000002,
       "notes": [
         "Both variants use the same loaded GPU model and overlap=10.",
         "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
@@ -2087,7 +2092,8 @@
     },
     {
       "benchmark": "DALI vs official OmniShotCut file-path API",
-      "run_id": "dali-20261108T154909",
+      "run_id": "dali-20261110T051614",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
       "gpu": "NVIDIA A10",
       "cpu_cores": 4,
       "memory_mib": 16384,
@@ -2102,8 +2108,8 @@
         "opencv-python": "5.0.0.93"
       },
       "repeats": 1,
-      "model_load_seconds_excluded": 0.7560711120000008,
-      "warmup_seconds_excluded": 0.05340657300000373,
+      "model_load_seconds_excluded": 0.5411481880000082,
+      "warmup_seconds_excluded": 0.05408349999999018,
       "notes": [
         "Both variants use the same loaded GPU model and overlap=10.",
         "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
@@ -2117,7 +2123,8 @@
     },
     {
       "benchmark": "DALI vs official OmniShotCut file-path API",
-      "run_id": "dali-20261108T154909",
+      "run_id": "dali-20261110T051614",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
       "gpu": "NVIDIA A10",
       "cpu_cores": 4,
       "memory_mib": 16384,
@@ -2132,8 +2139,8 @@
         "opencv-python": "5.0.0.93"
       },
       "repeats": 1,
-      "model_load_seconds_excluded": 0.7745345409999942,
-      "warmup_seconds_excluded": 0.05330693700000211,
+      "model_load_seconds_excluded": 0.6037609520000018,
+      "warmup_seconds_excluded": 0.05331347799999264,
       "notes": [
         "Both variants use the same loaded GPU model and overlap=10.",
         "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
@@ -2147,7 +2154,8 @@
     },
     {
       "benchmark": "DALI vs official OmniShotCut file-path API",
-      "run_id": "dali-20261108T154909",
+      "run_id": "dali-20261110T051614",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
       "gpu": "NVIDIA A10",
       "cpu_cores": 4,
       "memory_mib": 16384,
@@ -2162,8 +2170,8 @@
         "opencv-python": "5.0.0.93"
       },
       "repeats": 1,
-      "model_load_seconds_excluded": 0.7093371849999954,
-      "warmup_seconds_excluded": 0.052158380999998144,
+      "model_load_seconds_excluded": 0.4786191560000077,
+      "warmup_seconds_excluded": 0.05033440500000097,
       "notes": [
         "Both variants use the same loaded GPU model and overlap=10.",
         "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
@@ -2177,8 +2185,9 @@
     },
     {
       "benchmark": "DALI vs official OmniShotCut file-path API",
-      "run_id": "dali-20261108T154909",
-      "gpu": "NVIDIA A10",
+      "run_id": "dali-20261110T051614",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "gpu": "NVIDIA A10G",
       "cpu_cores": 4,
       "memory_mib": 16384,
       "torch_num_threads": 4,
@@ -2192,8 +2201,8 @@
         "opencv-python": "5.0.0.93"
       },
       "repeats": 1,
-      "model_load_seconds_excluded": 0.7616041469999999,
-      "warmup_seconds_excluded": 0.05336152200000299,
+      "model_load_seconds_excluded": 0.7315911839999956,
+      "warmup_seconds_excluded": 0.059711211999996294,
       "notes": [
         "Both variants use the same loaded GPU model and overlap=10.",
         "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
@@ -2207,8 +2216,9 @@
     },
     {
       "benchmark": "DALI vs official OmniShotCut file-path API",
-      "run_id": "dali-20261108T154909",
-      "gpu": "NVIDIA A10",
+      "run_id": "dali-20261110T051614",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "gpu": "NVIDIA A10G",
       "cpu_cores": 4,
       "memory_mib": 16384,
       "torch_num_threads": 4,
@@ -2222,8 +2232,8 @@
         "opencv-python": "5.0.0.93"
       },
       "repeats": 1,
-      "model_load_seconds_excluded": 0.6965720680000089,
-      "warmup_seconds_excluded": 0.053235612000008814,
+      "model_load_seconds_excluded": 0.6898044549999867,
+      "warmup_seconds_excluded": 0.05865617700000314,
       "notes": [
         "Both variants use the same loaded GPU model and overlap=10.",
         "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
@@ -2237,8 +2247,9 @@
     },
     {
       "benchmark": "DALI vs official OmniShotCut file-path API",
-      "run_id": "dali-20261108T154909",
-      "gpu": "NVIDIA A10",
+      "run_id": "dali-20261110T051614",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "gpu": "NVIDIA A10G",
       "cpu_cores": 4,
       "memory_mib": 16384,
       "torch_num_threads": 4,
@@ -2252,8 +2263,8 @@
         "opencv-python": "5.0.0.93"
       },
       "repeats": 1,
-      "model_load_seconds_excluded": 0.7495381370000018,
-      "warmup_seconds_excluded": 0.053905767999992804,
+      "model_load_seconds_excluded": 0.5305723179999973,
+      "warmup_seconds_excluded": 0.059353359000013484,
       "notes": [
         "Both variants use the same loaded GPU model and overlap=10.",
         "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
@@ -2267,7 +2278,8 @@
     },
     {
       "benchmark": "DALI vs official OmniShotCut file-path API",
-      "run_id": "dali-20261108T154909",
+      "run_id": "dali-20261110T051614",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
       "gpu": "NVIDIA A10",
       "cpu_cores": 4,
       "memory_mib": 16384,
@@ -2282,8 +2294,8 @@
         "opencv-python": "5.0.0.93"
       },
       "repeats": 1,
-      "model_load_seconds_excluded": 0.6957450059999957,
-      "warmup_seconds_excluded": 0.054105164999981525,
+      "model_load_seconds_excluded": 0.4902782860000059,
+      "warmup_seconds_excluded": 0.05294780300002344,
       "notes": [
         "Both variants use the same loaded GPU model and overlap=10.",
         "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
@@ -2297,8 +2309,9 @@
     },
     {
       "benchmark": "DALI vs official OmniShotCut file-path API",
-      "run_id": "dali-20261108T154909",
-      "gpu": "NVIDIA A10",
+      "run_id": "dali-20261110T051614",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "gpu": "NVIDIA A10G",
       "cpu_cores": 4,
       "memory_mib": 16384,
       "torch_num_threads": 4,
@@ -2312,8 +2325,8 @@
         "opencv-python": "5.0.0.93"
       },
       "repeats": 1,
-      "model_load_seconds_excluded": 0.665968466999999,
-      "warmup_seconds_excluded": 0.05259058599997957,
+      "model_load_seconds_excluded": 0.514633970999995,
+      "warmup_seconds_excluded": 0.058161479999995436,
       "notes": [
         "Both variants use the same loaded GPU model and overlap=10.",
         "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
@@ -2327,8 +2340,9 @@
     },
     {
       "benchmark": "DALI vs official OmniShotCut file-path API",
-      "run_id": "dali-20261108T154909",
-      "gpu": "NVIDIA A10",
+      "run_id": "dali-20261110T051614",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
+      "gpu": "NVIDIA A10G",
       "cpu_cores": 4,
       "memory_mib": 16384,
       "torch_num_threads": 4,
@@ -2342,8 +2356,8 @@
         "opencv-python": "5.0.0.93"
       },
       "repeats": 1,
-      "model_load_seconds_excluded": 0.6668911739999999,
-      "warmup_seconds_excluded": 0.05277247700001908,
+      "model_load_seconds_excluded": 0.49039637399999947,
+      "warmup_seconds_excluded": 0.05965714299998126,
       "notes": [
         "Both variants use the same loaded GPU model and overlap=10.",
         "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
@@ -2357,7 +2371,8 @@
     },
     {
       "benchmark": "DALI vs official OmniShotCut file-path API",
-      "run_id": "dali-20261108T154909",
+      "run_id": "dali-20261110T051614",
+      "dataset_version": "qwen2b-bf16-1fps-v1",
       "gpu": "NVIDIA A10",
       "cpu_cores": 4,
       "memory_mib": 16384,
@@ -2372,8 +2387,8 @@
         "opencv-python": "5.0.0.93"
       },
       "repeats": 1,
-      "model_load_seconds_excluded": 0.7039009780000072,
-      "warmup_seconds_excluded": 0.0534151559999998,
+      "model_load_seconds_excluded": 0.47813855200001854,
+      "warmup_seconds_excluded": 0.052447954999991,
       "notes": [
         "Both variants use the same loaded GPU model and overlap=10.",
         "Official baseline calls wrapper.inference(path, mode=clean_shot) unchanged; only decode timing is intercepted.",
@@ -2389,7 +2404,7 @@
   "aggregate": {
     "videos": 15,
     "errors": 0,
-    "dali_sum_video_median_seconds": 356.87768585000003,
-    "official_sum_video_median_seconds": 407.582250475
+    "dali_sum_video_median_seconds": 366.82171227,
+    "official_sum_video_median_seconds": 468.68713485500007
   }
 }
