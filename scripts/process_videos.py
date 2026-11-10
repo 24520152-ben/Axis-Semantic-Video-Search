@@ -15,7 +15,7 @@ cache_code = (
     f"snapshot_download({config.MODEL_ID!r}, revision={config.MODEL_REVISION!r}, "
     "allow_patterns=['*.json','*.txt','*.safetensors','*.jinja','tokenizer.model'])"
 )
-image = (
+base_image = (
     modal.Image.from_registry("nvidia/cuda:12.6.3-base-ubuntu22.04", add_python="3.12")
     .apt_install(
         "git",
@@ -28,8 +28,8 @@ image = (
     .uv_sync(extras=["pipeline"], frozen=True, extra_options="--no-dev")
     .workdir("/root")  # Volume reload requires cwd outside its mount.
     .run_commands(f"/.uv/.venv/bin/python -c {shlex.quote(cache_code)}")
-    .add_local_python_source("src")
 )
+image = base_image.add_local_python_source("src")
 
 
 @app.function(

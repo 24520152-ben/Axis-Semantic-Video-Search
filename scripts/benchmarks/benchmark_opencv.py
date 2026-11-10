@@ -16,15 +16,15 @@ from pathlib import Path
 
 import modal
 
-from scripts.process_videos import image as pipeline_image
+from scripts.process_videos import base_image as pipeline_image
 from src import config
 
 app = modal.App("aic-benchmark-opencv")
 volume = modal.Volume.from_name(config.VOLUME_NAME)
-image = pipeline_image.uv_pip_install(
-    "av>=19.0.2", "decord==0.6.0"
-).add_local_python_source("scripts.process_videos", "scripts.benchmarks.legacy_video")
-REMOTE_ROOT = "benchmarks/decord-cpu-20261107"
+image = pipeline_image.run_commands(
+    "/.uv/uv pip install --python /.uv/.venv/bin/python 'av>=19.0.2' 'decord==0.6.0'"
+).add_local_python_source("src", "scripts.process_videos", "scripts.benchmarks.legacy_video")
+REMOTE_ROOT = "benchmarks/uniform1fps"
 BENCHMARK_GPU = os.environ.get("BENCHMARK_GPU", "A10G")
 VARIANTS = ("pyav_decord", "opencv_sequential", "opencv_seek")
 
@@ -133,14 +133,29 @@ def _pixel_probes(frames):
 
 
 def _measure(path, shots, indices, expected_timestamps, variant):
-    from scripts.benchmarks.legacy_video import read_candidates
+    from scripts.benchmarks.legacy_video import read_candidates as legacy_read_candidates
+    from src.video.service import read_candidates
 
     _clean()
     frames = None
     with _Memory() as memory:
         start = time.perf_counter()
-        if variant == "pyav_decord":
-            source, candidates, reader, timeline = read_candidates(path, shots)
+        if variant == "opencv_sequential":
+            source, candidates, frames, timeline = read_candidates(path, shots)
+            if [row["frame_idx"] for row in candidates] != indices:
+                raise AssertionError("Production candidate indices changed")
+            sampling_end = time.perf_counter()
+            metadata_end = start
+            metadata = {
+                "sha256": source["sha256"],
+                "frame_count": len(timeline) - 1,
+                "fps": float(source["fps"]),
+                "backend": "production OpenCV sequential",
+            }
+            timestamps = [row["timestamp_us"] for row in candidates]
+            positions = [index + 1 for index in indices]
+        elif variant == "pyav_decord":
+            source, candidates, reader, timeline = legacy_read_candidates(path, shots)
             found_indices = [row["frame_idx"] for row in candidates]
             if found_indices != indices:
                 raise AssertionError("Candidate indices changed")
@@ -167,12 +182,11 @@ def _measure(path, shots, indices, expected_timestamps, variant):
             sampling_end = time.perf_counter()
     probes = _pixel_probes(frames)
     timestamp_errors = [
-        abs(float(a) - float(b))
-        for a, b in zip(timestamps, expected_timestamps, strict=True)
+        abs(float(a) - float(b)) for a, b in zip(timestamps, expected_timestamps, strict=True)
     ]
     measurement = {
         "variant": variant,
-        "metadata_seconds": metadata_end - start,
+        "metadata_seconds": None if variant == "opencv_sequential" else metadata_end - start,
         "sampling_seconds": sampling_end - metadata_end,
         "combined_seconds": sampling_end - start,
         "candidate_count": len(frames),
@@ -183,8 +197,7 @@ def _measure(path, shots, indices, expected_timestamps, variant):
         "timestamp_max_abs_error_us": max(timestamp_errors),
         "timestamp_mean_abs_error_us": statistics.mean(timestamp_errors),
         "position_mismatch_count": sum(
-            abs(pos - index - 1) > 0.01
-            for pos, index in zip(positions, indices, strict=True)
+            abs(pos - index - 1) > 0.01 for pos, index in zip(positions, indices, strict=True)
         ),
         "image_shapes": sorted({tuple(frame.shape) for frame in frames}),
     }
@@ -236,32 +249,19 @@ def benchmark_video(video_path: str, repetitions: int = 3, single: bool = False)
     import numpy as np
     import torch
 
-    from scripts.benchmarks.legacy_video import read_candidates
     from src.shot_detection.service import detect_shots
-    from src.video.service import resolve_source
+    from src.video.service import read_candidates, resolve_source
 
     volume.reload()
     path = resolve_source(config.WORKSPACE, video_path)
-    shared_path = config.WORKSPACE / REMOTE_ROOT / "shot_ranges.json"
-    shots = None
-    setup_source = "local_detection_outside_timing"
-    if shared_path.exists():
-        shared = json.loads(shared_path.read_text())
-        # Shared file maps source-relative paths to inclusive clean-shot ranges.
-        shots = shared.get("shots", shared).get(video_path)
-        if isinstance(shots, dict):
-            shots = shots.get("shots") or shots.get("shot_ranges")
-        if shots:
-            setup_source = "shared_dali_shot_ranges"
-    if not shots:
-        shots = detect_shots(path)
+    shots = detect_shots(path)
+    setup_source = "production_detect_shots_outside_timing"
     # Exact candidates and timestamp reference, prepared once outside measured runs.
-    source, candidates, initial_reader, timeline = read_candidates(path, shots)
+    source, candidates, initial_frames, timeline = read_candidates(path, shots)
     indices = [row["frame_idx"] for row in candidates]
     timestamps = [row["timestamp_us"] for row in candidates]
     # Prime decoder/library initialization with one frame only, not a full-video pass.
-    initial_reader.reader.get_batch([0])
-    del initial_reader
+    del initial_frames
     warm_capture = cv2.VideoCapture(str(path), cv2.CAP_FFMPEG)
     ok, warm_frame = warm_capture.read()
     if not ok:
@@ -280,9 +280,7 @@ def benchmark_video(video_path: str, repetitions: int = 3, single: bool = False)
             if reference_probes is None:
                 assert variant == "pyav_decord"
                 reference_probes = probes
-            measurement["probe_comparison_to_decord"] = _probe_difference(
-                probes, reference_probes
-            )
+            measurement["probe_comparison_to_decord"] = _probe_difference(probes, reference_probes)
             measurements.append(measurement)
             print(
                 f"{path.stem} repeat={repeat + 1} {variant}: {measurement['combined_seconds']:.3f}s",
@@ -290,8 +288,12 @@ def benchmark_video(video_path: str, repetitions: int = 3, single: bool = False)
             )
     summary = {
         variant: {
-            metric: statistics.median(
-                row[metric] for row in measurements if row["variant"] == variant
+            metric: None
+            if variant == "opencv_sequential" and metric == "metadata_seconds"
+            else statistics.median(
+                row[metric]
+                for row in measurements
+                if row["variant"] == variant and row[metric] is not None
             )
             for metric in (
                 "metadata_seconds",
@@ -304,6 +306,8 @@ def benchmark_video(video_path: str, repetitions: int = 3, single: bool = False)
     }
     result = {
         "video": video_path,
+        "dataset_version": config.DATASET_VERSION,
+        "sampling_policy": "all uniform 1-second candidates within clean shots; no selection",
         "source_sha256": source["sha256"],
         "frame_count": len(timeline) - 1,
         "candidate_count": len(indices),
@@ -327,8 +331,8 @@ def benchmark_video(video_path: str, repetitions: int = 3, single: bool = False)
         "methodology": {
             "source_cache": "warm source from untimed metadata/candidate setup; fresh readers each trial, one-frame decoder initialization only",
             "model_setup": "Shot detection/reference candidate construction outside measurement",
-            "metadata_scope": "SHA-256 in all branches; PyAV exact timeline+Decord reader indexing/validation vs OpenCV basic properties",
-            "sampling_scope": "All identical candidate indices retained as RGB uint8 CHW tensors; historical Decord get_batch batches of4",
+            "metadata_scope": "SHA-256 in all branches. Production OpenCV builds timeline inside its scan: metadata_seconds=null, sampling_seconds includes metadata. Other paths index separately.",
+            "sampling_scope": "Production read_candidates scans to EOF, builds timeline and retains all sampled RGB tensors. Alternatives use the same candidate indices; Decord batches of4 and OpenCV seek stop at last candidate.",
             "timestamps": "OpenCV POS_MSEC sampled after each decoded candidate, compared to PyAV normalized native PTS",
             "gpu_timing": "Decode benchmarks are CPU-only; GPU is used for untimed setup only",
             "order": "Rotate three variants each repetition; 20ms RSS sampling includes retained RGB cache",
@@ -355,9 +359,9 @@ def main(repetitions: int = 1, video_path: str = "", single: bool = False):
         raise ValueError("--single requires --video-path")
     paths = [video_path] if video_path else list_videos.remote()
     destination = Path(
-        "benchmarks/results/single/opencv.json"
+        "benchmarks/results/uniform1fps/single/opencv.json"
         if single
-        else "benchmarks/results/opencv.json"
+        else "benchmarks/results/uniform1fps/opencv.json"
     )
     destination.parent.mkdir(parents=True, exist_ok=True)
     payload = {"benchmark": "pyav_decord_vs_opencv", "videos": [], "errors": []}

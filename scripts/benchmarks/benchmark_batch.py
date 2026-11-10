@@ -26,25 +26,6 @@ def _rss_bytes():
     return 0
 
 
-def _cached_shots(video_path):
-    cache = config.WORKSPACE / "benchmarks/decord-cpu-20261107/shot_ranges.json"
-    if cache.exists():
-        data = json.loads(cache.read_text())
-        # Accept either an object keyed by source path or a videos collection.
-        rows = data.get("shots", data.get("videos", data))
-        if isinstance(rows, dict):
-            row = rows.get(video_path, rows.get(Path(video_path).stem))
-            if row is not None:
-                shots = (
-                    row.get("shots", row.get("ranges"))
-                    if isinstance(row, dict)
-                    else row
-                )
-                if shots:
-                    return [tuple(pair) for pair in shots]
-    return None
-
-
 @app.function(
     image=image,
     gpu=BENCHMARK_GPU,
@@ -59,7 +40,7 @@ def benchmark_video(
     video_path: str,
     run_id: str,
     repeats: int = 3,
-    reference_from_measured_batch4: bool = False,
+    reference_from_measured_batch16: bool = False,
 ):
     """Prepare candidates once, then measure each batch size in rotated order."""
     import gc
@@ -81,20 +62,20 @@ def benchmark_video(
     volume.reload()
     started_setup = time.monotonic()
     path = config.WORKSPACE / video_path
-    destination = (
-        config.WORKSPACE / "benchmarks" / run_id / "batch" / (path.stem + ".json")
-    )
+    destination = config.WORKSPACE / "benchmarks" / run_id / "batch" / (path.stem + ".json")
     if destination.exists():
         existing = json.loads(destination.read_text())
         with path.open("rb") as file:
             current_sha = hashlib.file_digest(file, "sha256").hexdigest()
         if (
-            existing.get("sha256") == current_sha
+            existing.get("dataset_version") == config.DATASET_VERSION
+            and existing.get("reader") == "production_opencv_sequential"
+            and existing.get("sha256") == current_sha
             and existing.get("gpu") == torch.cuda.get_device_name()
             and existing.get("method")
             == "cached CPU RGB candidates; wall time includes H2D, preprocessing, encode and CPU embeddings; CUDA synchronized; no shot/decode/model-load time"
-            and existing.get("reference_from_measured_batch4", False)
-            == reference_from_measured_batch4
+            and existing.get("reference_from_measured_batch16", False)
+            == reference_from_measured_batch16
             and len(existing.get("summary", {})) == 5
             and all(
                 len(
@@ -106,18 +87,15 @@ def benchmark_video(
                 )
                 >= repeats
                 or any(
-                    row["batch_size"] == size and row["status"] == "oom"
-                    for row in existing["runs"]
+                    row["batch_size"] == size and row["status"] == "oom" for row in existing["runs"]
                 )
                 for size in (1, 2, 4, 8, 16)
             )
         ):
             print(f"RESUME completed {video_path}", flush=True)
             return existing
-    shots = _cached_shots(video_path)
-    shot_source = "shared_dali_cache" if shots else "detect_shots_setup"
-    if not shots:
-        shots = detect_shots(path)
+    shots = detect_shots(path)
+    shot_source = "production_detect_shots"
     source, candidates, frames, _ = read_candidates(path, shots)
     setup_seconds = time.monotonic() - started_setup
     print(
@@ -136,13 +114,13 @@ def benchmark_video(
     if loaded_model:
         _MODEL = load_model()
     model_load_seconds = time.monotonic() - started_model
-    # Single-video mode uses the measured batch-4 pass as its reference.
+    # Single-video mode uses the measured batch-16 pass as its reference.
     reference = None
     reference_seconds = 0.0
-    if not reference_from_measured_batch4:
+    if not reference_from_measured_batch16:
         torch.cuda.synchronize()
         started_reference = time.monotonic()
-        reference = embed_candidates(_MODEL, frames, 4)
+        reference = embed_candidates(_MODEL, frames, config.BATCH_SIZE)
         torch.cuda.synchronize()
         reference_seconds = time.monotonic() - started_reference
         print(
@@ -158,6 +136,10 @@ def benchmark_video(
         )
     result = {
         "video": video_path,
+        "dataset_version": config.DATASET_VERSION,
+        "reader": "production_opencv_sequential",
+        "sampling_policy": "all uniform 1-second candidates within clean shots; no selection",
+        "reference_batch_size": config.BATCH_SIZE,
         "sha256": source["sha256"],
         "candidates": len(candidates),
         "shots": len(shots),
@@ -165,11 +147,9 @@ def benchmark_video(
         "setup_seconds_excluded": setup_seconds,
         "model_loaded_this_call": loaded_model,
         "model_load_seconds_excluded": model_load_seconds,
-        "batch4_reference_seconds_excluded": reference_seconds,
-        "reference_dtype": (
-            str(reference.dtype) if reference is not None else "torch.bfloat16"
-        ),
-        "reference_from_measured_batch4": reference_from_measured_batch4,
+        "batch16_reference_seconds_excluded": reference_seconds,
+        "reference_dtype": (str(reference.dtype) if reference is not None else "torch.bfloat16"),
+        "reference_from_measured_batch16": reference_from_measured_batch16,
         "gpu": torch.cuda.get_device_name(),
         "resources": {
             "cpu_cores": 4,
@@ -188,9 +168,7 @@ def benchmark_video(
         "method": "cached CPU RGB candidates; wall time includes H2D, preprocessing, encode and CPU embeddings; CUDA synchronized; no shot/decode/model-load time",
         "runs": [],
     }
-    destination = (
-        config.WORKSPACE / "benchmarks" / run_id / "batch" / (path.stem + ".json")
-    )
+    destination = config.WORKSPACE / "benchmarks" / run_id / "batch" / (path.stem + ".json")
     destination.parent.mkdir(parents=True, exist_ok=True)
 
     def save():
@@ -204,9 +182,7 @@ def benchmark_video(
     offset = sum(path.stem.encode()) % len(sizes)
     for repeat in range(repeats):
         order = (
-            [4, 1, 2, 8, 16]
-            if reference_from_measured_batch4
-            else sizes[offset:] + sizes[:offset]
+            [16, 1, 2, 4, 8] if reference_from_measured_batch16 else sizes[offset:] + sizes[:offset]
         )
         if repeat % 2:
             order = list(reversed(order))
@@ -251,20 +227,16 @@ def benchmark_video(
                     peak_process_rss_bytes=max(rss),
                 )
                 if reference is None:
-                    assert size == 4
+                    assert size == config.BATCH_SIZE
                     reference = vectors.clone()
-                assert (
-                    vectors.shape == reference.shape and vectors.dtype == torch.bfloat16
-                )
-                cosine = functional.cosine_similarity(
-                    vectors.float(), reference.float(), dim=1
-                )
-                row["reference_batch4_cosine_min"] = float(cosine.min())
-                row["reference_batch4_cosine_mean"] = float(cosine.mean())
-                row["reference_batch4_max_abs_difference"] = float(
+                assert vectors.shape == reference.shape and vectors.dtype == torch.bfloat16
+                cosine = functional.cosine_similarity(vectors.float(), reference.float(), dim=1)
+                row["reference_batch16_cosine_min"] = float(cosine.min())
+                row["reference_batch16_cosine_mean"] = float(cosine.mean())
+                row["reference_batch16_max_abs_difference"] = float(
                     (vectors.float() - reference.float()).abs().max()
                 )
-                row["reference_batch4_agrees"] = bool(
+                row["reference_batch16_agrees"] = bool(
                     torch.isfinite(vectors).all() and cosine.min() >= 0.995
                 )
                 del vectors
@@ -274,9 +246,7 @@ def benchmark_video(
                 gc.collect()
                 torch.cuda.empty_cache()
             except Exception as error:
-                row.update(
-                    status="error", error=str(error), traceback=traceback.format_exc()
-                )
+                row.update(status="error", error=str(error), traceback=traceback.format_exc())
                 failed_sizes.add(size)
             result["runs"].append(row)
             save()
@@ -284,24 +254,18 @@ def benchmark_video(
     result["summary"] = {}
     for size in sizes:
         successful = [
-            row
-            for row in result["runs"]
-            if row["batch_size"] == size and row["status"] == "ok"
+            row for row in result["runs"] if row["batch_size"] == size and row["status"] == "ok"
         ]
         result["summary"][str(size)] = {
             "successful_repeats": len(successful),
             "median_seconds": (
-                statistics.median(row["seconds"] for row in successful)
-                if successful
-                else None
+                statistics.median(row["seconds"] for row in successful) if successful else None
             ),
             "max_peak_gpu_allocated_bytes": max(
                 (row["peak_gpu_allocated_bytes"] for row in successful), default=None
             ),
             "all_reference_agree": (
-                all(row["reference_batch4_agrees"] for row in successful)
-                if successful
-                else None
+                all(row["reference_batch16_agrees"] for row in successful) if successful else None
             ),
         }
     save()
@@ -338,10 +302,12 @@ def main(
     paths = paths[start_index : end_index or None]
     assert paths
     if single_run:
-        assert (
-            len(paths) == 1 and repeats == 1
-        ), "single_run requires one explicit video and repeats=1"
-    output = Path("benchmarks/results/single" if single_run else "benchmarks/results")
+        assert len(paths) == 1 and repeats == 1, (
+            "single_run requires one explicit video and repeats=1"
+        )
+    output = Path(
+        "benchmarks/results/uniform1fps/single" if single_run else "benchmarks/results/uniform1fps"
+    )
     output.mkdir(parents=True, exist_ok=True)
     results = {
         "run_id": run_id,
@@ -359,7 +325,7 @@ def main(
         kwargs={
             "run_id": run_id,
             "repeats": repeats,
-            "reference_from_measured_batch4": True,
+            "reference_from_measured_batch16": True,
         },
         order_outputs=True,
         return_exceptions=True,
@@ -370,9 +336,7 @@ def main(
             print(f"FAILED {path}: {result}", flush=True)
         else:
             results["videos"].append(result)
-            (output / f"batch-{Path(path).stem}.json").write_text(
-                json.dumps(result, indent=2)
-            )
+            (output / f"batch-{Path(path).stem}.json").write_text(json.dumps(result, indent=2))
         aggregate_path.write_text(json.dumps(results, indent=2))
     print(
         json.dumps(
@@ -385,7 +349,9 @@ def main(
         flush=True,
     )
     failed_trials = any(
-        row["status"] == "error" for video in results["videos"] for row in video["runs"]
+        row["status"] == "error" or (row["status"] == "ok" and not row["reference_batch16_agrees"])
+        for video in results["videos"]
+        for row in video["runs"]
     )
     if results["failures"] or failed_trials:
         raise RuntimeError(f"Benchmark failures; see {aggregate_path}")
