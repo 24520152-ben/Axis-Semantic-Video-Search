@@ -24,8 +24,7 @@ flowchart LR
     V[Videos + media-info] --> S[DALI + OmniShotCut]
     S --> C[OpenCV: candidates at ~1 FPS]
     C --> E[Qwen image embeddings]
-    E --> K[Cosine dedup + temporal coverage]
-    K --> O[JPEG + Parquet on Modal Volume]
+    E --> O[All sampled JPEGs + Parquet on Modal Volume]
     O --> I[Local ingest CLI]
     I --> Z[(Zilliz Cloud)]
     U[Web UI / API client] --> A[FastAPI on Modal CPU]
@@ -44,18 +43,21 @@ ingest its output, then deploy the API and UI.
 | Candidate sampling | OpenCV sequential grab/retrieve samples roughly 1 FPS within each shot; NumPy shares RGB storage with PyTorch | CPU |
 | Timing and identity | OpenCV reads presentation timestamps; SHA-256 identifies the video | CPU |
 | Image embedding | Qwen encodes every candidate once, in batches of 16 | GPU |
-| Frame selection | Cosine threshold **0.95**, with temporal anchors at most **5 seconds apart within each shot** | CPU |
-| Export | Only retained frames become JPEGs and Parquet rows | CPU |
+| Export | Every sampled frame becomes a JPEG and a Parquet row | CPU |
 | Retrieval | Qwen embeds the text query; Zilliz searches by cosine similarity | Modal GPU + Zilliz |
 
 Candidate RGB tensors remain cached in CPU RAM for export. Each embedding batch
 is transferred to the model device for Qwen preprocessing and inference.
-Embeddings move to CPU in native **BF16, 2048 dimensions** for selection and storage. The checkpoint
+Embeddings move to CPU in native **BF16, 2048 dimensions** for storage. The checkpoint
 provides normalization; the pipeline does not add another normalization step.
 Video pixels are decoded in two passes: DALI for detection and OpenCV for sampling.
 OpenCV advances through the entire video to collect timestamps, retrieving RGB
 pixels only for candidates. The capture closes before embedding; export reuses
 the retained CPU tensors.
+All sampled frames are embedded and exported, including visually identical ones.
+Sampling starts at each clean shot's first frame and takes the first available
+frame at or after each subsequent one-second target. Shot detection remains in
+place; this is uniform sampling within shots, not across excluded transitions.
 
 ## Project structure
 
@@ -65,12 +67,12 @@ scripts/
 ├── serve_retrieval.py      # Deploy FastAPI CPU and Qwen GPU workers
 └── benchmarks/            # Stage comparisons and alternative decoder baseline
 src/
-├── config.py              # Model, sampling, resource and dataset defaults
+├── config.py              # Model, resource and dataset defaults
 ├── main.py                # FastAPI application
 ├── shot_detection/        # DALI preprocessing and OmniShotCut inference
 ├── video/                 # Sequential OpenCV sampling, timestamps and RGB cache
 ├── embedding/             # Qwen image and query encoding
-├── keyframes/             # Selection, JPEG and Parquet export
+├── keyframes/             # Sampled JPEG and Parquet export
 ├── pipeline/              # Single-video workflow
 ├── retrieval/             # Ingest, Zilliz search and preview routes
 └── web/                   # Separate HTML, CSS and JavaScript files
@@ -188,7 +190,7 @@ uv run modal run scripts/process_videos.py \
 Modal distributes videos across at most **5 containers**. Each processes one
 video at a time with **1 L4 GPU preferred, A10G as fallback, 4 CPU cores and
 16 GiB RAM**. More videos wait in the queue; actual concurrency depends on
-available GPUs and workspace quotas. The CLI prints retained-frame counts and
+available GPUs and workspace quotas. The CLI prints exported-frame counts and
 reports failures while allowing other videos to finish.
 
 ### Output format
@@ -196,7 +198,7 @@ reports failures while allowing other videos to finish.
 Results are saved on the Modal Volume, rather than downloaded automatically:
 
 ```text
-/workspace/data/retrieval/qwen2b-bf16-v1/
+/workspace/data/retrieval/qwen2b-bf16-1fps-v1/
 ├── images/
 │   └── L26_V035/
 │       ├── 0.jpg
@@ -205,14 +207,19 @@ Results are saved on the Modal Volume, rather than downloaded automatically:
     └── L26_V035.parquet
 ```
 
-Each retained frame has exactly one JPEG and one Parquet row with the seven
-fields listed above. Rejected frames produce neither. Parquet stores each BF16
+Each sampled frame has exactly one JPEG and one Parquet row with the seven
+fields listed above. No sampled frame is removed based on embedding similarity
+or a temporal-coverage constraint. Parquet stores each BF16
 vector as **4096 raw bytes** in a fixed-size binary column; ingest sends those
 bytes to the collection's `BFLOAT16_VECTOR` field.
 
 `image_uri` looks like `images/L26_V035/250.jpg`. JPEG names use source frame
 indices, not sequential keyframe numbers. `watch_url` keeps the original URL;
 the UI combines it with `timestamp_us` when opening YouTube.
+
+The uniform-sampling dataset uses `qwen2b-bf16-1fps-v1`, separate from existing
+outputs. Regenerate and ingest this dataset before serving it; the API preview
+root follows the configured dataset version.
 
 ## Ingest into Zilliz
 
@@ -241,7 +248,7 @@ uploads no JPEGs to Zilliz.
 | `--env-file .env` | Select a credentials file |
 
 Re-ingesting the same `frame_id` updates that record. Upsert does **not** delete
-records missing from newer output. When changing the reader, batch size or selection settings, use a new
+records missing from newer output. When changing the reader, batch size or sampling policy, use a new
 dataset version and collection, or explicitly remove obsolete records.
 
 ## Deploy the API and UI
@@ -283,7 +290,7 @@ directory containing `images/` and `records/`:
 
 ```bash
 uv run modal volume get aic-abr \
-  data/retrieval/qwen2b-bf16-v1 ./local-dataset
+  data/retrieval/qwen2b-bf16-1fps-v1 ./local-dataset
 DATASET_ROOT=./local-dataset \
   uv run --extra retrieval uvicorn src.main:app --reload
 ```
@@ -325,13 +332,11 @@ Edit [`src/config.py`](src/config.py) for shared defaults:
 | `CPU_CORES` / `MEMORY_MIB` | `4` / `16384` | Resources per pipeline worker |
 | `MAX_CONTAINERS` | `5` | Maximum concurrent pipeline workers |
 | `BATCH_SIZE` | `16` | Candidate embedding batch size |
-| `SIMILARITY_THRESHOLD` | `0.95` | Within-shot cosine deduplication cutoff |
-| `MAX_GAP_SECONDS` | `5` | Maximum within-shot temporal coverage gap |
 | `MAX_PIXELS` | `524288` | Maximum candidate image pixels for Qwen preprocessing |
 | `JPEG_QUALITY` | `95` | Retained JPEG quality |
 | `SCALEDOWN_WINDOW` | `2 seconds` | Pipeline worker idle window before scale-down |
 | `MAX_FRAME_CACHE_BYTES` | `8 GiB` | Candidate RGB cache limit in CPU RAM |
-| `DATASET_VERSION` | `qwen2b-bf16-v1` | Output dataset directory |
+| `DATASET_VERSION` | `qwen2b-bf16-1fps-v1` | Output dataset directory |
 | `VOLUME_NAME` | `aic-abr` | Source and output Volume |
 
 The model ID and revision are pinned in the same file so image and query
@@ -346,7 +351,10 @@ configured separately in `scripts/serve_retrieval.py`.
 - Candidate decoding uses sequential OpenCV on CPU; shot detection still requires DALI GPU decoding.
 - DALI holds the resized detection video on GPU, and OpenCV retains candidate RGB
   tensors in CPU RAM. Long or high-resolution videos can exceed memory/cache limits.
-- Coverage applies within detected clean shots; gaps across shot boundaries can exceed 5 seconds.
+- Sampling restarts at the first frame of each clean shot and targets one-second
+  intervals within it. Short shots can yield samples less than a second apart
+  across boundaries; excluded transitions and source timestamp gaps can leave
+  larger gaps. There is no five-second coverage constraint.
 
 ## Performance benchmarks
 
@@ -375,9 +383,11 @@ the local source dataset; all 873 durations were measured with FFprobe.
 Sample IDs are recorded in the raw benchmark
 results; a random-selection seed was not recorded.
 
-Measured on **2026-11-08** across these **15 videos** using Modal **A10G**,
+Measured on **2026-11-10** across these **15 videos** using Modal **A10G**,
 with **4 CPU cores and 16 GiB RAM per worker**, up to five workers per script.
 Every configuration completed one measured run per video without errors or OOM.
+The measured pipeline retains all uniform 1-second candidates, uses dataset
+`qwen2b-bf16-1fps-v1`, and applies no similarity filtering or five-second anchors.
 The tables sum measured stage times across videos; they exclude queueing, model
 loading and warmup, and do not represent full-pipeline time or elapsed batch time.
 
@@ -401,10 +411,10 @@ preprocessing, transfers, model inference and assembling the detected shots.
 
 | Shot detection path | Decode + resize | Total shot detection |
 | --- | ---: | ---: |
-| **Current DALI path** | **279.19 s** | **356.88 s** |
-| Official OmniShotCut video-path API | 288.04 s | 407.58 s |
+| **Current DALI path** | **291.88 s** | **366.82 s** |
+| Official OmniShotCut video-path API | 332.26 s | 468.69 s |
 
-The current path reduced total shot-detection time by **12.4%**. This includes
+The current path reduced total shot-detection time by **21.7%**. This includes
 window preprocessing, transfer, inference and shot assembly, so the entire gain
 cannot be attributed to decode/resize alone. Frame counts matched on all videos,
 but exact clean-shot ranges matched on only **3 of 15 videos**. The two paths
@@ -417,7 +427,9 @@ for embedding, roughly one per second within each shot. This experiment gives
 each reader the same candidate frame indices and compares how it retrieves them:
 
 - **OpenCV sequential (pipeline strategy):** Open the video once and advance
-  forward with `grab()`. Call `retrieve()` only at requested indices, convert
+  forward with `grab()` through EOF, building its timestamp timeline and choosing
+  candidates at one-second targets within each shot. Call `retrieve()` only at
+  candidate indices, convert
   OpenCV's BGR images to RGB and retain CPU tensors. Intermediate frames still
   require decoder work, but do not need an RGB image returned to Python.
 - **OpenCV seek:** For each requested index, call
@@ -428,27 +440,28 @@ each reader the same candidate frame indices and compares how it retrieves them:
   timeline. Decord indexes and validates the video, then `get_batch()` retrieves
   requested frames in groups of four, retaining RGB tensors on CPU.
 
-The metadata/indexing column includes source SHA-256 hashing in every variant.
-Sampling includes obtaining and retaining all candidate RGB tensors; shot
-detection and embedding are excluded.
+All variants include source SHA-256 hashing and retain sampled RGB tensors in CPU
+RAM; shot detection and embedding are excluded. Production OpenCV creates its
+timeline and samples in a single scan to EOF. These operations cannot be timed
+separately, so only its combined reading time is reported. Alternative readers
+use the same candidate indices and can stop pixel retrieval at the last candidate.
 
-| Candidate reading path | Metadata/indexing | Sampling | Total |
-| --- | ---: | ---: | ---: |
-| **OpenCV sequential** | **1.86 s** | **225.11 s** | **226.97 s** |
-| PyAV + Decord CPU | 7.81 s | 225.51 s | 233.32 s |
-| OpenCV seek | 1.85 s | 688.48 s | 690.33 s |
+| Candidate reading path | Total reading time |
+| --- | ---: |
+| **OpenCV sequential (production reader)** | **235.25 s** |
+| PyAV + Decord CPU | 236.22 s |
+| OpenCV seek | 707.86 s |
 
-**OpenCV sequential was the fastest reader in this run:** it reduced total
-reading time by **2.7%** compared with PyAV + Decord CPU and **67.1%**
-compared with OpenCV seek (3.04× speedup). Metadata work differs:
-PyAV/Decord builds and validates the exact presentation timeline, while OpenCV
-reads basic properties.
-Sparse RGB probes matched for all videos, reported frame positions matched, and
-OpenCV candidate timestamps differed from the reference by less than 1 microsecond.
-These checks do not establish exhaustive pixel or timestamp equivalence. The
-OpenCV benchmark uses candidate indices prepared outside timing and stops at the
-last candidate. Production additionally builds the timestamp timeline while
-scanning to EOF, so 226.97 seconds is not a measurement of the complete production reader.
+OpenCV sequential reduced reading time by **0.4%** compared with PyAV + Decord CPU
+and **66.8%** compared with OpenCV seek (3.01× speedup). The 0.4% difference is too
+small to establish a stable advantage from one run. PyAV/Decord validates a native
+packet-timestamp timeline; OpenCV uses its reported frame timestamps. Metadata
+requirements and EOF handling therefore differ between variants.
+Sparse RGB probes matched on all videos. OpenCV seek reported the expected frame
+positions, and candidate timestamps differed from the reference by less than one
+microsecond. Production OpenCV indices come from its sequential scan rather than
+an independent position query. These diagnostics do not establish exhaustive
+pixel or timestamp equivalence.
 
 ### Embedding batch size
 
@@ -468,17 +481,18 @@ return embeddings to CPU. No images are dropped or reused as cached embeddings.
 
 | Batch size | Total embedding time | Reduction vs batch 1 |
 | --- | ---: | ---: |
-| 1 | 1,239.49 s | — |
-| 2 | 1,120.91 s | 9.6% |
-| 4 | 1,041.65 s | 16.0% |
-| 8 | 1,017.88 s | 17.9% |
-| **16 (pipeline default)** | **994.07 s** | **19.8%** |
+| 1 | 1,225.22 s | — |
+| 2 | 1,105.25 s | 9.8% |
+| 4 | 1,054.39 s | 13.9% |
+| 8 | 1,017.90 s | 16.9% |
+| **16 (pipeline default)** | **975.97 s** | **20.3%** |
 
-Batch 16 was fastest among the tested sizes, reducing time by another **4.6%**
+Batch 16 was fastest among the tested sizes, reducing time by another **7.4%**
 relative to batch 4. All sizes completed without OOM and passed the benchmark's
-embedding similarity check against batch 4 (per-frame cosine similarity at least
+embedding similarity check against batch 16 (per-frame cosine similarity at least
 0.995); embeddings are not bit-identical across batch sizes. The production batch
-size is 16.
+size is 16. Peak PyTorch-allocated GPU memory was **5.65 GiB** at batch 16
+versus **4.39 GiB** at batch 4; these are allocator peaks, not total device usage.
 
 These single-run measurements support the benefits of the DALI path and batching,
 but small differences may reflect run-to-run variation. They do not prove a global
@@ -496,6 +510,10 @@ API, PyAV + Decord CPU with OpenCV (sequential and seeking), and embedding batch
 1, 2, 4, 8 and 16. Each benchmark covers every source video on the Volume with
 one measured run per configuration by default. They use up to five GPU workers per
 benchmark, each with 4 CPU cores and 16 GiB RAM; production artifacts are not overwritten.
+Each trial keeps every uniform 1-second candidate; similarity selection and
+five-second anchors are not applied. Batch comparisons use the production default
+of 16 as the embedding reference. Shot detection and candidate setup are excluded
+from embedding timings; JPEG/Parquet export is not timed by these stage benchmarks.
 The GPU defaults to A10G for all three scripts. Set `BENCHMARK_GPU` consistently
 if changing hardware. Use `--video-path` to limit a run to one video.
 
@@ -505,7 +523,7 @@ uv run --extra pipeline --extra benchmark modal run scripts/benchmarks/benchmark
 uv run --extra pipeline modal run scripts/benchmarks/benchmark_batch.py
 
 # Optional: generate a report after all three finish.
-uv run python scripts/benchmarks/summarize.py --min-repeats 1
+uv run python scripts/benchmarks/summarize.py --results benchmarks/results/uniform1fps --min-repeats 1
 ```
 
 Run the scripts sequentially to limit concurrent GPU demand to five workers.
@@ -514,18 +532,26 @@ workspace limits.
 
 The decoder comparison implements the PyAV/Decord alternative in
 `scripts/benchmarks/legacy_video.py`; those dependencies belong to the optional
-`benchmark` extra and are not used by production sampling. Embedding benchmarks use the OpenCV candidate reader.
+`benchmark` extra and are not used by production sampling. Embedding benchmarks use the OpenCV candidate reader. The sequential reader
+benchmark also calls production `read_candidates()` directly, including the full
+scan to EOF, timeline construction, sampling and CPU cache. Its metadata and
+sampling work are interleaved: `metadata_seconds` is null and `sampling_seconds`
+contains the whole scan. Compare reader variants using `combined_seconds`.
 
 All three scripts follow the production dispatch pattern: list source videos,
 then use Modal `.map()` with at most five workers. Each video stays on one
-worker for its paired comparisons. Candidate benchmarks prepare shot ranges
-outside their timed sections when cached ranges are unavailable.
-Results are saved under `benchmarks/results/` locally and separate `benchmarks/`
-directories on the Volume. The summary produces JSON, per-video CSV and an HTML
+worker for its paired comparisons. Candidate benchmarks run production shot detection outside their timed sections,
+without relying on a shared shot cache from another run.
+New results are saved under `benchmarks/results/uniform1fps/` locally and separate
+`benchmarks/` directories on the Volume. The JSON files linked in the measured
+tables are the verified aggregate snapshots of the 2026-11-10 runs; the
+uniform1fps directory contains working run outputs. Logs, per-video duplicates
+and generated reports are ignored by Git. The summary produces JSON, per-video CSV and an HTML
 report. It compares sums of per-video median stage times, excluding model load
 and warmup; these are not full-pipeline times or concurrent batch makespans.
-OpenCV reads basic metadata while PyAV/Decord validates exact timestamps, so
-consider correctness diagnostics alongside speed. Configurations with OOM or
+OpenCV builds a timestamp timeline during sequential decoding while PyAV/Decord
+validates native packet timestamps. Consider these scope differences and the
+correctness diagnostics alongside speed. Configurations with OOM or
 incomplete repetitions do not receive an all-video speedup claim. A single run
 is exploratory; increase repeats when assessing measurement stability.
 
